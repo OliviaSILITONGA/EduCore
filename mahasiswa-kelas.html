@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Kelas Mahasiswa - EduCore</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="container">
+    <div class="top-line">
+      <h2><span id="mName">Mahasiswa</span> — <small id="courseTitle">Mata Kuliah</small></h2>
+      <div>
+        <a class="linkish" href="mahasiswa-matkul.html">← Pilih Mata Kuliah</a>
+      </div>
+    </div>
+
+    <div id="progressWrap" class="card small">
+      <div>Progress: <span id="progressPct">0%</span></div>
+      <div class="progress-bar"><div id="progressFill" class="progress-fill"></div></div>
+    </div>
+
+    <div id="materiList" class="materi-list"></div>
+
+    <div id="kuisArea" class="center hidden">
+      <button class="cta" onclick="goToQuiz()">Kerjakan Kuis Sekarang 🧩</button>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

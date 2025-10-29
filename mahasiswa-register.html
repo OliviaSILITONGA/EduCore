@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Daftar Mahasiswa - EduCore</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="container">
+    <h2>Daftar Mahasiswa</h2>
+    <p>Isi data singkat untuk membuat akun mahasiswa (prototype).</p>
+
+    <div class="form">
+      <input id="m_name" type="text" placeholder="Nama lengkap" />
+      <input id="m_email" type="email" placeholder="Email" />
+      <input id="m_id" type="text" placeholder="NIM / ID (opsional)" />
+      <select id="m_jurusan">
+        <option value="Ilmu Komputer">Ilmu Komputer</option>
+        <option value="Sistem Informasi">Sistem Informasi</option>
+        <option value="Teknik Elektro">Teknik Elektro</option>
+      </select>
+
+      <div class="form-row">
+        <button onclick="registerStudent()">Daftar & Pilih Mata Kuliah ➜</button>
+        <a class="linkish" href="index.html">Kembali</a>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
