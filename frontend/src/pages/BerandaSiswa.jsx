@@ -2,16 +2,16 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 
 // IMPORT GAMBAR
-import mtk from "../assets/images/gambar_beranda/beranda_siswa/mtk.jpg";
-import indo from "../assets/images/gambar_beranda/beranda_siswa/B.indo.jpg";
-import inggris from "../assets/images/gambar_beranda/beranda_siswa/B.inggris.jpg";
-import biologi from "../assets/images/gambar_beranda/beranda_siswa/biologi.jpg";
-import ekonomi from "../assets/images/gambar_beranda/beranda_siswa/ekonomi.jpg";
-import fisika from "../assets/images/gambar_beranda/beranda_siswa/fisika.jpg";
-import geografi from "../assets/images/gambar_beranda/beranda_siswa/geografi.jpg";
-import kimia from "../assets/images/gambar_beranda/beranda_siswa/kimia.jpg";
-import sejarah from "../assets/images/gambar_beranda/beranda_siswa/sejarah.jpg";
-import siswaImg from "../assets/images/gambar_beranda/beranda_siswa/utama_siswa.jpg";
+import mtk from "../assets/images/mtk.jpg";
+import indo from "../assets/images/B.indo.jpg";
+import inggris from "../assets/images/B.inggris.jpg";
+import biologi from "../assets/images/biologi.jpg";
+import ekonomi from "../assets/images/ekonomi.jpg";
+import fisika from "../assets/images/fisika.jpg";
+import geografi from "../assets/images/geografi.jpg";
+import kimia from "../assets/images/kimia.jpg";
+import sejarah from "../assets/images/sejarah.jpg";
+import siswaImg from "../assets/images/utama_siswa.jpg";
 
 export default function BerandaSiswa() {
   const navigate = useNavigate();

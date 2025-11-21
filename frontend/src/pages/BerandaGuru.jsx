@@ -2,16 +2,16 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 
 // IMPORT GAMBAR SESUAI FILE DI DALAM FOLDER
-import mtk from "../assets/images/gambar_beranda/beranda_guru/mtk.jpg";
-import indo from "../assets/images/gambar_beranda/beranda_guru/B.indo.jpg";
-import inggris from "../assets/images/gambar_beranda/beranda_guru/B.inggris.jpg";
-import biologi from "../assets/images/gambar_beranda/beranda_guru/biologi.jpg";
-import kimia from "../assets/images/gambar_beranda/beranda_guru/kimia.jpg";
-import fisika from "../assets/images/gambar_beranda/beranda_guru/fisika.jpg";
-import geografi from "../assets/images/gambar_beranda/beranda_guru/geografi.jpg";
-import ekonomi from "../assets/images/gambar_beranda/beranda_guru/ekonomi.jpg";
-import sejarah from "../assets/images/gambar_beranda/beranda_guru/sejarah.jpg";
-import utamaGuru from "../assets/images/gambar_beranda/beranda_guru/utama_guru.jpg";
+import mtk from "../assets/images/mtk.jpg";
+import indo from "../assets/images/B.indo.jpg";
+import inggris from "../assets/images/B.inggris.jpg";
+import biologi from "../assets/images/biologi.jpg";
+import kimia from "../assets/images/kimia.jpg";
+import fisika from "../assets/images/fisika.jpg";
+import geografi from "../assets/images/geografi.jpg";
+import ekonomi from "../assets/images/ekonomi.jpg";
+import sejarah from "../assets/images/sejarah.jpg";
+import utamaGuru from "../assets/images/utama_guru.jpg";
 
 export default function BerandaGuru() {
   const navigate = useNavigate();
