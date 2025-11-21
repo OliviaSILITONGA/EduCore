@@ -57,3 +57,11 @@ CREATE TABLE pembelajaran (
 	id_pelajaran VARCHAR(7) REFERENCES pelajaran (id_pelajaran),
 	nilai_latihan INT CHECK (nilai_latihan >= 0 AND nilai_latihan <= 100)
 );
+
+CREATE TABLE materi_detail (
+    id_section SERIAL PRIMARY KEY,
+    id_pelajaran VARCHAR(7) REFERENCES pelajaran(id_pelajaran),
+    judul_section VARCHAR(200),
+    isi_section TEXT,
+    urutan INT
+);
