@@ -10,7 +10,8 @@ const {
   handlerMapel,
   handlerMapelSiswa,
   handlerKelas,
-  handlerMateri
+  handlerMateri,
+  handlerBelajar
 } = require("../controllers/controller");
 
 // Router login
