@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import Button from "../components/Button";
 
 export default function MateriSayaSiswa() {
   const navigate = useNavigate();
@@ -34,8 +35,8 @@ export default function MateriSayaSiswa() {
   ]);
 
   const handleMulaiBelajar = (materiId) => {
-    alert(`Memulai materi: ${materiList.find(m => m.id === materiId)?.judul}`);
-    // Nanti bisa navigate ke halaman belajar
+    // Navigate to lesson page
+    navigate(`/belajar/${subject}/${materiId}`);
   };
 
   return (
@@ -46,19 +47,17 @@ export default function MateriSayaSiswa() {
           <div style={styles.profileCircle}></div>
           <h2 style={styles.name}>Halo, Siswa!</h2>
         </div>
-        <button style={styles.menuBtn}>Dashboard</button>
-        <button style={styles.menuBtn}>Tugas</button>
-        <button style={styles.menuBtn}>Materi</button>
-        <button style={styles.menuBtn}>Pengaturan</button>
+        <Button variant="menu" onClick={() => navigate("/beranda-siswa")}>Dashboard</Button>
+        <Button variant="menu">Tugas</Button>
+        <Button variant="menu">Materi</Button>
+        <Button variant="menu">Pengaturan</Button>
       </div>
 
       {/* CONTENT */}
       <div style={styles.content}>
         {/* HEADER */}
         <div style={styles.header}>
-          <button onClick={() => navigate(-1)} style={styles.backButton}>
-            ← Kembali
-          </button>
+          <Button onClick={() => navigate(-1)} style={styles.backButton} variant="link">← Kembali</Button>
           <h1 style={styles.title}>Materi {subject ? subject.toUpperCase() : ""}</h1>
         </div>
 
@@ -92,12 +91,9 @@ export default function MateriSayaSiswa() {
                   </div>
                 </div>
                 
-                <button 
-                  style={styles.pelajariButton}
-                  onClick={() => handleMulaiBelajar(materi.id)}
-                >
+                <Button style={styles.pelajariButton} onClick={() => handleMulaiBelajar(materi.id)}>
                   Mulai Belajar
-                </button>
+                </Button>
               </div>
             ))}
           </div>
@@ -118,7 +114,7 @@ const styles = {
   },
   sidebar: {
     width: "250px",
-    background: "#003cbd",
+    background: "#808080",
     color: "white",
     display: "flex",
     flexDirection: "column",
@@ -145,7 +141,7 @@ const styles = {
     width: "80%",
     padding: "12px",
     background: "white",
-    color: "#003cbd",
+    color: "#A52A2A",
     borderRadius: "8px",
     border: "none",
     cursor: "pointer",
@@ -174,7 +170,7 @@ const styles = {
   title: { 
     fontSize: "28px", 
     fontWeight: "700",
-    color: "#003cbd",
+    color: "#000",
     margin: 0
   },
   infoCard: {
@@ -189,11 +185,13 @@ const styles = {
     fontSize: "22px",
     fontWeight: "700",
     margin: "0 0 10px 0",
+    color: "#000",
   },
   infoText: {
     fontSize: "16px",
     margin: 0,
     opacity: 0.9,
+    color: "#000",
   },
   section: {
     background: "white",
@@ -205,7 +203,7 @@ const styles = {
     fontSize: "22px",
     fontWeight: "600",
     marginBottom: "20px",
-    color: "#003cbd",
+    color: "#000",
   },
   materiList: {
     display: "flex",
@@ -233,7 +231,7 @@ const styles = {
   materiTitle: {
     fontSize: "18px",
     fontWeight: "700",
-    color: "#003cbd",
+    color: "#000",
     margin: 0,
   },
   levelBadge: {

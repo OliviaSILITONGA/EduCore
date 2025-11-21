@@ -1,5 +1,6 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import Button from "../components/Button";
 
 // IMPORT GAMBAR SESUAI FILE DI DALAM FOLDER
 import mtk from "../assets/images/mtk.jpg";
@@ -40,10 +41,10 @@ export default function BerandaGuru() {
         <img src={utamaGuru} alt="guru" style={styles.profileImg} />
         <h2 style={styles.name}>Halo, Guru!</h2>
 
-        <button style={styles.menuBtn}>Dashboard</button>
-        <button style={styles.menuBtn}>Data Siswa</button>
-        <button style={styles.menuBtn}>Materi</button>
-        <button style={styles.menuBtn}>Pengaturan</button>
+        <Button variant="menu" onClick={() => navigate("/beranda-guru")}>Dashboard</Button>
+        <Button variant="menu">Data Siswa</Button>
+        <Button variant="menu">Materi</Button>
+        <Button variant="menu">Pengaturan</Button>
       </div>
 
       {/* CONTENT */}

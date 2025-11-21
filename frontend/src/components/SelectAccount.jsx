@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import Button from "../components/Button";
 import gambarGuru from "../assets/images/gambar_guru.jpg";
 import gambarSiswa from "../assets/images/gambar_siswa.jpg";
 
@@ -14,19 +15,16 @@ export default function SelectAccount() {
         <h2 style={styles.choose}>Pilih Tipe Akun</h2>
 
         {/* GURU */}
-        <button style={styles.btn} onClick={() => navigate("/login-guru")}>
+        <Button onClick={() => navigate("/login-guru")} style={{ display: "flex", gap: 12, alignItems: "center" }}>
           <img src={gambarGuru} alt="Guru" style={styles.icon} />
           <span>Untuk Guru</span>
-        </button>
+        </Button>
 
         {/* SISWA */}
-        <button
-          style={{ ...styles.btn, background: "#bbdefb" }}
-          onClick={() => navigate("/login-siswa")}
-        >
+        <Button variant="menu" onClick={() => navigate("/login-siswa")} style={{ display: "flex", gap: 12, alignItems: "center" }}>
           <img src={gambarSiswa} alt="Siswa" style={styles.icon} />
           <span>Untuk Siswa</span>
-        </button>
+        </Button>
       </div>
     </div>
   );
@@ -36,7 +34,7 @@ const styles = {
   page: {
     width: "100vw",
     height: "100vh",
-    background: "linear-gradient(180deg, #49c7f0, #003cbd)",
+    background: "#f4f4f4",
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
@@ -44,39 +42,43 @@ const styles = {
 
   card: {
     textAlign: "center",
-    width: "400px",
+    width: "420px",
+    background: "white",
+    padding: "30px",
+    borderRadius: "12px",
+    boxShadow: "0 6px 18px rgba(0,0,0,0.08)",
   },
 
   title: {
-    fontSize: "40px",
-    fontWeight: "bold",
-    color: "#fff",
+    fontSize: "36px",
+    fontWeight: "700",
+    color: "#000",
   },
 
-  sub: { marginTop: "-5px", color: "#fff" },
+  sub: { marginTop: "-5px", color: "#666" },
 
   choose: {
-    marginTop: "25px",
-    marginBottom: "20px",
-    color: "#fff",
-    fontSize: "20px",
+    marginTop: "20px",
+    marginBottom: "18px",
+    color: "#000",
+    fontSize: "18px",
     fontWeight: "600",
   },
 
   btn: {
     width: "100%",
-    padding: "15px",
-    marginTop: "15px",
-    borderRadius: "12px",
-    background: "#4dd0e1",
-    border: "none",
-    fontSize: "18px",
+    padding: "14px",
+    marginTop: "12px",
+    borderRadius: "10px",
+    background: "white",
+    border: "1px solid #e0e0e0",
+    fontSize: "16px",
     cursor: "pointer",
     display: "flex",
     alignItems: "center",
-    gap: "15px",
+    gap: "12px",
     fontWeight: "600",
-    color: "#003c47",
+    color: "#A52A2A",
   },
 
   icon: {
