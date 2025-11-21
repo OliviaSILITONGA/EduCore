@@ -158,6 +158,49 @@ async function handlerMateri(subject) {
   }));
 }
 
+async function handlerBelajar(subject, materiId) {
+  // 1. Ambil materi utama dari tabel pelajaran
+  const materi = await pool.query(
+    `SELECT 
+        p.id_pelajaran,
+        p.nama_pelajaran,
+        p.deskripsi,
+        p.durasi,
+        p.level,
+        p.tanggal,
+        mp.nama_mapel
+     FROM pelajaran p
+     JOIN kelas k ON p.id_kelas = k.id_kelas
+     JOIN mata_pelajaran mp ON k.id_mapel = mp.id_mapel
+     WHERE LOWER(mp.nama_mapel) = LOWER($1)
+       AND p.id_pelajaran = $2`,
+    [subject, materiId]
+  );
+
+  if (materi.rows.length === 0) return null;
+
+  const m = materi.rows[0];
+
+  // 2. Ambil sections dari tabel materi_detail
+  const sections = await pool.query(
+    `SELECT id_section AS id, judul_section AS title, isi_section AS text
+     FROM materi_detail
+     WHERE id_pelajaran = $1
+     ORDER BY urutan ASC`,
+    [materiId]
+  );
+
+  return {
+    judul: m.nama_pelajaran,
+    mapel: m.nama_mapel,
+    durasi: m.durasi,
+    level: m.level,
+    tanggal: m.tanggal,
+    deskripsi: m.deskripsi,
+    sections: sections.rows
+  };
+}
+
 module.exports = {
   handlerLoginSiswa,
   handlerLoginGuru,
@@ -169,4 +212,5 @@ module.exports = {
   handlerMapelSiswa,
   handlerKelas,
   handlerMateri,
+  handlerBelajar,
 };
