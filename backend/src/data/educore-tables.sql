@@ -35,7 +35,11 @@ CREATE TABLE kelas (
 CREATE TABLE pelajaran (
 	id_pelajaran VARCHAR(7) PRIMARY KEY,
 	id_kelas VARCHAR(5) REFERENCES kelas (id_kelas),
-	nama_pelajaran VARCHAR(100)
+	nama_pelajaran VARCHAR(100),
+	durasi VARCHAR(20),
+	level VARCHAR(20),
+	deskripsi TEXT,
+	tanggal DATE DEFAULT CURRENT_DATE
 );
 
 CREATE TABLE enrollment (
