@@ -93,6 +93,16 @@ async function handlerMateri(req, res) {
   }
 }
 
+async function handlerBelajar(req, res) {
+  try {
+    const { subject, materiId } = req.params;
+    const data = await service.handlerBelajar(subject, materiId);
+    return success(res, 200, "Data materi belajar", data);
+  } catch (err) {
+    return error(res, 500, err.message);
+  }
+}
+
 module.exports = {
   handlerLoginSiswa,
   handlerLoginGuru,
@@ -104,4 +114,5 @@ module.exports = {
   handlerMapelSiswa,
   handlerKelas,
   handlerMateri,
+  handlerBelajar,
 };
