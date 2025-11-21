@@ -30,9 +30,10 @@ router.get("/mata-pelajaran/:subject", handlerMapel);
 router.get("/mata-pelajaran-siswa/:subject", handlerMapelSiswa);
 
 // Router manajemen kelas
-router.get("/manajemen-kelas/:mapel", handlerKelas);
+router.get("/manajemen-kelas/:matpel", handlerKelas);
 
 // Router materi siswa
 router.get("/materi-siswa/:subject", handlerMateri);
+router.get("/belajar/:subject/:materiId", handlerBelajar);
 
 module.exports = router;
