@@ -1,5 +1,6 @@
 // pages/DetailMataPelajaran.jsx - UPDATE DENGAN DESAIN GAMBAR
 import { useParams, useNavigate } from "react-router-dom";
+import Button from "../components/Button";
 
 export default function DetailMataPelajaran() {
   const { subject } = useParams();
@@ -7,12 +8,12 @@ export default function DetailMataPelajaran() {
 
   // Data kelas sesuai gambar
   const kelasList = [
-    { id: 1, name: "KELAS 1", pelajaran: "PELAJARAN 1", status: "Tambah" },
-    { id: 2, name: "KELAS 2", pelajaran: "PELAJARAN 2", status: "Tambah" },
-    { id: 3, name: "KELAS 3", pelajaran: "PELAJARAN 3", status: "Tambah" },
-    { id: 4, name: "KELAS 4", pelajaran: "PELAJARAN 4", status: "Tambah" },
-    { id: 5, name: "KELAS 5", pelajaran: "PELAJARAN 5", status: "Tambah" },
-    { id: 6, name: "KELAS 6", pelajaran: "UJIAN", status: "Buat" },
+    { id: 1, name: "KELAS 1", pelajaran: "", status: "Tambah" },
+    { id: 2, name: "KELAS 2", pelajaran: "", status: "Tambah" },
+    { id: 3, name: "KELAS 3", pelajaran: "", status: "Tambah" },
+    { id: 4, name: "KELAS 4", pelajaran: "", status: "Tambah" },
+    { id: 5, name: "KELAS 5", pelajaran: "", status: "Tambah" },
+    { id: 6, name: "KELAS 6", pelajaran: "", status: "Tambah" },
     { id: 7, name: "KELAS 7", pelajaran: "", status: "Tambah" },
     { id: 8, name: "KELAS 8", pelajaran: "", status: "Tambah" },
     { id: 9, name: "KELAS 9", pelajaran: "", status: "Tambah" },
@@ -37,22 +38,17 @@ export default function DetailMataPelajaran() {
           <h2 style={styles.name}>Halo, Guru!</h2>
         </div>
 
-        <button style={styles.menuBtn}>Dashboard</button>
-        <button style={styles.menuBtn}>Data Siswa</button>
-        <button style={styles.menuBtn}>Materi</button>
-        <button style={styles.menuBtn}>Pengaturan</button>
+        <Button variant="menu" onClick={() => navigate("/beranda-guru")}>Dashboard</Button>
+        <Button variant="menu">Data Siswa</Button>
+        <Button variant="menu">Materi</Button>
+        <Button variant="menu">Pengaturan</Button>
       </div>
 
       {/* CONTENT */}
       <div style={styles.content}>
         {/* HEADER */}
         <div style={styles.header}>
-          <button 
-            style={styles.backBtn}
-            onClick={() => navigate("/beranda-guru")}
-          >
-            ‹ Kembali
-          </button>
+          <Button onClick={() => navigate("/beranda-guru")} style={styles.backBtn} variant="link">‹ Kembali</Button>
           <h1 style={styles.subjectTitle}>{subject ? subject.toUpperCase() : "MATA PELAJARAN"}</h1>
         </div>
 
@@ -74,12 +70,12 @@ export default function DetailMataPelajaran() {
                 {kelas.pelajaran && kelas.pelajaran !== "UJIAN" && (
                   <span style={styles.tambahText}>Tambahkan</span>
                 )}
-                <button 
+                <Button
                   style={styles.statusBtn}
                   onClick={(e) => handleKelasClick(kelas.id, e)}
                 >
                   {kelas.status}
-                </button>
+                </Button>
               </div>
             </div>
           ))}
@@ -166,7 +162,7 @@ const styles = {
   subjectTitle: {
     fontSize: "32px",
     fontWeight: "700",
-    color: "#003cbd",
+    color: "#000",
     margin: 0,
   },
   
@@ -199,7 +195,7 @@ const styles = {
     margin: 0,
     fontSize: "18px",
     fontWeight: "700",
-    color: "#003cbd",
+    color: "#000",
   },
   
   pelajaranText: {

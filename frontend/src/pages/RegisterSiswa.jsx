@@ -1,4 +1,6 @@
 import { useNavigate } from "react-router-dom";
+import Button from "../components/Button";
+import Input from "../components/Input";
 
 export default function RegisterSiswa() {
   const navigate = useNavigate();
@@ -16,12 +18,12 @@ export default function RegisterSiswa() {
         <div style={stylesSiswa.formBox}>
           <h2 style={stylesSiswa.title}>Register Siswa</h2>
 
-          <input type="text" placeholder="Nama Lengkap" style={stylesSiswa.input} />
-          <input type="email" placeholder="Email" style={stylesSiswa.input} />
-          <input type="password" placeholder="Password" style={stylesSiswa.input} />
-          <input type="password" placeholder="Konfirmasi Password" style={stylesSiswa.input} />
+          <Input type="text" placeholder="Nama Lengkap" style={stylesSiswa.input} />
+          <Input type="email" placeholder="Email" style={stylesSiswa.input} />
+          <Input type="password" placeholder="Password" style={stylesSiswa.input} />
+          <Input type="password" placeholder="Konfirmasi Password" style={stylesSiswa.input} />
 
-          <button style={stylesSiswa.btn}>Daftar</button>
+          <Button>Daftar</Button>
 
           <p style={stylesSiswa.registerText}>
             Sudah punya akun?{" "}
@@ -47,7 +49,7 @@ const stylesSiswa = {
 
   left: {
     flex: 1,
-    background: "linear-gradient(180deg, #49c7f0, #003cbd)",
+    background: "#808080",
     color: "#fff",
     display: "flex",
     flexDirection: "column",
@@ -72,6 +74,7 @@ const stylesSiswa = {
     fontSize: "32px",
     marginBottom: "25px",
     fontWeight: "600",
+    color: "#000",
   },
 
   input: {

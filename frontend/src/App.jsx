@@ -2,7 +2,7 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 // Import semua halaman
-import SelectAccount from "./pages/SelectAccount";
+import SelectAccount from "./components/SelectAccount";
 import LoginSiswa from "./pages/LoginSiswa";
 import LoginGuru from "./pages/LoginGuru";
 import RegisterSiswa from "./pages/RegisterSiswa";
@@ -13,6 +13,7 @@ import DetailMataPelajaran from "./pages/DetailMataPelajaran";
 import DetailMataPelajaranSiswa from "./pages/DetailMataPelajaranSiswa";
 import ManajemenKelas from "./pages/ManajemenKelas";
 import MateriSayaSiswa from "./pages/MateriSayaSiswa";
+import Belajar from "./pages/Belajar";
 
 export default function App() {
   return (
@@ -39,6 +40,7 @@ export default function App() {
         <Route path="/manajemen-kelas/:matpel" element={<ManajemenKelas />} />
         {/* materi siswa */}
         <Route path="/materi-siswa/:subject" element={<MateriSayaSiswa />} />
+        <Route path="/belajar/:subject/:materiId" element={<Belajar />} />
       </Routes>
     </BrowserRouter>
   );

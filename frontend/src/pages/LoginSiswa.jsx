@@ -1,5 +1,7 @@
 // LoginSiswa.jsx - UPDATE DENGAN CONSOLE LOG
 import { useNavigate } from "react-router-dom";
+import Button from "../components/Button";
+import Input from "../components/Input";
 
 export default function LoginSiswa() {
   const navigate = useNavigate();
@@ -20,12 +22,10 @@ export default function LoginSiswa() {
         <div style={styles.formBox}>
           <h2 style={styles.title}>Login Siswa</h2>
 
-          <input type="email" placeholder="Email" style={styles.input} />
-          <input type="password" placeholder="Password" style={styles.input} />
+          <Input type="email" placeholder="Email" style={styles.input} />
+          <Input type="password" placeholder="Password" style={styles.input} />
 
-          <button style={styles.btn} onClick={handleLogin}>
-            Login
-          </button>
+          <Button onClick={handleLogin}>Login</Button>
 
           <p style={styles.registerText}>
             Belum punya akun?{" "}
@@ -51,7 +51,7 @@ const styles = {
   /* KIRI */
   left: {
     width: "50%",
-    background: "linear-gradient(180deg, #49c7f0, #003cbd)",
+    background: "#808080",
     color: "#fff",
     display: "flex",
     flexDirection: "column",
@@ -80,6 +80,7 @@ const styles = {
     fontSize: "32px",
     marginBottom: "25px",
     fontWeight: "600",
+    color: "#000",
   },
 
   input: {

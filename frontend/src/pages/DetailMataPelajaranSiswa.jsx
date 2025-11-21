@@ -1,22 +1,24 @@
 import { useParams, useNavigate } from "react-router-dom";
+import Button from "../components/Button";
 
 export default function DetailMataPelajaranSiswa() {
   const { subject } = useParams();
   const navigate = useNavigate();
 
   const kelasList = [
-    { id: 1, name: "KELAS 1", pelajaran: "PELAJARAN 1", status: "Pelajari" },
-    { id: 2, name: "KELAS 2", pelajaran: "PELAJARAN 2", status: "Pelajari" },
-    { id: 3, name: "KELAS 3", pelajaran: "PELAJARAN 3", status: "Pelajari" },
-    { id: 4, name: "KELAS 4", pelajaran: "PELAJARAN 4", status: "Pelajari" },
-    { id: 5, name: "KELAS 5", pelajaran: "PELAJARAN 5", status: "Pelajari" },
-    { id: 6, name: "KELAS 6", pelajaran: "UJIAN", status: "Tes Yuk!" },
+    { id: 1, name: "KELAS 1", pelajaran: "", status: "Pelajari" },
+    { id: 2, name: "KELAS 2", pelajaran: "", status: "Pelajari" },
+    { id: 3, name: "KELAS 3", pelajaran: "", status: "Pelajari" },
+    { id: 4, name: "KELAS 4", pelajaran: "", status: "Pelajari" },
+    { id: 5, name: "KELAS 5", pelajaran: "", status: "Pelajari" },
+    { id: 6, name: "KELAS 6", pelajaran: "", status: "pelajari" },
     { id: 7, name: "KELAS 7", pelajaran: "", status: "Pelajari" },
     { id: 8, name: "KELAS 8", pelajaran: "", status: "Pelajari" },
     { id: 9, name: "KELAS 9", pelajaran: "", status: "Pelajari" },
     { id: 10, name: "KELAS 10", pelajaran: "", status: "Pelajari" },
     { id: 11, name: "KELAS 11", pelajaran: "", status: "Pelajari" },
     { id: 12, name: "KELAS 12", pelajaran: "", status: "Pelajari" },
+    { id: 13, name: "UJIAN", pelajaran: "UJIAN", status: "Tes" },
   ];
 
   const handlePelajariClick = (kelasId, e) => {
@@ -31,20 +33,15 @@ export default function DetailMataPelajaranSiswa() {
           <div style={styles.profileCircle}></div>
           <h2 style={styles.name}>Halo, Siswa!</h2>
         </div>
-        <button style={styles.menuBtn}>Dashboard</button>
-        <button style={styles.menuBtn}>Tugas</button>
-        <button style={styles.menuBtn}>Materi</button>
-        <button style={styles.menuBtn}>Pengaturan</button>
+        <Button variant="menu" onClick={() => navigate("/beranda-siswa")}>Dashboard</Button>
+        <Button variant="menu">Tugas</Button>
+        <Button variant="menu">Materi</Button>
+        <Button variant="menu">Pengaturan</Button>
       </div>
 
       <div style={styles.content}>
         <div style={styles.header}>
-          <button 
-            style={styles.backBtn}
-            onClick={() => navigate("/beranda-siswa")}
-          >
-            ‹ Kembali
-          </button>
+          <Button onClick={() => navigate("/beranda-siswa")} style={styles.backBtn} variant="link">‹ Kembali</Button>
           <h1 style={styles.subjectTitle}>{subject ? subject.toUpperCase() : "MATA PELAJARAN"}</h1>
         </div>
 
@@ -62,12 +59,12 @@ export default function DetailMataPelajaranSiswa() {
                 {kelas.pelajaran && kelas.pelajaran !== "UJIAN" && (
                   <span style={styles.tambahText}>Mulai belajar</span>
                 )}
-                <button 
+                <Button
                   style={kelas.pelajaran === "UJIAN" ? styles.tesBtn : styles.pelajariBtn}
                   onClick={(e) => handlePelajariClick(kelas.id, e)}
                 >
                   {kelas.status}
-                </button>
+                </Button>
               </div>
             </div>
           ))}
@@ -87,7 +84,7 @@ const styles = {
   },
   sidebar: {
     width: "250px",
-    background: "#003cbd",
+    background: "#808080",
     color: "white",
     display: "flex",
     flexDirection: "column",
@@ -114,7 +111,7 @@ const styles = {
     width: "80%",
     padding: "12px",
     background: "white",
-    color: "#003cbd",
+    color: "#A52A2A",
     borderRadius: "8px",
     border: "none",
     cursor: "pointer",
@@ -144,7 +141,7 @@ const styles = {
   subjectTitle: {
     fontSize: "32px",
     fontWeight: "700",
-    color: "#003cbd",
+    color: "#000",
     margin: 0,
   },
   grid: {
@@ -173,7 +170,7 @@ const styles = {
     margin: 0,
     fontSize: "18px",
     fontWeight: "700",
-    color: "#003cbd",
+    color: "#000",
   },
   pelajaranText: {
     fontSize: "12px",

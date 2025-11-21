@@ -1,5 +1,6 @@
 import React from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import Button from "../components/Button";
 
 export default function ManajemenKelas() {
   const navigate = useNavigate();
@@ -12,18 +13,16 @@ export default function ManajemenKelas() {
         <div style={styles.profilePlaceholder}></div>
         <h2 style={styles.name}>Halo, Guru!</h2>
 
-        <button style={styles.menuBtn}>Dashboard</button>
-        <button style={styles.menuBtn}>Data Siswa</button>
-        <button style={styles.menuBtn}>Materi</button>
-        <button style={styles.menuBtn}>Pengaturan</button>
+        <Button variant="menu" onClick={() => navigate("/beranda-guru")}>Dashboard</Button>
+        <Button variant="menu">Data Siswa</Button>
+        <Button variant="menu">Materi</Button>
+        <Button variant="menu">Pengaturan</Button>
       </div>
 
       {/* CONTENT */}
       <div style={styles.content}>
         <div style={styles.header}>
-          <button onClick={() => navigate(-1)} style={styles.backButton}>
-            ← Kembali
-          </button>
+          <Button onClick={() => navigate(-1)} style={styles.backButton} variant="link">← Kembali</Button>
           <h1 style={styles.title}>Manajemen Kelas {matpel}</h1>
         </div>
 
@@ -33,8 +32,8 @@ export default function ManajemenKelas() {
           <p>Di sini Anda bisa mengelola materi dan daftar murid.</p>
           
           <div style={styles.buttonContainer}>
-            <button style={styles.primaryButton}>Lihat Materi</button>
-            <button style={styles.primaryButton}>Lihat Daftar Murid</button>
+            <Button style={styles.primaryButton}>Lihat Materi</Button>
+            <Button style={styles.primaryButton}>Lihat Daftar Murid</Button>
           </div>
         </div>
       </div>

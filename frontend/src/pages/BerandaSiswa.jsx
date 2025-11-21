@@ -1,5 +1,6 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import Button from "../components/Button";
 
 // IMPORT GAMBAR
 import mtk from "../assets/images/mtk.jpg";
@@ -39,10 +40,10 @@ export default function BerandaSiswa() {
         <img src={siswaImg} alt="siswa" style={styles.profileImg} />
         <h2 style={styles.name}>Halo, Siswa!</h2>
 
-        <button style={styles.menuBtn}>Dashboard</button>
-        <button style={styles.menuBtn}>Tugas</button>
-        <button style={styles.menuBtn}>Materi</button>
-        <button style={styles.menuBtn}>Pengaturan</button>
+        <Button variant="menu" onClick={() => navigate("/beranda-siswa")}>Dashboard</Button>
+        <Button variant="menu">Tugas</Button>
+        <Button variant="menu">Materi</Button>
+        <Button variant="menu">Pengaturan</Button>
       </div>
 
       {/* CONTENT */}
@@ -77,7 +78,7 @@ const styles = {
 
   sidebar: {
     width: "250px",
-    background: "#003cbd",
+    background: "#808080",
     color: "white",
     display: "flex",
     flexDirection: "column",
@@ -98,7 +99,7 @@ const styles = {
     width: "80%",
     padding: "12px",
     background: "white",
-    color: "#003cbd",
+    color: "#A52A2A",
     borderRadius: "8px",
     border: "none",
     cursor: "pointer",

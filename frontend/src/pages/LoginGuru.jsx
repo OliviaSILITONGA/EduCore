@@ -1,4 +1,6 @@
 import { useNavigate } from "react-router-dom";
+import Button from "../components/Button";
+import Input from "../components/Input";
 
 export default function LoginGuru() {
   const navigate = useNavigate();
@@ -16,15 +18,10 @@ export default function LoginGuru() {
         <div style={styles.formBox}>
           <h2 style={styles.title}>Login Guru</h2>
 
-          <input type="email" placeholder="Email" style={styles.input} />
-          <input type="password" placeholder="Password" style={styles.input} />
+          <Input type="email" placeholder="Email" style={styles.input} />
+          <Input type="password" placeholder="Password" style={styles.input} />
 
-          <button
-  style={styles.btn}
-  onClick={() => navigate("/beranda-guru")}
->
-  Login
-</button>
+          <Button onClick={() => navigate("/beranda-guru")}>Login</Button>
 
 
           <p style={styles.registerText}>
@@ -52,7 +49,7 @@ const styles = {
   /* KIRI */
   left: {
     width: "50%",
-    background: "linear-gradient(180deg, #49c7f0, #003cbd)",
+    background: "#808080",
     color: "#fff",
     display: "flex",
     flexDirection: "column",
@@ -81,6 +78,7 @@ const styles = {
     fontSize: "32px",
     marginBottom: "25px",
     fontWeight: "600",
+    color: "#000",
   },
 
   input: {
