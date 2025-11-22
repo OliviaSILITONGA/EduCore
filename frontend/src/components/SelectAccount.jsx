@@ -5,7 +5,6 @@ import gambarSiswa from "../assets/images/gambar_siswa.jpg";
 
 export default function SelectAccount() {
   const navigate = useNavigate();
-
   return (
     <div style={styles.page}>
       <div style={styles.card}>
@@ -15,13 +14,20 @@ export default function SelectAccount() {
         <h2 style={styles.choose}>Pilih Tipe Akun</h2>
 
         {/* GURU */}
-        <Button onClick={() => navigate("/login-guru")} style={{ display: "flex", gap: 12, alignItems: "center" }}>
+        <Button
+          onClick={() => navigate("/login-guru")}
+          style={{ display: "flex", gap: 12, alignItems: "center" }}
+        >
           <img src={gambarGuru} alt="Guru" style={styles.icon} />
           <span>Untuk Guru</span>
         </Button>
 
         {/* SISWA */}
-        <Button variant="menu" onClick={() => navigate("/login-siswa")} style={{ display: "flex", gap: 12, alignItems: "center" }}>
+        <Button
+          variant="menu"
+          onClick={() => navigate("/login-siswa")}
+          style={{ display: "flex", gap: 12, alignItems: "center" }}
+        >
           <img src={gambarSiswa} alt="Siswa" style={styles.icon} />
           <span>Untuk Siswa</span>
         </Button>

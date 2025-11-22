@@ -37,7 +37,12 @@ export default function BerandaSiswa() {
     <div style={styles.page}>
       {/* SIDEBAR */}
       <div style={styles.sidebar}>
-        <img src={siswaImg} alt="siswa" style={styles.profileImg} />
+        <button>
+          onClick={() => navigate("/profile-siswa")}
+          className="focus:outline-none"
+          <img src={siswaImg} alt="siswa" style={styles.profileImg} />
+        </button>
+
         <h2 style={styles.name}>Halo, Siswa!</h2>
 
         <Button variant="menu" onClick={() => navigate("/beranda-siswa")}>
@@ -88,13 +93,6 @@ const styles = {
     paddingTop: "30px",
   },
 
-  profileImg: {
-    width: "120px",
-    height: "120px",
-    borderRadius: "50%",
-    marginBottom: "10px",
-  },
-
   name: { fontSize: "22px", marginBottom: "20px", color: "white" },
 
   menuBtn: {
@@ -113,6 +111,13 @@ const styles = {
     flex: 1,
     padding: "25px 40px",
     overflowY: "auto",
+  },
+
+  profileImg: {
+    width: "120px",
+    height: "120px",
+    borderRadius: "50%",
+    marginBottom: "10px",
   },
 
   title: {
