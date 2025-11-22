@@ -40,9 +40,7 @@ export default function BerandaSiswa() {
         <img src={siswaImg} alt="siswa" style={styles.profileImg} />
         <h2 style={styles.name}>Halo, Siswa!</h2>
 
-        <Button variant="menu" onClick={() => navigate("/beranda-siswa")}>
-          Dashboard
-        </Button>
+        <Button variant="menu" onClick={() => navigate("/beranda-siswa")}>Dashboard</Button>
         <Button variant="menu">Tugas</Button>
         <Button variant="menu">Materi</Button>
         <Button variant="menu">Pengaturan</Button>
@@ -54,8 +52,8 @@ export default function BerandaSiswa() {
 
         <div style={styles.grid}>
           {subjects.map((item, i) => (
-            <div
-              key={i}
+            <div 
+              key={i} 
               style={styles.card}
               onClick={() => handleCardClick(item.title)}
             >
@@ -115,11 +113,11 @@ const styles = {
     overflowY: "auto",
   },
 
-  title: {
-    fontSize: "28px",
-    fontWeight: "700",
+  title: { 
+    fontSize: "28px", 
+    fontWeight: "700", 
     marginBottom: "20px",
-    color: "#000",
+    color: "#000"
   },
 
   grid: {
