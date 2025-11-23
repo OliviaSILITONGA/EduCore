@@ -123,42 +123,47 @@ const styles = {
   title: {
     fontSize: "28px",
     fontWeight: "700",
-    marginBottom: "20px",
-    color: "#000",
-  },
 
-  grid: {
-    display: "grid",
-    gridTemplateColumns: "repeat(3, 1fr)",
-    gap: "20px",
-  },
+    title: {
+      fontSize: "28px",
+      fontWeight: "700",
+      marginBottom: "20px",
+      color: "#000",
+    },
 
-  // CARD
-  card: {
-    background: "white",
-    borderRadius: "10px",
-    padding: "15px",
-    textAlign: "center",
-    boxShadow: "0 4px 10px rgba(0,0,0,0.1)",
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    justifyContent: "space-between",
-    height: "210px",
-    cursor: "pointer",
-  },
+    grid: {
+      display: "grid",
+      gridTemplateColumns: "repeat(3, 1fr)",
+      gap: "20px",
+    },
 
-  cardImg: {
-    width: "100%",
-    height: "140px",
-    objectFit: "cover",
-    borderRadius: "10px",
-  },
+    // CARD
+    card: {
+      background: "white",
+      borderRadius: "10px",
+      padding: "15px",
+      textAlign: "center",
+      boxShadow: "0 4px 10px rgba(0,0,0,0.1)",
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "center",
+      justifyContent: "space-between",
+      height: "210px",
+      cursor: "pointer",
+    },
 
-  cardText: {
-    marginTop: "10px",
-    fontWeight: "700",
-    fontSize: "18px",
-    color: "#000",
+    cardImg: {
+      width: "100%",
+      height: "140px",
+      objectFit: "cover",
+      borderRadius: "10px",
+    },
+
+    cardText: {
+      marginTop: "10px",
+      fontWeight: "700",
+      fontSize: "18px",
+      color: "#000",
+    },
   },
 };
