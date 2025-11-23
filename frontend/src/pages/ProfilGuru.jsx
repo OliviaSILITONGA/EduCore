@@ -1,51 +1,62 @@
-import React from "react";
+// src/pages/ProfilSiswa.jsx
+import siswaImg from "../assets/images/utama_siswa.jpg";
+import { Link } from "react-router-dom";
 
 export default function ProfilGuru() {
   return (
-    <div className="min-h-screen bg-gray-200">
-      <div className="bg-sky-500 text-white p-4 font-bold text-2xl flex items-center">
-        <span className="mr-2 text-xl">&lt; kembali</span> Educore
-      </div>
-
+    <div className="min-h-screen bg-[#D9D9D9]">
       <div className="p-4 space-y-6">
-        <div className="bg-white p-6 rounded-2xl shadow flex gap-4 items-center">
-          <img src="/guru-avatar.png" className="w-20 h-20 rounded-full" />
+        {/* Data Profil */}
+        <div className="bg-white p-6 rounded-xl shadow max-w-xl mx-auto">
+          <div className="flex items-center gap-4">
+            <img
+              src={siswaImg}
+              className="w-20 h-20 rounded-full object-cover border-4 border-gray-300"
+            />
 
-          <div>
-            <h2 className="text-xl font-bold">Guru 1</h2>
-            <p>emailguru1@gmail.com</p>
-            <p>080987654321</p>
-            <button className="text-blue-700 font-semibold">Edit Profil</button>
+            <div>
+              <p className="font-bold text-lg">Murid 1</p>
+              <p className="text-gray-700">emailmurid1@gmail.com</p>
+              <p className="text-gray-700">081234567890</p>
+
+              <Link
+                to="/edit-profil"
+                className="text-blue-600 font-semibold underline text-sm"
+              >
+                Edit Profil
+              </Link>
+            </div>
           </div>
         </div>
 
-        <div className="bg-white p-6 rounded-2xl shadow">
-          <h2 className="font-bold text-xl">Detail alamat</h2>
+        {/* Detail Alamat */}
+        <div className="bg-white p-6 rounded-xl shadow max-w-xl mx-auto">
+          <h2 className="font-bold text-xl mb-3">Detail alamat</h2>
+          <p className="font-semibold">Provinsi</p>
+          <p className="mb-2">Tokyo</p>
 
-          <p className="font-semibold mt-4">Provinsi</p>
-          <p>Tokyo</p>
+          <p className="font-semibold">Kota</p>
+          <p className="mb-2">Tokyo</p>
 
-          <p className="font-semibold mt-2">Kota</p>
-          <p>Tokyo</p>
-
-          <p className="font-semibold mt-2">Alamat</p>
-          <p>Jl.Tokyo No.13</p>
+          <p className="font-semibold">Alamat</p>
+          <p>Jl. Tokyo No.31</p>
         </div>
 
-        <div className="bg-white p-6 rounded-2xl shadow">
-          <h2 className="font-bold text-xl">Detail sekolah</h2>
+        {/* Detail Sekolah */}
+        <div className="bg-white p-6 rounded-xl shadow max-w-xl mx-auto">
+          <h2 className="font-bold text-xl mb-3">Detail sekolah</h2>
 
-          <p className="font-semibold mt-4">Provinsi</p>
-          <p>Tokyo</p>
+          <p className="font-semibold">Provinsi</p>
+          <p className="mb-2">Tokyo</p>
 
-          <p className="font-semibold mt-2">Kota</p>
-          <p>Tokyo</p>
+          <p className="font-semibold">Kota</p>
+          <p className="mb-2">Tokyo</p>
 
-          <p className="font-semibold mt-2">Nama Sekolah</p>
-          <p>SMA Tokyo</p>
+          <p className="font-semibold">Nama Sekolah</p>
+          <p className="mb-2">SMA Tokyo</p>
 
-          <p className="font-semibold mt-2">Tingkat</p>
-          <p>Guru SMA</p>
+          <p className="font-semibold">Tingkat</p>
+          <p>SMA</p>
         </div>
       </div>
     </div>

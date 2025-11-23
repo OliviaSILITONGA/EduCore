@@ -2,7 +2,7 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import Button from "../components/Button";
 
-// IMPORT GAMBAR SESUAI FILE DI DALAM FOLDER
+// IMPORT GAMBAR
 import mtk from "../assets/images/mtk.jpg";
 import indo from "../assets/images/B.indo.jpg";
 import inggris from "../assets/images/B.inggris.jpg";
@@ -29,37 +29,66 @@ export default function BerandaGuru() {
     { title: "Sejarah", img: sejarah },
   ];
 
-  // Function untuk handle klik card
   const handleCardClick = (subjectTitle) => {
     navigate(`/mata-pelajaran/${subjectTitle.toLowerCase()}`);
   };
 
   return (
-    <div style={styles.page}>
+    <div className="flex w-screen h-screen bg-gray-100">
       {/* SIDEBAR */}
-      <div style={styles.sidebar}>
-        <img src={utamaGuru} alt="guru" style={styles.profileImg} />
-        <h2 style={styles.name}>Halo, Guru!</h2>
+      <div className="w-[250px] bg-gray-600 text-white flex flex-col items-center pt-8">
+        <button
+          onClick={() => navigate("/profil-guru")}
+          className="focus:outline-none hover:opacity-80 transition"
+        >
+          <img
+            src={utamaGuru}
+            alt="Profil Guru"
+            className="w-32 h-32 rounded-full mb-3 object-cover"
+          />
+        </button>
 
-        <Button variant="menu" onClick={() => navigate("/beranda-guru")}>Dashboard</Button>
-        <Button variant="menu">Data Siswa</Button>
-        <Button variant="menu">Materi</Button>
-        <Button variant="menu">Pengaturan</Button>
+        <h2 className="text-2xl font-semibold mb-6">Halo, Guru!</h2>
+
+        <Button
+          variant="menu"
+          onClick={() => navigate("/beranda-guru")}
+          className="w-[80%]"
+        >
+          Dashboard
+        </Button>
+
+        <Button variant="menu" className="w-[80%]">
+          Data Siswa
+        </Button>
+
+        <Button variant="menu" className="w-[80%]">
+          Materi
+        </Button>
+
+        <Button variant="menu" className="w-[80%]">
+          Pengaturan
+        </Button>
       </div>
 
       {/* CONTENT */}
-      <div style={styles.content}>
-        <h1 style={styles.title}>Mata Pelajaran</h1>
+      <div className="flex-1 p-8 overflow-y-auto">
+        <h1 className="text-3xl font-bold mb-6">Mata Pelajaran</h1>
 
-        <div style={styles.grid}>
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
           {subjects.map((item, i) => (
-            <div 
-              key={i} 
-              style={styles.card}
+            <div
+              key={i}
               onClick={() => handleCardClick(item.title)}
+              className="bg-white rounded-xl shadow-md cursor-pointer hover:scale-[1.02] transition p-4 flex flex-col items-center"
             >
-              <img src={item.img} style={styles.cardImg} alt={item.title} />
-              <p style={styles.cardText}>{item.title}</p>
+              <img
+                src={item.img}
+                alt={item.title}
+                className="w-full h-40 object-cover rounded-lg"
+              />
+
+              <p className="mt-3 text-lg font-bold">{item.title}</p>
             </div>
           ))}
         </div>
@@ -67,87 +96,3 @@ export default function BerandaGuru() {
     </div>
   );
 }
-
-// ============== STYLE ==============
-const styles = {
-  page: {
-    display: "flex",
-    width: "100vw",
-    height: "100vh",
-    background: "#f4f4f4",
-  },
-
-  sidebar: {
-    width: "250px",
-    background: "#808080",
-    color: "white",
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    paddingTop: "30px",
-  },
-
-  profileImg: {
-    width: "120px",
-    height: "120px",
-    borderRadius: "50%",
-    marginBottom: "10px",
-  },
-
-  name: { fontSize: "22px", marginBottom: "20px" },
-
-  menuBtn: {
-    width: "80%",
-    padding: "12px",
-    background: "white",
-    color: "#A52A2A",
-    borderRadius: "8px",
-    border: "none",
-    cursor: "pointer",
-    marginBottom: "10px",
-    fontWeight: "600",
-  },
-
-  content: {
-    flex: 1,
-    padding: "25px 40px",
-    overflowY: "auto",
-  },
-
-  title: { fontSize: "28px", fontWeight: "700", marginBottom: "20px" },
-
-  grid: {
-    display: "grid",
-    gridTemplateColumns: "repeat(3, 1fr)",
-    gap: "20px",
-  },
-
-  // CARD
-  card: {
-    background: "white",
-    borderRadius: "10px",
-    padding: "15px",
-    textAlign: "center",
-    boxShadow: "0 4px 10px rgba(0,0,0,0.1)",
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    justifyContent: "space-between",
-    height: "210px",
-    cursor: "pointer",
-  },
-
-  cardImg: {
-    width: "100%",
-    height: "140px",
-    objectFit: "cover",
-    borderRadius: "10px",
-  },
-
-  cardText: {
-    marginTop: "10px",
-    fontWeight: "700",
-    fontSize: "18px",
-    color: "#000",
-  },
-};

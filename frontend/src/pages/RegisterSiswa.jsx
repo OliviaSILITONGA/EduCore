@@ -1,111 +1,102 @@
-import { useNavigate } from "react-router-dom";
-import Button from "../components/Button";
-import Input from "../components/Input";
+import React from "react";
+import { Link } from "react-router-dom";
 
 export default function RegisterSiswa() {
-  const navigate = useNavigate();
-
   return (
-    <div style={stylesSiswa.page}>
-      {/* KIRI */}
-      <div style={stylesSiswa.left}>
-        <h1 style={stylesSiswa.brand}>Educore</h1>
-        <p style={stylesSiswa.tagline}>Belajar cerdas, bukan lebih keras</p>
-      </div>
+    <div className="min-h-screen bg-[#E5E5E5] flex flex-col">
+      {/* HEADER */}
+      <header className="bg-[#19A7CE] w-full py-6 px-10 text-white text-3xl font-bold">
+        Educore
+      </header>
 
-      {/* KANAN */}
-      <div style={stylesSiswa.right}>
-        <div style={stylesSiswa.formBox}>
-          <h2 style={stylesSiswa.title}>Register Siswa</h2>
+      {/* CARD */}
+      <div className="flex justify-center py-10">
+        <div className="bg-white w-[750px] rounded-md shadow p-10">
+          <h2 className="text-center text-lg font-semibold mb-6">
+            Yuk buat akun Educore kamu!
+          </h2>
 
-          <Input type="text" placeholder="Nama Lengkap" style={stylesSiswa.input} />
-          <Input type="email" placeholder="Email" style={stylesSiswa.input} />
-          <Input type="password" placeholder="Password" style={stylesSiswa.input} />
-          <Input type="password" placeholder="Konfirmasi Password" style={stylesSiswa.input} />
+          {/* FACEBOOK BUTTON */}
+          <button className="w-full flex items-center gap-3 justify-center bg-[#1877F2] text-white py-3 rounded-md font-semibold text-sm mb-4">
+            <img src="/facebook.png" alt="fb" className="w-5" />
+            Daftar dengan akun Facebook
+          </button>
 
-          <Button>Daftar</Button>
+          {/* GOOGLE BUTTON */}
+          <button className="w-full flex items-center gap-3 justify-center border py-3 rounded-md font-semibold text-sm mb-6">
+            <img src="/google.png" alt="google" className="w-5" />
+            Daftar dengan akun Google
+          </button>
 
-          <p style={stylesSiswa.registerText}>
-            Sudah punya akun?{" "}
-            <span
-              style={stylesSiswa.registerLink}
-              onClick={() => navigate("/login-siswa")}
-            >
-              Login
-            </span>
+          {/* GARIS PEMBATAS */}
+          <div className="flex items-center gap-4 my-6">
+            <div className="flex-1 h-[1px] bg-gray-300"></div>
+            <span className="text-gray-600 font-semibold text-sm">ATAU</span>
+            <div className="flex-1 h-[1px] bg-gray-300"></div>
+          </div>
+
+          {/* FORM */}
+          <div className="space-y-6">
+            <div>
+              <label className="text-sm font-semibold">
+                <span className="text-red-500">*Wajib diisi</span> Alamat Email
+              </label>
+              <input
+                type="email"
+                placeholder="Masukkan Alamat Email"
+                className="w-full mt-1 border rounded-md p-3 bg-[#D8E6F2]"
+              />
+            </div>
+
+            <div>
+              <label className="text-sm font-semibold">
+                <span className="text-red-500">*Wajib diisi</span> Kata Sandi
+              </label>
+              <input
+                type="password"
+                placeholder="Masukkan Kata Sandi"
+                className="w-full mt-1 border rounded-md p-3 bg-[#D8E6F2]"
+              />
+            </div>
+
+            <div>
+              <label className="text-sm font-semibold">
+                <span className="text-red-500">*Wajib diisi</span> Ulang Kata
+                Sandi
+              </label>
+              <input
+                type="password"
+                placeholder="Masukkan Ulang Kata Sandi"
+                className="w-full mt-1 border rounded-md p-3 bg-[#D8E6F2]"
+              />
+            </div>
+
+            {/* CHECKBOX */}
+            <div className="flex items-start gap-3">
+              <input type="checkbox" className="mt-1" />
+              <p className="text-sm text-gray-700">
+                Saya setuju dengan syarat dan ketentuan serta kebijakan privasi
+                Educore.
+              </p>
+            </div>
+
+            {/* BUTTON BUAT AKUN */}
+            <button className="w-full bg-[#BBD7EC] text-[#3C6A91] py-3 rounded-md font-bold text-lg">
+              Buat Akun
+            </button>
+          </div>
+
+          <div className="my-10 h-[1px] bg-gray-300"></div>
+
+          <p className="text-center text-sm">
+            Langsung{" "}
+            <Link to="/login-siswa" className="text-blue-600 font-semibold">
+              Masuk
+            </Link>{" "}
+            jika sudah punya akun.
           </p>
         </div>
       </div>
     </div>
   );
 }
-
-const stylesSiswa = {
-  page: {
-    display: "flex",
-    width: "100vw",
-    height: "100vh",
-  },
-
-  left: {
-    flex: 1,
-    background: "#808080",
-    color: "#fff",
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-
-  brand: { fontSize: "50px", fontWeight: "bold" },
-  tagline: { marginTop: "-10px" },
-
-  right: {
-    flex: 1,
-    background: "#fff",
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-
-  formBox: { width: "70%" },
-
-  title: {
-    fontSize: "32px",
-    marginBottom: "25px",
-    fontWeight: "600",
-    color: "#000",
-  },
-
-  input: {
-    width: "100%",
-    padding: "14px",
-    marginBottom: "15px",
-    borderRadius: "8px",
-    border: "1px solid #ccc",
-    fontSize: "16px",
-  },
-
-  btn: {
-    width: "100%",
-    padding: "14px",
-    background: "#003cbd",
-    color: "#fff",
-    border: "none",
-    borderRadius: "8px",
-    cursor: "pointer",
-    fontSize: "17px",
-    fontWeight: "600",
-  },
-
-  registerText: {
-    marginTop: 15,
-    color: "black",
-  },
-
-  registerLink: {
-    color: "blue",
-    cursor: "pointer",
-    fontWeight: "bold",
-  },
-};

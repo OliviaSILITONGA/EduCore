@@ -7,12 +7,12 @@ import mtk from "../assets/images/mtk.jpg";
 import indo from "../assets/images/B.indo.jpg";
 import inggris from "../assets/images/B.inggris.jpg";
 import biologi from "../assets/images/biologi.jpg";
-import ekonomi from "../assets/images/ekonomi.jpg";
+import kimia from "../assets/images/kimia.jpg";
 import fisika from "../assets/images/fisika.jpg";
 import geografi from "../assets/images/geografi.jpg";
-import kimia from "../assets/images/kimia.jpg";
+import ekonomi from "../assets/images/ekonomi.jpg";
 import sejarah from "../assets/images/sejarah.jpg";
-import siswaImg from "../assets/images/utama_siswa.jpg";
+import utamaGuru from "../assets/images/utama_guru.jpg";
 
 export default function BerandaSiswa() {
   const navigate = useNavigate();
@@ -34,38 +34,61 @@ export default function BerandaSiswa() {
   };
 
   return (
-    <div style={styles.page}>
+    <div className="flex w-screen h-screen bg-gray-100">
       {/* SIDEBAR */}
-      <div style={styles.sidebar}>
-        <button>
-          onClick={() => navigate("/profile-siswa")}
-          className="focus:outline-none"
-          <img src={siswaImg} alt="siswa" style={styles.profileImg} />
+      <div className="w-[250px] bg-gray-600 text-white flex flex-col items-center pt-8">
+        <button
+          onClick={() => navigate("/profil-siswa")}
+          className="focus:outline-none hover:opacity-80 transition"
+        >
+          <img
+            src={utamaGuru}
+            alt="Profil Guru"
+            className="w-32 h-32 rounded-full mb-3 object-cover"
+          />
         </button>
 
-        <h2 style={styles.name}>Halo, Siswa!</h2>
+        <h2 className="text-2xl font-semibold mb-6">Halo, Temanku!!</h2>
 
-        <Button variant="menu" onClick={() => navigate("/beranda-siswa")}>
+        <Button
+          variant="menu"
+          onClick={() => navigate("/beranda-guru")}
+          className="w-[80%]"
+        >
           Dashboard
         </Button>
-        <Button variant="menu">Tugas</Button>
-        <Button variant="menu">Materi</Button>
-        <Button variant="menu">Pengaturan</Button>
+
+        <Button variant="menu" className="w-[80%]">
+          Data Siswa
+        </Button>
+
+        <Button variant="menu" className="w-[80%]">
+          Materi
+        </Button>
+
+        <Button variant="menu" className="w-[80%]">
+          Pengaturan
+        </Button>
       </div>
 
       {/* CONTENT */}
-      <div style={styles.content}>
-        <h1 style={styles.title}>Mata Pelajaran</h1>
+      <div className="flex-1 p-8 overflow-y-auto">
+        <h1 className="text-3xl font-bold mb-6">Mata Pelajaran</h1>
 
-        <div style={styles.grid}>
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
           {subjects.map((item, i) => (
             <div
               key={i}
-              style={styles.card}
               onClick={() => handleCardClick(item.title)}
+              className="bg-white rounded-xl shadow-md cursor-pointer hover:scale-[1.02] transition p-4 flex flex-col items-center"
             >
-              <img src={item.img} style={styles.cardImg} alt={item.title} />
-              <p style={styles.cardText}>{item.title}</p>
+              <img
+                src={item.img}
+                alt={item.title}
+                className="w-full h-40 object-cover rounded-lg"
+              />
+
+              <p className="mt-3 text-lg font-bold">{item.title}</p>
             </div>
           ))}
         </div>
@@ -73,97 +96,3 @@ export default function BerandaSiswa() {
     </div>
   );
 }
-
-// ============== STYLE ==============
-const styles = {
-  page: {
-    display: "flex",
-    width: "100vw",
-    height: "100vh",
-    background: "#f4f4f4",
-  },
-
-  sidebar: {
-    width: "250px",
-    background: "#808080",
-    color: "white",
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    paddingTop: "30px",
-  },
-
-  name: { fontSize: "22px", marginBottom: "20px", color: "white" },
-
-  menuBtn: {
-    width: "80%",
-    padding: "12px",
-    background: "white",
-    color: "#A52A2A",
-    borderRadius: "8px",
-    border: "none",
-    cursor: "pointer",
-    marginBottom: "10px",
-    fontWeight: "600",
-  },
-
-  content: {
-    flex: 1,
-    padding: "25px 40px",
-    overflowY: "auto",
-  },
-
-  profileImg: {
-    width: "120px",
-    height: "120px",
-    borderRadius: "50%",
-    marginBottom: "10px",
-  },
-
-  title: {
-    fontSize: "28px",
-    fontWeight: "700",
-
-    title: {
-      fontSize: "28px",
-      fontWeight: "700",
-      marginBottom: "20px",
-      color: "#000",
-    },
-
-    grid: {
-      display: "grid",
-      gridTemplateColumns: "repeat(3, 1fr)",
-      gap: "20px",
-    },
-
-    // CARD
-    card: {
-      background: "white",
-      borderRadius: "10px",
-      padding: "15px",
-      textAlign: "center",
-      boxShadow: "0 4px 10px rgba(0,0,0,0.1)",
-      display: "flex",
-      flexDirection: "column",
-      alignItems: "center",
-      justifyContent: "space-between",
-      height: "210px",
-      cursor: "pointer",
-    },
-
-    cardImg: {
-      width: "100%",
-      height: "140px",
-      objectFit: "cover",
-      borderRadius: "10px",
-    },
-
-    cardText: {
-      marginTop: "10px",
-      fontWeight: "700",
-      fontSize: "18px",
-      color: "#000",
-    },
-  },
-};
