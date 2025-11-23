@@ -48,7 +48,7 @@ export default function DetailMataPelajaran() {
       <div style={styles.content}>
         {/* HEADER */}
         <div style={styles.header}>
-          <Button onClick={() => navigate("/beranda-guru")} style={styles.backBtn} variant="link">‹ Kembali</Button>
+          <Button onClick={() => navigate("/beranda-guru")} style={styles.backBtn} variant="link">Kembali</Button>
           <h1 style={styles.subjectTitle}>{subject ? subject.toUpperCase() : "MATA PELAJARAN"}</h1>
         </div>
 

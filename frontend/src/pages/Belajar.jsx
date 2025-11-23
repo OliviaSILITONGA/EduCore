@@ -1,10 +1,14 @@
-import React from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 import Button from "../components/Button";
 
 export default function Belajar() {
   const { subject, materiId } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
+  const [kelas, setKelas] = useState("1");
+  const [isTeacher, setIsTeacher] = useState(false);
+  const TOTAL_MATERI = 3; // used for percent calculations (dummy)
 
   // dummy content - replace with API data later
   const materiData = {
@@ -44,11 +48,45 @@ export default function Belajar() {
     else navigate(`/materi-siswa/${subject}`);
   };
 
+  useEffect(() => {
+    // role can be passed as ?role=guru or stored in localStorage
+    const qs = new URLSearchParams(location.search);
+    const role = qs.get("role") || localStorage.getItem("role");
+    setIsTeacher(role === "guru");
+  }, [location.search]);
+
+  const storageKey = (subject, kelas) => `completed::${subject || "unknown"}::kelas-${kelas}`;
+
+  function isCompletedForClass(subject, kelas, materiId) {
+    try {
+      const raw = localStorage.getItem(storageKey(subject, kelas));
+      if (!raw) return false;
+      const arr = JSON.parse(raw);
+      return arr.includes(Number(materiId));
+    } catch (e) {
+      return false;
+    }
+  }
+
+  function markCompleted(subject, kelas, materiId) {
+    try {
+      const key = storageKey(subject, kelas);
+      const raw = localStorage.getItem(key);
+      const arr = raw ? JSON.parse(raw) : [];
+      const idNum = Number(materiId);
+      if (!arr.includes(idNum)) arr.push(idNum);
+      localStorage.setItem(key, JSON.stringify(arr));
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
   return (
     <div style={styles.page}>
       <div style={styles.container}>
         <div style={styles.header}>
-          <Button variant="link" onClick={() => navigate(-1)}>← Kembali</Button>
+          <Button variant="link" onClick={() => navigate(-1)}>Kembali</Button>
           <div>
             <h1 style={styles.title}>{m.judul}</h1>
             <div style={styles.meta}>{m.durasi} • {subject ? subject.toUpperCase() : ""}</div>
@@ -62,6 +100,24 @@ export default function Belajar() {
               <Button onClick={() => alert("Mulai/Resume")}>Putar</Button>
               <Button variant="menu" onClick={() => alert("Catatan")}>Catatan</Button>
             </div>
+
+            {/* teacher controls: upload materi, create exam, view learners */}
+            {isTeacher && (
+              <div style={{ marginTop: 16, display: "flex", gap: 10 }}>
+                <label style={{ display: "inline-flex", alignItems: "center", gap: 8 }}>
+                  <input type="file" style={{ display: "none" }} onChange={(e) => alert(`Upload: ${e.target.files?.[0]?.name || ''}`)} />
+                  <Button onClick={() => document.querySelector('input[type=file]')?.click()}>Upload Materi</Button>
+                </label>
+                <Button variant="menu" onClick={() => alert("Buat Ujian (modal)")}>Buat Ujian</Button>
+                <Button variant="menu" onClick={() => {
+                  const key = storageKey(subject, kelas);
+                  const raw = localStorage.getItem(key);
+                  const arr = raw ? JSON.parse(raw) : [];
+                  alert(`Siswa yang sudah menyelesaikan (kelas ${kelas}):\n` + (arr.length ? arr.join(', ') : 'Belum ada'));
+                }}>Lihat yang sudah belajar</Button>
+              </div>
+            )}
+
           </div>
 
           <div style={styles.contentColumn}>
@@ -73,7 +129,23 @@ export default function Belajar() {
             ))}
 
             <div style={styles.nextRow}>
-              <Button onClick={handleNext}>{materiData[id + 1] ? "Selanjutnya" : "Selesai"}</Button>
+              <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <label style={{ fontSize: 14, color: '#666' }}>Pilih Kelas:</label>
+                  <select value={kelas} onChange={(e) => setKelas(e.target.value)} style={{ padding: '6px 8px', borderRadius: 6 }}>
+                    {Array.from({ length: 12 }).map((_, i) => (
+                      <option key={i} value={i + 1}>{`KELAS ${i + 1}`}</option>
+                    ))}
+                  </select>
+                </div>
+
+                <Button onClick={() => {
+                  const ok = markCompleted(subject, kelas, id);
+                  if (ok) alert('Tersimpan: Materi ditandai selesai untuk ' + `KELAS ${kelas}`);
+                }} style={{ width: 180 }}>Tandai Selesai</Button>
+
+                <Button onClick={handleNext}>{materiData[id + 1] ? "Selanjutnya" : "Selesai"}</Button>
+              </div>
             </div>
           </div>
         </div>

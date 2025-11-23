@@ -4,7 +4,7 @@ export default function ProfilGuru() {
   return (
     <div className="min-h-screen bg-gray-200">
       <div className="bg-sky-500 text-white p-4 font-bold text-2xl flex items-center">
-        <span className="mr-2 text-xl">&lt; kembali</span> Educore
+        <span className="mr-2 text-xl">Kembali</span> Educore
       </div>
 
       <div className="p-4 space-y-6">

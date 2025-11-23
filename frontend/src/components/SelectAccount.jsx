@@ -15,13 +15,13 @@ export default function SelectAccount() {
         <h2 style={styles.choose}>Pilih Tipe Akun</h2>
 
         {/* GURU */}
-        <Button onClick={() => navigate("/login-guru")} style={{ display: "flex", gap: 12, alignItems: "center" }}>
+        <Button onClick={() => navigate("/login-guru")}>
           <img src={gambarGuru} alt="Guru" style={styles.icon} />
           <span>Untuk Guru</span>
         </Button>
 
         {/* SISWA */}
-        <Button variant="menu" onClick={() => navigate("/login-siswa")} style={{ display: "flex", gap: 12, alignItems: "center" }}>
+        <Button variant="menu" onClick={() => navigate("/login-siswa")}>
           <img src={gambarSiswa} alt="Siswa" style={styles.icon} />
           <span>Untuk Siswa</span>
         </Button>
