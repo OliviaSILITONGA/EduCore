@@ -1,13 +1,10 @@
 // src/pages/ProfilSiswa.jsx
-import Navbar2 from "../components/Navbar";
 import siswaImg from "../assets/images/utama_siswa.jpg";
 import { Link } from "react-router-dom";
 
 export default function ProfilSiswa() {
   return (
     <div className="min-h-screen bg-[#D9D9D9]">
-      <Navbar2 title="Educore" />
-
       <div className="p-4 space-y-6">
         {/* Data Profil */}
         <div className="bg-white p-6 rounded-xl shadow max-w-xl mx-auto">

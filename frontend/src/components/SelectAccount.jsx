@@ -6,91 +6,46 @@ import gambarSiswa from "../assets/images/gambar_siswa.jpg";
 export default function SelectAccount() {
   const navigate = useNavigate();
   return (
-    <div style={styles.page}>
-      <div style={styles.card}>
-        <h1 style={styles.title}>Educore</h1>
-        <p style={styles.sub}>Belajar cerdas, bukan lebih keras</p>
+    <div className="w-screen h-screen bg-gradient-to-b from-sky-300 to-blue-700 text-white p-8 flex flex-col">
+      {/* Header */}
+      <h1 className="text-4xl font-extrabold">Educore</h1>
+      <p className="-mt-1 mb-8">Belajar cerdas, bukan lebih keras</p>
 
-        <h2 style={styles.choose}>Pilih Tipe Akun</h2>
+      {/* Back */}
+      <button className="text-white mb-6 text-lg" onClick={() => navigate(-1)}>
+        &lt; kembali
+      </button>
 
-        {/* GURU */}
+      {/* Card */}
+      <div className="max-w-xl mx-auto w-full text-center mt-4">
+        <h2 className="text-3xl font-extrabold mb-6">Pilih Tipe Akun</h2>
+
+        {/* Guru */}
         <Button
           onClick={() => navigate("/login-guru")}
-          style={{ display: "flex", gap: 12, alignItems: "center" }}
+          className="w-full flex items-center gap-4 bg-sky-400 hover:bg-sky-500 transition text-white text-xl font-semibold px-6 py-4 rounded-2xl mb-6 shadow-lg"
         >
-          <img src={gambarGuru} alt="Guru" style={styles.icon} />
-          <span>Untuk Guru</span>
+          <img
+            src={gambarGuru}
+            alt="Guru"
+            className="w-16 h-16 rounded-full object-cover"
+          />
+          Untuk Guru
         </Button>
 
-        {/* SISWA */}
+        {/* Siswa */}
         <Button
-          variant="menu"
           onClick={() => navigate("/login-siswa")}
-          style={{ display: "flex", gap: 12, alignItems: "center" }}
+          className="w-full flex items-center gap-4 bg-blue-200 hover:bg-blue-300 transition text-white text-xl font-semibold px-6 py-4 rounded-2xl shadow-lg"
         >
-          <img src={gambarSiswa} alt="Siswa" style={styles.icon} />
-          <span>Untuk Siswa</span>
+          <img
+            src={gambarSiswa}
+            alt="Siswa"
+            className="w-16 h-16 rounded-full object-cover"
+          />
+          Untuk Siswa
         </Button>
       </div>
     </div>
   );
 }
-
-const styles = {
-  page: {
-    width: "100vw",
-    height: "100vh",
-    background: "#f4f4f4",
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-
-  card: {
-    textAlign: "center",
-    width: "420px",
-    background: "white",
-    padding: "30px",
-    borderRadius: "12px",
-    boxShadow: "0 6px 18px rgba(0,0,0,0.08)",
-  },
-
-  title: {
-    fontSize: "36px",
-    fontWeight: "700",
-    color: "#000",
-  },
-
-  sub: { marginTop: "-5px", color: "#666" },
-
-  choose: {
-    marginTop: "20px",
-    marginBottom: "18px",
-    color: "#000",
-    fontSize: "18px",
-    fontWeight: "600",
-  },
-
-  btn: {
-    width: "100%",
-    padding: "14px",
-    marginTop: "12px",
-    borderRadius: "10px",
-    background: "white",
-    border: "1px solid #e0e0e0",
-    fontSize: "16px",
-    cursor: "pointer",
-    display: "flex",
-    alignItems: "center",
-    gap: "12px",
-    fontWeight: "600",
-    color: "#A52A2A",
-  },
-
-  icon: {
-    width: "40px",
-    height: "40px",
-    borderRadius: "50%",
-    objectFit: "cover",
-  },
-};

@@ -1,12 +1,9 @@
 // src/pages/EditProfilSiswa.jsx
-import Navbar2 from "../components/Navbar";
-import siswaImg from "../assets/images/utama_siswa.jpg";
 
+import siswaImg from "../assets/images/utama_siswa.jpg";
 export default function EditProfilSiswa() {
   return (
     <div className="min-h-screen bg-[#D9D9D9]">
-      <Navbar2 title="Educore" />
-
       <div className="p-4 space-y-6">
         {/* Detail Profil */}
         <div className="bg-white p-6 rounded-xl shadow max-w-xl mx-auto">
