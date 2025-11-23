@@ -1,6 +1,5 @@
 import React from "react";
 
-<<<<<<< HEAD
 export default function Button({
   children,
   onClick,
@@ -8,7 +7,7 @@ export default function Button({
   style = {},
   className = "", // ← tambahkan ini
   ...props // ← tambahkan ini
-}) {
+}) 
   const base = {
     padding: "10px 16px",
     borderRadius: "8px",
@@ -40,7 +39,7 @@ export default function Button({
       alignSelf: "flex-start",
     },
   };
-=======
+
 export default function Button({ children, onClick, variant = "primary", style = {} }) {
 	const base = {
 		display: "inline-flex",
@@ -86,7 +85,7 @@ export default function Button({ children, onClick, variant = "primary", style =
 			fontWeight: 700,
 		},
 	};
->>>>>>> c89e39c5b657a36f4afecd2c3f80b764e982dd96
+
 
   const applied = {
     ...base,
@@ -106,4 +105,4 @@ export default function Button({ children, onClick, variant = "primary", style =
   );
 }
 
-export { Button };
+export { Button }

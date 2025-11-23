@@ -4,15 +4,7 @@ import { Link } from "react-router-dom";
 
 export default function ProfilGuru() {
   return (
-<<<<<<< HEAD
     <div className="min-h-screen bg-[#D9D9D9]">
-=======
-    <div className="min-h-screen bg-gray-200">
-      <div className="bg-sky-500 text-white p-4 font-bold text-2xl flex items-center">
-        <span className="mr-2 text-xl">Kembali</span> Educore
-      </div>
-
->>>>>>> c89e39c5b657a36f4afecd2c3f80b764e982dd96
       <div className="p-4 space-y-6">
         {/* Data Profil */}
         <div className="bg-white p-6 rounded-xl shadow max-w-xl mx-auto">
