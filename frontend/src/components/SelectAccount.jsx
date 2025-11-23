@@ -39,18 +39,6 @@ export default function SelectAccount() {
           />
           Untuk Siswa
         </button>
-
-        {/* GURU */}
-        <Button onClick={() => navigate("/login-guru")}>
-          <img src={gambarGuru} alt="Guru" style={styles.icon} />
-          <span>Untuk Guru</span>
-        </Button>
-
-        {/* SISWA */}
-        <Button variant="menu" onClick={() => navigate("/login-siswa")}>
-          <img src={gambarSiswa} alt="Siswa" style={styles.icon} />
-          <span>Untuk Siswa</span>
-        </Button>
       </div>
     </div>
   );
