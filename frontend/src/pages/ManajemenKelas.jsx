@@ -22,7 +22,7 @@ export default function ManajemenKelas() {
       {/* CONTENT */}
       <div style={styles.content}>
         <div style={styles.header}>
-          <Button onClick={() => navigate(-1)} style={styles.backButton} variant="link">← Kembali</Button>
+          <Button onClick={() => navigate(-1)} style={styles.backButton} variant="link">Kembali</Button>
           <h1 style={styles.title}>Manajemen Kelas {matpel}</h1>
         </div>
 

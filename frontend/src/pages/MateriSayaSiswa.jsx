@@ -57,7 +57,7 @@ export default function MateriSayaSiswa() {
       <div style={styles.content}>
         {/* HEADER */}
         <div style={styles.header}>
-          <Button onClick={() => navigate(-1)} style={styles.backButton} variant="link">← Kembali</Button>
+          <Button onClick={() => navigate(-1)} style={styles.backButton} variant="link">Kembali</Button>
           <h1 style={styles.title}>Materi {subject ? subject.toUpperCase() : ""}</h1>
         </div>
 
@@ -80,13 +80,11 @@ export default function MateriSayaSiswa() {
                 <div style={styles.materiContent}>
                   <div style={styles.materiHeader}>
                     <h3 style={styles.materiTitle}>{materi.judul}</h3>
-                    <span style={styles.levelBadge}>{materi.level}</span>
                   </div>
                   
                   <p style={styles.materiDeskripsi}>{materi.deskripsi}</p>
                   
                   <div style={styles.materiMeta}>
-                    <span style={styles.metaItem}>⏱️ {materi.durasi}</span>
                     <span style={styles.metaItem}>📅 {materi.tanggal}</span>
                   </div>
                 </div>
@@ -235,12 +233,7 @@ const styles = {
     margin: 0,
   },
   levelBadge: {
-    background: "#4dd0e1",
-    color: "white",
-    padding: "4px 12px",
-    borderRadius: "20px",
-    fontSize: "12px",
-    fontWeight: "600",
+    display: "none",
   },
   materiDeskripsi: {
     fontSize: "14px",
@@ -259,10 +252,15 @@ const styles = {
     background: "#4dd0e1",
     color: "white",
     border: "none",
-    padding: "10px 20px",
+    padding: "8px 16px",
     borderRadius: "8px",
     cursor: "pointer",
     fontSize: "14px",
-    fontWeight: "600",
+    fontWeight: "700",
+    width: "36%",
+    margin: 0,
+    boxShadow: "0 6px 12px rgba(0,0,0,0.08)",
+    alignSelf: "center",
+    justifyContent: "center",
   },
 };

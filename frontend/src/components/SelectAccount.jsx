@@ -14,6 +14,7 @@ export default function SelectAccount() {
       <div className="max-w-xl mx-auto w-full text-center mt-4">
         <h2 className="text-3xl font-extrabold mb-6">Pilih Tipe Akun</h2>
 
+<<<<<<< HEAD
         {/* Guru */}
         <button
           onClick={() => navigate("/login-guru")}
@@ -39,6 +40,19 @@ export default function SelectAccount() {
           />
           Untuk Siswa
         </button>
+=======
+        {/* GURU */}
+        <Button onClick={() => navigate("/login-guru")}>
+          <img src={gambarGuru} alt="Guru" style={styles.icon} />
+          <span>Untuk Guru</span>
+        </Button>
+
+        {/* SISWA */}
+        <Button variant="menu" onClick={() => navigate("/login-siswa")}>
+          <img src={gambarSiswa} alt="Siswa" style={styles.icon} />
+          <span>Untuk Siswa</span>
+        </Button>
+>>>>>>> c89e39c5b657a36f4afecd2c3f80b764e982dd96
       </div>
     </div>
   );

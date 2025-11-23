@@ -1,6 +1,19 @@
 import { useParams, useNavigate } from "react-router-dom";
 import Button from "../components/Button";
 
+const TOTAL_MATERI = 3; // dummy total materi per subject
+
+function getCompletedCount(subject, kelasId) {
+  try {
+    const raw = localStorage.getItem(`completed::${subject || 'unknown'}::kelas-${kelasId}`);
+    if (!raw) return 0;
+    const arr = JSON.parse(raw);
+    return Array.isArray(arr) ? arr.length : 0;
+  } catch (e) {
+    return 0;
+  }
+}
+
 export default function DetailMataPelajaranSiswa() {
   const { subject } = useParams();
   const navigate = useNavigate();
@@ -41,7 +54,7 @@ export default function DetailMataPelajaranSiswa() {
 
       <div style={styles.content}>
         <div style={styles.header}>
-          <Button onClick={() => navigate("/beranda-siswa")} style={styles.backBtn} variant="link">‹ Kembali</Button>
+          <Button onClick={() => navigate("/beranda-siswa")} style={styles.backBtn} variant="link">Kembali</Button>
           <h1 style={styles.subjectTitle}>{subject ? subject.toUpperCase() : "MATA PELAJARAN"}</h1>
         </div>
 
@@ -56,9 +69,19 @@ export default function DetailMataPelajaranSiswa() {
               </div>
               
               <div style={styles.kelasFooter}>
-                {kelas.pelajaran && kelas.pelajaran !== "UJIAN" && (
-                  <span style={styles.tambahText}>Mulai belajar</span>
-                )}
+                <div style={{ display: 'flex', flexDirection: 'column' }}>
+                  {kelas.pelajaran && kelas.pelajaran !== "UJIAN" && (
+                    <span style={styles.tambahText}>Mulai belajar</span>
+                  )}
+                  {/* progress */}
+                  <div style={styles.progressRow}>
+                    <div style={styles.progressBarBackground}>
+                      <div style={{ ...styles.progressBarFill, width: `${Math.round((getCompletedCount(subject, kelas.id) / TOTAL_MATERI) * 100)}%` }} />
+                    </div>
+                    <div style={styles.progressText}>{Math.round((getCompletedCount(subject, kelas.id) / TOTAL_MATERI) * 100)}%</div>
+                  </div>
+                </div>
+
                 <Button
                   style={kelas.pelajaran === "UJIAN" ? styles.tesBtn : styles.pelajariBtn}
                   onClick={(e) => handlePelajariClick(kelas.id, e)}
@@ -180,6 +203,29 @@ const styles = {
     borderRadius: "6px",
     fontWeight: "600",
   },
+  progressRow: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: 10,
+    marginTop: 8,
+  },
+  progressBarBackground: {
+    width: 140,
+    height: 8,
+    background: '#eee',
+    borderRadius: 6,
+    overflow: 'hidden',
+  },
+  progressBarFill: {
+    height: '100%',
+    background: '#4dd0e1',
+    borderRadius: 6,
+  },
+  progressText: {
+    fontSize: 12,
+    color: '#666',
+    fontWeight: 600,
+  },
   kelasFooter: {
     display: "flex",
     justifyContent: "space-between",
@@ -200,6 +246,9 @@ const styles = {
     cursor: "pointer",
     fontSize: "14px",
     fontWeight: "600",
+    width: "36%",
+    margin: 0,
+    boxShadow: "0 6px 12px rgba(0,0,0,0.08)",
   },
   tesBtn: {
     background: "#ff6b6b",
