@@ -1,11 +1,16 @@
 import { useParams, useNavigate } from "react-router-dom";
+import Logo from "../assets/images/Educore_Logo_White.png";
+import utamaGuru from "../assets/images/utama_guru.jpg"; // ✅ pastikan ini ada
 import Button from "../components/Button";
+import useStudentProfile from "../hooks/useStudentProfile";
 
-const TOTAL_MATERI = 3; // dummy total materi per subject
+const TOTAL_MATERI = 3;
 
 function getCompletedCount(subject, kelasId) {
   try {
-    const raw = localStorage.getItem(`completed::${subject || 'unknown'}::kelas-${kelasId}`);
+    const raw = localStorage.getItem(
+      `completed::${subject || "unknown"}::kelas-${kelasId}`
+    );
     if (!raw) return 0;
     const arr = JSON.parse(raw);
     return Array.isArray(arr) ? arr.length : 0;
@@ -17,6 +22,7 @@ function getCompletedCount(subject, kelasId) {
 export default function DetailMataPelajaranSiswa() {
   const { subject } = useParams();
   const navigate = useNavigate();
+  const { profile } = useStudentProfile();
 
   const kelasList = [
     { id: 1, name: "KELAS 1", pelajaran: "", status: "Pelajari" },
@@ -24,7 +30,7 @@ export default function DetailMataPelajaranSiswa() {
     { id: 3, name: "KELAS 3", pelajaran: "", status: "Pelajari" },
     { id: 4, name: "KELAS 4", pelajaran: "", status: "Pelajari" },
     { id: 5, name: "KELAS 5", pelajaran: "", status: "Pelajari" },
-    { id: 6, name: "KELAS 6", pelajaran: "", status: "pelajari" },
+    { id: 6, name: "KELAS 6", pelajaran: "", status: "Pelajari" },
     { id: 7, name: "KELAS 7", pelajaran: "", status: "Pelajari" },
     { id: 8, name: "KELAS 8", pelajaran: "", status: "Pelajari" },
     { id: 9, name: "KELAS 9", pelajaran: "", status: "Pelajari" },
@@ -40,50 +46,112 @@ export default function DetailMataPelajaranSiswa() {
   };
 
   return (
-    <div style={styles.page}>
-      <div style={styles.sidebar}>
-        <div style={styles.profileSection}>
-          <div style={styles.profileCircle}></div>
-          <h2 style={styles.name}>Halo, Siswa!</h2>
-        </div>
-        <Button variant="menu" onClick={() => navigate("/beranda-siswa")}>Dashboard</Button>
-        <Button variant="menu">Tugas</Button>
-        <Button variant="menu">Materi</Button>
-        <Button variant="menu">Pengaturan</Button>
-      </div>
+    <div className="flex w-screen h-screen bg-gray-100 font-sans">
+      {/* SIDEBAR */}
+      <aside className="w-[250px] bg-[#27B4E3] text-white flex flex-col items-center pt-8 min-h-screen">
+        <img src={Logo} className="h-20 mb-6" alt="Logo Educore" />
 
-      <div style={styles.content}>
-        <div style={styles.header}>
-          <Button onClick={() => navigate("/beranda-siswa")} style={styles.backBtn} variant="link">Kembali</Button>
-          <h1 style={styles.subjectTitle}>{subject ? subject.toUpperCase() : "MATA PELAJARAN"}</h1>
+        <button
+          onClick={() => navigate("/profil-siswa")}
+          className="focus:outline-none hover:opacity-80 transition"
+        >
+          <img
+            src={profile.foto || utamaGuru}
+            alt="Foto Profil"
+            className="w-32 h-32 rounded-full mb-3 object-cover"
+          />
+        </button>
+
+        <h2 className="text-2xl font-semibold mb-6">Halo, Temanku!!</h2>
+
+        <Button
+          variant="menu"
+          onClick={() => navigate("/beranda-siswa")}
+          className="w-[80%]"
+        >
+          Dashboard
+        </Button>
+
+        <Button variant="menu" className="w-[80%]">
+          Materi
+        </Button>
+      </aside>
+
+      {/* CONTENT */}
+      <div className="flex-1 p-10 overflow-y-auto">
+        {/* HEADER */}
+        <div className="flex items-center gap-5 mb-10">
+          <Button
+            variant="link"
+            onClick={() => navigate("/beranda-siswa")}
+            className="text-blue-700 font-semibold text-lg"
+          >
+            Kembali
+          </Button>
+
+          <h1 className="text-4xl font-bold text-black">
+            {subject ? subject.toUpperCase() : "MATA PELAJARAN"}
+          </h1>
         </div>
 
-        <div style={styles.grid}>
+        {/* GRID KELAS */}
+        <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
           {kelasList.map((kelas) => (
-            <div key={kelas.id} style={styles.kelasCard}>
-              <div style={styles.kelasHeader}>
-                <h3 style={styles.kelasName}>{kelas.name}</h3>
+            <div
+              key={kelas.id}
+              className="bg-white rounded-xl shadow p-5 border-2 border-gray-200 flex flex-col justify-between h-40"
+            >
+              {/* HEADER KELAS */}
+              <div className="flex justify-between items-start">
+                <h3 className="text-lg font-bold">{kelas.name}</h3>
+
                 {kelas.pelajaran && (
-                  <span style={styles.pelajaranText}>{kelas.pelajaran}</span>
+                  <span className="text-xs bg-gray-100 px-2 py-1 rounded font-semibold text-gray-600">
+                    {kelas.pelajaran}
+                  </span>
                 )}
               </div>
-              
-              <div style={styles.kelasFooter}>
-                <div style={{ display: 'flex', flexDirection: 'column' }}>
+
+              {/* FOOTER */}
+              <div className="flex justify-between items-center mt-4">
+                {/* Progress Section */}
+                <div className="flex flex-col">
                   {kelas.pelajaran && kelas.pelajaran !== "UJIAN" && (
-                    <span style={styles.tambahText}>Mulai belajar</span>
+                    <span className="text-xs italic text-gray-600">
+                      Mulai belajar
+                    </span>
                   )}
-                  {/* progress */}
-                  <div style={styles.progressRow}>
-                    <div style={styles.progressBarBackground}>
-                      <div style={{ ...styles.progressBarFill, width: `${Math.round((getCompletedCount(subject, kelas.id) / TOTAL_MATERI) * 100)}%` }} />
+
+                  <div className="flex items-center gap-2 mt-1">
+                    <div className="w-36 h-2 bg-gray-200 rounded overflow-hidden">
+                      <div
+                        className="h-full bg-cyan-300 rounded"
+                        style={{
+                          width: `${Math.round(
+                            (getCompletedCount(subject, kelas.id) /
+                              TOTAL_MATERI) *
+                              100
+                          )}%`,
+                        }}
+                      ></div>
                     </div>
-                    <div style={styles.progressText}>{Math.round((getCompletedCount(subject, kelas.id) / TOTAL_MATERI) * 100)}%</div>
+
+                    <span className="text-xs font-semibold text-gray-600">
+                      {Math.round(
+                        (getCompletedCount(subject, kelas.id) / TOTAL_MATERI) *
+                          100
+                      )}
+                      %
+                    </span>
                   </div>
                 </div>
 
                 <Button
-                  style={kelas.pelajaran === "UJIAN" ? styles.tesBtn : styles.pelajariBtn}
+                  className={`px-4 py-2 text-sm font-semibold rounded ${
+                    kelas.pelajaran === "UJIAN"
+                      ? "bg-red-500 text-white"
+                      : "bg-cyan-400 text-white shadow"
+                  }`}
                   onClick={(e) => handlePelajariClick(kelas.id, e)}
                 >
                   {kelas.status}
@@ -96,168 +164,3 @@ export default function DetailMataPelajaranSiswa() {
     </div>
   );
 }
-
-const styles = {
-  page: {
-    display: "flex",
-    width: "100vw",
-    height: "100vh",
-    background: "#f4f4f4",
-    fontFamily: "Arial, sans-serif",
-  },
-  sidebar: {
-    width: "250px",
-    background: "#808080",
-    color: "white",
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    paddingTop: "30px",
-  },
-  profileSection: {
-    textAlign: "center",
-    marginBottom: "30px",
-  },
-  profileCircle: {
-    width: "80px",
-    height: "80px",
-    borderRadius: "50%",
-    background: "#4dd0e1",
-    margin: "0 auto 10px",
-  },
-  name: {
-    fontSize: "18px",
-    margin: 0,
-    fontWeight: "600",
-  },
-  menuBtn: {
-    width: "80%",
-    padding: "12px",
-    background: "white",
-    color: "#A52A2A",
-    borderRadius: "8px",
-    border: "none",
-    cursor: "pointer",
-    marginBottom: "10px",
-    fontWeight: "600",
-  },
-  content: {
-    flex: 1,
-    padding: "30px 40px",
-    overflowY: "auto",
-  },
-  header: {
-    display: "flex",
-    alignItems: "center",
-    marginBottom: "30px",
-    gap: "20px",
-  },
-  backBtn: {
-    background: "none",
-    border: "none",
-    fontSize: "18px",
-    cursor: "pointer",
-    color: "#003cbd",
-    fontWeight: "600",
-    padding: "8px 0",
-  },
-  subjectTitle: {
-    fontSize: "32px",
-    fontWeight: "700",
-    color: "#000",
-    margin: 0,
-  },
-  grid: {
-    display: "grid",
-    gridTemplateColumns: "repeat(4, 1fr)",
-    gap: "20px",
-  },
-  kelasCard: {
-    background: "white",
-    borderRadius: "12px",
-    padding: "20px",
-    boxShadow: "0 4px 10px rgba(0,0,0,0.1)",
-    cursor: "pointer",
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "space-between",
-    height: "140px",
-    border: "2px solid #e0e0e0",
-  },
-  kelasHeader: {
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "flex-start",
-  },
-  kelasName: {
-    margin: 0,
-    fontSize: "18px",
-    fontWeight: "700",
-    color: "#000",
-  },
-  pelajaranText: {
-    fontSize: "12px",
-    color: "#666",
-    background: "#f0f0f0",
-    padding: "4px 8px",
-    borderRadius: "6px",
-    fontWeight: "600",
-  },
-  progressRow: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: 10,
-    marginTop: 8,
-  },
-  progressBarBackground: {
-    width: 140,
-    height: 8,
-    background: '#eee',
-    borderRadius: 6,
-    overflow: 'hidden',
-  },
-  progressBarFill: {
-    height: '100%',
-    background: '#4dd0e1',
-    borderRadius: 6,
-  },
-  progressText: {
-    fontSize: 12,
-    color: '#666',
-    fontWeight: 600,
-  },
-  kelasFooter: {
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginTop: "15px",
-  },
-  tambahText: {
-    fontSize: "12px",
-    color: "#666",
-    fontStyle: "italic",
-  },
-  pelajariBtn: {
-    background: "#4dd0e1",
-    color: "white",
-    border: "none",
-    padding: "8px 16px",
-    borderRadius: "6px",
-    cursor: "pointer",
-    fontSize: "14px",
-    fontWeight: "600",
-    width: "36%",
-    margin: 0,
-    boxShadow: "0 6px 12px rgba(0,0,0,0.08)",
-  },
-  tesBtn: {
-    background: "#ff6b6b",
-    color: "white",
-    border: "none",
-    padding: "8px 16px",
-    borderRadius: "6px",
-    cursor: "pointer",
-    fontSize: "14px",
-    fontWeight: "600",
-  },
-};

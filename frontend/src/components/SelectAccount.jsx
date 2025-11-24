@@ -1,14 +1,13 @@
 import { useNavigate } from "react-router-dom";
 import gambarGuru from "../assets/images/gambar_guru.jpg";
 import gambarSiswa from "../assets/images/gambar_siswa.jpg";
+import Logo from "../components/Logo";
 
 export default function SelectAccount() {
   const navigate = useNavigate();
   return (
     <div className="min-h-screen w-full bg-gradient-to-b from-[#27B4E3] to-[#0029A2] text-white p-8 flex flex-col">
-      {/* Header */}
-      <h1 className="text-4xl font-extrabold">Educore</h1>
-      <p className="-mt-1 text-xl mb-8">Belajar cerdas, bukan lebih keras</p>
+      <Logo />
 
       {/* Card */}
       <div className="max-w-xl mx-auto w-full text-center mt-4">

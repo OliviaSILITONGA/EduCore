@@ -1,5 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import FACEBOOK_LOGO from "../assets/images/FB.png";
+import GOOGLE_LOGO from "../assets/images/GOOGLE.png";
 
 export default function RegisterGuru() {
   return (
@@ -18,13 +20,13 @@ export default function RegisterGuru() {
 
           {/* FACEBOOK BUTTON */}
           <button className="w-full flex items-center gap-3 justify-center bg-[#1877F2] text-white py-3 rounded-md font-semibold text-sm mb-4">
-            <img src="/facebook.png" alt="fb" className="w-5" />
+            <img src={FACEBOOK_LOGO} alt="Facebook Logo" className="w-8 h-8" />
             Daftar dengan akun Facebook
           </button>
 
           {/* GOOGLE BUTTON */}
           <button className="w-full flex items-center gap-3 justify-center border py-3 rounded-md font-semibold text-sm mb-6">
-            <img src="/google.png" alt="google" className="w-5" />
+            <img src={GOOGLE_LOGO} alt="Google Logo" className="w-8 h-8" />
             Daftar dengan akun Google
           </button>
 

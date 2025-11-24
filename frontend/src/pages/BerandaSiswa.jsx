@@ -1,8 +1,10 @@
-import React from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import Logo from "../assets/images/Educore_Logo_White.png";
 import Button from "../components/Button";
+import useStudentProfile from "../hooks/useStudentProfile";
 
 // IMPORT GAMBAR
+import utamaGuru from "../assets/images/utama_guru.jpg";
 import mtk from "../assets/images/mtk.jpg";
 import indo from "../assets/images/B.indo.jpg";
 import inggris from "../assets/images/B.inggris.jpg";
@@ -12,10 +14,10 @@ import fisika from "../assets/images/fisika.jpg";
 import geografi from "../assets/images/geografi.jpg";
 import ekonomi from "../assets/images/ekonomi.jpg";
 import sejarah from "../assets/images/sejarah.jpg";
-import utamaGuru from "../assets/images/utama_guru.jpg";
 
 export default function BerandaSiswa() {
   const navigate = useNavigate();
+  const { profile } = useStudentProfile();
 
   const subjects = [
     { title: "Matematika", img: mtk },
@@ -36,14 +38,15 @@ export default function BerandaSiswa() {
   return (
     <div className="flex w-screen h-screen bg-gray-100">
       {/* SIDEBAR */}
-      <div className="w-[250px] bg-gray-600 text-white flex flex-col items-center pt-8">
+      <aside className="w-[250px] bg-[#27B4E3] text-white flex flex-col items-center pt-8 min-h-screen">
+        <img src={Logo} className="h-20 mb-6" />
+
         <button
           onClick={() => navigate("/profil-siswa")}
           className="focus:outline-none hover:opacity-80 transition"
         >
           <img
-            src={utamaGuru}
-            alt="Profil Guru"
+            src={profile.foto || utamaGuru}
             className="w-32 h-32 rounded-full mb-3 object-cover"
           />
         </button>
@@ -52,24 +55,16 @@ export default function BerandaSiswa() {
 
         <Button
           variant="menu"
-          onClick={() => navigate("/beranda-guru")}
+          onClick={() => navigate("/beranda-siswa")}
           className="w-[80%]"
         >
           Dashboard
         </Button>
 
         <Button variant="menu" className="w-[80%]">
-          Data Siswa
-        </Button>
-
-        <Button variant="menu" className="w-[80%]">
           Materi
         </Button>
-
-        <Button variant="menu" className="w-[80%]">
-          Pengaturan
-        </Button>
-      </div>
+      </aside>
 
       {/* CONTENT */}
       <div className="flex-1 p-8 overflow-y-auto">

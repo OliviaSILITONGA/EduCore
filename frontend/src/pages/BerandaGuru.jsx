@@ -13,6 +13,7 @@ import geografi from "../assets/images/geografi.jpg";
 import ekonomi from "../assets/images/ekonomi.jpg";
 import sejarah from "../assets/images/sejarah.jpg";
 import utamaGuru from "../assets/images/utama_guru.jpg";
+import Logo from "../assets/images/Educore_Logo_White.png";
 
 export default function BerandaGuru() {
   const navigate = useNavigate();
@@ -36,9 +37,11 @@ export default function BerandaGuru() {
   return (
     <div className="flex w-screen h-screen bg-gray-100">
       {/* SIDEBAR */}
-      <div className="w-[250px] bg-gray-600 text-white flex flex-col items-center pt-8">
+      <div className="w-[250px] bg-[#27B4E3] text-white flex flex-col items-center pt-8">
+        <img src={Logo} alt="EduCore Logo" className="h-25 left-10" />
+
         <button
-          onClick={() => navigate("/profil-guru")}
+          onClick={() => navigate("/profil-siswa")}
           className="focus:outline-none hover:opacity-80 transition"
         >
           <img
@@ -64,10 +67,6 @@ export default function BerandaGuru() {
 
         <Button variant="menu" className="w-[80%]">
           Materi
-        </Button>
-
-        <Button variant="menu" className="w-[80%]">
-          Pengaturan
         </Button>
       </div>
 

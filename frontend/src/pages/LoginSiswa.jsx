@@ -1,5 +1,8 @@
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
+import Logo from "../assets/images/Educore_Logo_White.png";
+import FACEBOOK_LOGO from "../assets/images/FB.png";
+import GOOGLE_LOGO from "../assets/images/GOOGLE.png";
 
 export default function LoginSiswa() {
   const navigate = useNavigate();
@@ -7,8 +10,7 @@ export default function LoginSiswa() {
     <div className="w-screen h-screen grid grid-cols-1 md:grid-cols-2 font-sans">
       {/* LEFT SECTION */}
       <div className="flex flex-col justify-center px-12 bg-gradient-to-b from-[#27B4E3] to-[#0029A2] text-white">
-        <h1 className="text-6xl font-extrabold">Educore</h1>
-        <p className="text-2xl mt-3">Belajar cerdas, bukan lebih keras</p>
+        <img src={Logo} alt="Educore Logo" className="h-110 w-auto" />
       </div>
 
       {/* RIGHT SECTION */}
@@ -18,12 +20,13 @@ export default function LoginSiswa() {
 
         {/* FACEBOOK BUTTON */}
         <button className="w-full py-3 rounded-xl bg-blue-600 text-white font-semibold text-lg shadow-md flex items-center justify-center gap-3 hover:bg-blue-700">
-          <span className="text-2xl">📘</span>
+          <img src={FACEBOOK_LOGO} alt="Facebook Logo" className="w-8 h-8" />
           Masuk dengan Facebook
         </button>
 
         {/* GOOGLE BUTTON */}
-        <button className="w-full py-3 rounded-xl bg-white border border-gray-300 text-gray-800 font-semibold text-lg shadow-sm mt-4 hover:bg-gray-50">
+        <button className="w-full py-3 rounded-xl bg-white border border-gray-300 text-gray-800 font-semibold text-lg flex items-center justify-center gap-3 shadow-sm mt-4 hover:bg-gray-50">
+          <img src={GOOGLE_LOGO} alt="Google Logo" className="w-8 h-8" />
           Masuk dengan Google
         </button>
 
