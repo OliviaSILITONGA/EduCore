@@ -1,6 +1,8 @@
 // pages/DetailMataPelajaran.jsx - UPDATE DENGAN DESAIN GAMBAR
 import { useParams, useNavigate } from "react-router-dom";
 import Button from "../components/Button";
+import utamaGuru from "../assets/images/utama_guru.jpg";
+import Logo from "../assets/images/Educore_Logo_White.png";
 
 export default function DetailMataPelajaran() {
   const { subject } = useParams();
@@ -32,40 +34,66 @@ export default function DetailMataPelajaran() {
   return (
     <div style={styles.page}>
       {/* SIDEBAR */}
-      <div style={styles.sidebar}>
-        <div style={styles.profileSection}>
-          <div style={styles.profileCircle}></div>
-          <h2 style={styles.name}>Halo, Guru!</h2>
-        </div>
+      <div className="w-[250px] bg-[#27B4E3] text-white flex flex-col items-center pt-8">
+        <img src={Logo} alt="EduCore Logo" className="h-25 left-10" />
 
-        <Button variant="menu" onClick={() => navigate("/beranda-guru")}>Dashboard</Button>
-        <Button variant="menu">Data Siswa</Button>
-        <Button variant="menu">Materi</Button>
-        <Button variant="menu">Pengaturan</Button>
+        <button
+          onClick={() => navigate("/profil-siswa")}
+          className="focus:outline-none hover:opacity-80 transition"
+        >
+          <img
+            src={utamaGuru}
+            alt="Profil Guru"
+            className="w-32 h-32 rounded-full mb-3 object-cover"
+          />
+        </button>
+
+        <h2 className="text-2xl font-semibold mb-6">Halo, Guru!</h2>
+
+        <Button
+          variant="menu"
+          onClick={() => navigate("/beranda-guru")}
+          className="w-[80%]"
+        >
+          Dashboard
+        </Button>
+
+        <Button variant="menu" className="w-[80%]">
+          Data Siswa
+        </Button>
+
+        <Button variant="menu" className="w-[80%]">
+          Materi
+        </Button>
       </div>
 
       {/* CONTENT */}
       <div style={styles.content}>
         {/* HEADER */}
         <div style={styles.header}>
-          <Button onClick={() => navigate("/beranda-guru")} style={styles.backBtn} variant="link">Kembali</Button>
-          <h1 style={styles.subjectTitle}>{subject ? subject.toUpperCase() : "MATA PELAJARAN"}</h1>
+          <Button
+            onClick={() => navigate("/beranda-guru")}
+            style={styles.backBtn}
+            variant="link"
+          >
+            Kembali
+          </Button>
+          <h1 style={styles.subjectTitle}>
+            {subject ? subject.toUpperCase() : "MATA PELAJARAN"}
+          </h1>
         </div>
 
         {/* GRID KELAS - SESUAI GAMBAR */}
         <div style={styles.grid}>
           {kelasList.map((kelas) => (
-            <div 
-              key={kelas.id} 
-              style={styles.kelasCard}
-            >
+            <div key={kelas.id} style={styles.kelasCard}>
               <div style={styles.kelasHeader}>
                 <h3 style={styles.kelasName}>{kelas.name}</h3>
                 {kelas.pelajaran && (
                   <span style={styles.pelajaranText}>{kelas.pelajaran}</span>
                 )}
               </div>
-              
+
               <div style={styles.kelasFooter}>
                 {kelas.pelajaran && kelas.pelajaran !== "UJIAN" && (
                   <span style={styles.tambahText}>Tambahkan</span>
@@ -94,7 +122,7 @@ const styles = {
     background: "#f4f4f4",
     fontFamily: "Arial, sans-serif",
   },
-  
+
   sidebar: {
     width: "250px",
     background: "#808080",
@@ -104,12 +132,12 @@ const styles = {
     alignItems: "center",
     paddingTop: "30px",
   },
-  
+
   profileSection: {
     textAlign: "center",
     marginBottom: "30px",
   },
-  
+
   profileCircle: {
     width: "80px",
     height: "80px",
@@ -117,13 +145,13 @@ const styles = {
     background: "#ccc",
     margin: "0 auto 10px",
   },
-  
+
   name: {
     fontSize: "18px",
     margin: 0,
     fontWeight: "600",
   },
-  
+
   menuBtn: {
     width: "80%",
     padding: "12px",
@@ -135,20 +163,20 @@ const styles = {
     marginBottom: "10px",
     fontWeight: "600",
   },
-  
+
   content: {
     flex: 1,
     padding: "30px 40px",
     overflowY: "auto",
   },
-  
+
   header: {
     display: "flex",
     alignItems: "center",
     marginBottom: "30px",
     gap: "20px",
   },
-  
+
   backBtn: {
     background: "none",
     border: "none",
@@ -158,20 +186,20 @@ const styles = {
     fontWeight: "600",
     padding: "8px 0",
   },
-  
+
   subjectTitle: {
     fontSize: "32px",
     fontWeight: "700",
     color: "#000",
     margin: 0,
   },
-  
+
   grid: {
     display: "grid",
     gridTemplateColumns: "repeat(4, 1fr)",
     gap: "20px",
   },
-  
+
   kelasCard: {
     background: "white",
     borderRadius: "12px",
@@ -184,20 +212,20 @@ const styles = {
     height: "140px",
     border: "2px solid #e0e0e0",
   },
-  
+
   kelasHeader: {
     display: "flex",
     justifyContent: "space-between",
     alignItems: "flex-start",
   },
-  
+
   kelasName: {
     margin: 0,
     fontSize: "18px",
     fontWeight: "700",
     color: "#000",
   },
-  
+
   pelajaranText: {
     fontSize: "12px",
     color: "#666",
@@ -206,20 +234,20 @@ const styles = {
     borderRadius: "6px",
     fontWeight: "600",
   },
-  
+
   kelasFooter: {
     display: "flex",
     justifyContent: "space-between",
     alignItems: "center",
     marginTop: "15px",
   },
-  
+
   tambahText: {
     fontSize: "12px",
     color: "#666",
     fontStyle: "italic",
   },
-  
+
   statusBtn: {
     background: "#003cbd",
     color: "white",

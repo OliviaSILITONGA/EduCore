@@ -35,8 +35,10 @@ export default function EditProfilSiswa() {
       <Navbar_siswa />
       <div className="p-4 space-y-6">
         {/* DETAIL PROFIL */}
-        <div className="bg-white p-6 rounded-xl shadow max-w-xl mx-auto">
-          <h2 className="font-bold text-xl mb-4">Detail profil</h2>
+        <div className="bg-white p-6 rounded-xl shadow max-w-xl  mt-20 mx-auto">
+          <h2 className="font-bold text-xl mb-4">
+            Ayo isi data tentang dirimu!
+          </h2>
 
           <p className="font-semibold">Nama Lengkap</p>
           <input
@@ -47,12 +49,32 @@ export default function EditProfilSiswa() {
           />
 
           <p className="font-semibold">Jenis Kelamin</p>
-          <input
-            name="gender"
-            value={form.gender}
-            onChange={handleChange}
-            className="w-full bg-blue-100 p-2 rounded mb-3"
-          />
+          <div className="relative mb-3">
+            <select
+              name="gender"
+              value={form.gender}
+              onChange={handleChange}
+              className="w-full bg-blue-100 p-2 rounded cursor-pointer appearance-none"
+            >
+              <option value="">Pilih jenis kelamin</option>
+              <option value="Laki-laki">Laki-laki</option>
+              <option value="Perempuan">Perempuan</option>
+            </select>
+
+            <svg
+              className="w-5 h-5 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M6 9l6 6 6-6"
+              />
+            </svg>
+          </div>
 
           <p className="font-semibold">Nomor Telepon</p>
           <input
@@ -133,12 +155,33 @@ export default function EditProfilSiswa() {
           />
 
           <p className="font-semibold">Tingkat</p>
-          <input
-            name="tingkat"
-            value={form.tingkat}
-            onChange={handleChange}
-            className="w-full bg-blue-100 p-2 rounded"
-          />
+          <div className="relative mb-3">
+            <select
+              name="gender"
+              value={form.gender}
+              onChange={handleChange}
+              className="w-full bg-blue-100 p-2 rounded cursor-pointer appearance-none"
+            >
+              <option value="">Pilih jenis tingkat Sekolah</option>
+              <option value="SD">SD</option>
+              <option value="SMP">SMP</option>
+              <option value="SMA">SMA</option>
+            </select>
+
+            <svg
+              className="w-5 h-5 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M6 9l6 6 6-6"
+              />
+            </svg>
+          </div>
         </div>
 
         {/* ORANG TUA */}

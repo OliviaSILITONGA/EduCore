@@ -1,97 +1,133 @@
 import React, { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import Button from "../components/Button";
+import Logo from "../assets/images/Educore_Logo_White.png";
+import utamaGuru from "../assets/images/utama_guru.jpg";
+import useStudentProfile from "../hooks/useStudentProfile";
 
 export default function MateriSayaSiswa() {
   const navigate = useNavigate();
   const { subject } = useParams();
 
-  // Data dummy materi
+  const { profile } = useStudentProfile();
+
   const [materiList] = useState([
-    { 
-      id: 1, 
-      judul: "Aljabar Dasar", 
+    {
+      id: 1,
+      judul: "Aljabar Dasar",
       deskripsi: "Materi pengenalan aljabar untuk pemula",
       durasi: "30 menit",
       level: "Pemula",
-      tanggal: "2024-01-15"
+      tanggal: "2024-01-15",
     },
-    { 
-      id: 2, 
-      judul: "Geometri Bangun Datar", 
+    {
+      id: 2,
+      judul: "Geometri Bangun Datar",
       deskripsi: "Memahami bentuk-bentuk geometri dasar",
-      durasi: "45 menit", 
+      durasi: "45 menit",
       level: "Pemula",
-      tanggal: "2024-01-20"
+      tanggal: "2024-01-20",
     },
-    { 
-      id: 3, 
-      judul: "Trigonometri", 
+    {
+      id: 3,
+      judul: "Trigonometri",
       deskripsi: "Konsep sinus, cosinus, dan tangent",
       durasi: "60 menit",
       level: "Menengah",
-      tanggal: "2024-01-25"
-    }
+      tanggal: "2024-01-25",
+    },
   ]);
 
   const handleMulaiBelajar = (materiId) => {
-    // Navigate to lesson page
     navigate(`/belajar/${subject}/${materiId}`);
   };
 
   return (
-    <div style={styles.page}>
+    <div className="flex w-full h-screen bg-gray-100">
       {/* SIDEBAR */}
-      <div style={styles.sidebar}>
-        <div style={styles.profileSection}>
-          <div style={styles.profileCircle}></div>
-          <h2 style={styles.name}>Halo, Siswa!</h2>
-        </div>
-        <Button variant="menu" onClick={() => navigate("/beranda-siswa")}>Dashboard</Button>
-        <Button variant="menu">Tugas</Button>
-        <Button variant="menu">Materi</Button>
-        <Button variant="menu">Pengaturan</Button>
-      </div>
+      <aside className="w-[250px] bg-[#27B4E3] text-white flex flex-col items-center pt-8 min-h-screen">
+        <img src={Logo} className="h-20 mb-6" alt="Logo Educore" />
+
+        <button
+          onClick={() => navigate("/profil-siswa")}
+          className="focus:outline-none hover:opacity-80 transition"
+        >
+          <img
+            src={profile?.foto || utamaGuru}
+            alt="Foto Profil"
+            className="w-32 h-32 rounded-full mb-3 object-cover"
+          />
+        </button>
+
+        <h2 className="text-2xl font-semibold mb-6">Halo, Temanku!!</h2>
+
+        <Button
+          variant="menu"
+          onClick={() => navigate("/beranda-siswa")}
+          className="w-[80%]"
+        >
+          Dashboard
+        </Button>
+
+        <Button variant="menu" className="w-[80%]">
+          Materi
+        </Button>
+      </aside>
 
       {/* CONTENT */}
-      <div style={styles.content}>
+      <div className="flex-1 p-10 overflow-y-auto">
         {/* HEADER */}
-        <div style={styles.header}>
-          <Button onClick={() => navigate(-1)} style={styles.backButton} variant="link">Kembali</Button>
-          <h1 style={styles.title}>Materi {subject ? subject.toUpperCase() : ""}</h1>
+        <div className="flex items-center mb-6">
+          <Button
+            onClick={() => navigate(-1)}
+            variant="link"
+            className="text-blue-700 text-lg font-semibold hover:underline"
+          >
+            Kembali
+          </Button>
+
+          <h1 className="text-3xl font-bold ml-4">
+            Materi {subject ? subject.toUpperCase() : ""}
+          </h1>
         </div>
 
-        {/* INFO MATA PELAJARAN */}
-        <div style={styles.infoCard}>
-          <h2 style={styles.infoTitle}>Selamat Belajar! 🎓</h2>
-          <p style={styles.infoText}>
-            Di sini kamu bisa mempelajari semua materi <strong>{subject}</strong>. 
-            Pilih materi yang ingin dipelajari dan mulai perjalanan belajarmu!
+        {/* INFO CARD */}
+        <div className="bg-gradient-to-br from-indigo-500 to-purple-600 text-white rounded-xl p-6 mb-8 shadow-lg">
+          <h2 className="text-2xl font-bold">Selamat Belajar! 🎓</h2>
+          <p className="text-base opacity-90 mt-1">
+            Di sini kamu bisa mempelajari semua materi{" "}
+            <strong>{subject}</strong>. Pilih materi yang ingin dipelajari dan
+            mulai perjalanan belajarmu!
           </p>
         </div>
 
-        {/* DAFTAR MATERI */}
-        <div style={styles.section}>
-          <h2 style={styles.sectionTitle}>Materi Pembelajaran</h2>
-          
-          <div style={styles.materiList}>
-            {materiList.map(materi => (
-              <div key={materi.id} style={styles.materiCard}>
-                <div style={styles.materiContent}>
-                  <div style={styles.materiHeader}>
-                    <h3 style={styles.materiTitle}>{materi.judul}</h3>
-                  </div>
-                  
-                  <p style={styles.materiDeskripsi}>{materi.deskripsi}</p>
-                  
-                  <div style={styles.materiMeta}>
-                    <span style={styles.metaItem}>📅 {materi.tanggal}</span>
+        {/* LIST MATERI */}
+        <div className="bg-white rounded-xl p-6 shadow-md">
+          <h2 className="text-2xl font-semibold mb-5">Materi Pembelajaran</h2>
+
+          <div className="flex flex-col gap-4">
+            {materiList.map((materi) => (
+              <div
+                key={materi.id}
+                className="flex justify-between p-5 border border-gray-200 rounded-lg bg-gray-50 hover:shadow-md transition"
+              >
+                <div>
+                  <h3 className="text-xl font-bold">{materi.judul}</h3>
+                  <p className="text-gray-600 text-sm mt-1">
+                    {materi.deskripsi}
+                  </p>
+
+                  <div className="text-xs text-gray-500 mt-2">
+                    📅 {materi.tanggal}
                   </div>
                 </div>
-                
-                <Button style={styles.pelajariButton} onClick={() => handleMulaiBelajar(materi.id)}>
-                  Mulai Belajar
-                </Button>
+
+                <button
+                  onClick={() => handleMulaiBelajar(materi.id)}
+                  className="bg-cyan-500 hover:bg-cyan-600 text-white font-semibold px-4 py-2 text-sm md:text-base rounded-md shadow-sm"
+                >
+                  Mulai
+                </button>
               </div>
             ))}
           </div>
@@ -100,167 +136,3 @@ export default function MateriSayaSiswa() {
     </div>
   );
 }
-
-// ============== STYLE ==============
-const styles = {
-  page: {
-    display: "flex",
-    width: "100vw",
-    height: "100vh",
-    background: "#f4f4f4",
-    fontFamily: "Arial, sans-serif",
-  },
-  sidebar: {
-    width: "250px",
-    background: "#808080",
-    color: "white",
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    paddingTop: "30px",
-  },
-  profileSection: {
-    textAlign: "center",
-    marginBottom: "30px",
-  },
-  profileCircle: {
-    width: "80px",
-    height: "80px",
-    borderRadius: "50%",
-    background: "#4dd0e1",
-    margin: "0 auto 10px",
-  },
-  name: {
-    fontSize: "18px",
-    margin: 0,
-    fontWeight: "600",
-  },
-  menuBtn: {
-    width: "80%",
-    padding: "12px",
-    background: "white",
-    color: "#A52A2A",
-    borderRadius: "8px",
-    border: "none",
-    cursor: "pointer",
-    marginBottom: "10px",
-    fontWeight: "600",
-  },
-  content: {
-    flex: 1,
-    padding: "30px 40px",
-    overflowY: "auto",
-  },
-  header: {
-    display: "flex",
-    alignItems: "center",
-    marginBottom: "25px",
-  },
-  backButton: {
-    background: "none",
-    border: "none",
-    color: "#003cbd",
-    fontSize: "16px",
-    cursor: "pointer",
-    marginRight: "15px",
-    padding: "8px 12px",
-  },
-  title: { 
-    fontSize: "28px", 
-    fontWeight: "700",
-    color: "#000",
-    margin: 0
-  },
-  infoCard: {
-    background: "linear(135deg, #667eea 0%, #764ba2 100%)",
-    color: "white",
-    borderRadius: "12px",
-    padding: "25px",
-    marginBottom: "30px",
-    boxShadow: "0 4px 15px rgba(0,0,0,0.1)",
-  },
-  infoTitle: {
-    fontSize: "22px",
-    fontWeight: "700",
-    margin: "0 0 10px 0",
-    color: "#000",
-  },
-  infoText: {
-    fontSize: "16px",
-    margin: 0,
-    opacity: 0.9,
-    color: "#000",
-  },
-  section: {
-    background: "white",
-    borderRadius: "12px",
-    padding: "25px",
-    boxShadow: "0 4px 10px rgba(0,0,0,0.1)",
-  },
-  sectionTitle: {
-    fontSize: "22px",
-    fontWeight: "600",
-    marginBottom: "20px",
-    color: "#000",
-  },
-  materiList: {
-    display: "flex",
-    flexDirection: "column",
-    gap: "15px",
-  },
-  materiCard: {
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    padding: "20px",
-    border: "1px solid #e0e0e0",
-    borderRadius: "10px",
-    background: "#fafafa",
-  },
-  materiContent: {
-    flex: 1,
-  },
-  materiHeader: {
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "flex-start",
-    marginBottom: "10px",
-  },
-  materiTitle: {
-    fontSize: "18px",
-    fontWeight: "700",
-    color: "#000",
-    margin: 0,
-  },
-  levelBadge: {
-    display: "none",
-  },
-  materiDeskripsi: {
-    fontSize: "14px",
-    color: "#666",
-    margin: "0 0 10px 0",
-  },
-  materiMeta: {
-    display: "flex",
-    gap: "15px",
-  },
-  metaItem: {
-    fontSize: "12px",
-    color: "#888",
-  },
-  pelajariButton: {
-    background: "#4dd0e1",
-    color: "white",
-    border: "none",
-    padding: "8px 16px",
-    borderRadius: "8px",
-    cursor: "pointer",
-    fontSize: "14px",
-    fontWeight: "700",
-    width: "36%",
-    margin: 0,
-    boxShadow: "0 6px 12px rgba(0,0,0,0.08)",
-    alignSelf: "center",
-    justifyContent: "center",
-  },
-};

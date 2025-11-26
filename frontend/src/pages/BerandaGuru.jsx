@@ -41,7 +41,7 @@ export default function BerandaGuru() {
         <img src={Logo} alt="EduCore Logo" className="h-25 left-10" />
 
         <button
-          onClick={() => navigate("/profil-siswa")}
+          onClick={() => navigate("/profil-guru")}
           className="focus:outline-none hover:opacity-80 transition"
         >
           <img

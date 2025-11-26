@@ -1,6 +1,8 @@
 import React from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import Button from "../components/Button";
+import utamaGuru from "../assets/images/utama_guru.jpg";
+import Logo from "../assets/images/Educore_Logo_White.png";
 
 export default function ManajemenKelas() {
   const navigate = useNavigate();
@@ -9,28 +11,59 @@ export default function ManajemenKelas() {
   return (
     <div style={styles.page}>
       {/* SIDEBAR */}
-      <div style={styles.sidebar}>
-        <div style={styles.profilePlaceholder}></div>
-        <h2 style={styles.name}>Halo, Guru!</h2>
+      <div className="w-[250px] bg-[#27B4E3] text-white flex flex-col items-center pt-8">
+        <img src={Logo} alt="EduCore Logo" className="h-25 left-10" />
 
-        <Button variant="menu" onClick={() => navigate("/beranda-guru")}>Dashboard</Button>
-        <Button variant="menu">Data Siswa</Button>
-        <Button variant="menu">Materi</Button>
-        <Button variant="menu">Pengaturan</Button>
+        <button
+          onClick={() => navigate("/profil-siswa")}
+          className="focus:outline-none hover:opacity-80 transition"
+        >
+          <img
+            src={utamaGuru}
+            alt="Profil Guru"
+            className="w-32 h-32 rounded-full mb-3 object-cover"
+          />
+        </button>
+
+        <h2 className="text-2xl font-semibold mb-6">Halo, Guru!</h2>
+
+        <Button
+          variant="menu"
+          onClick={() => navigate("/beranda-guru")}
+          className="w-[80%]"
+        >
+          Dashboard
+        </Button>
+
+        <Button variant="menu" className="w-[80%]">
+          Data Siswa
+        </Button>
+
+        <Button variant="menu" className="w-[80%]">
+          Materi
+        </Button>
       </div>
 
       {/* CONTENT */}
       <div style={styles.content}>
         <div style={styles.header}>
-          <Button onClick={() => navigate(-1)} style={styles.backButton} variant="link">Kembali</Button>
+          <Button
+            onClick={() => navigate(-1)}
+            style={styles.backButton}
+            variant="link"
+          >
+            Kembali
+          </Button>
           <h1 style={styles.title}>Manajemen Kelas {matpel}</h1>
         </div>
 
         <div style={styles.card}>
           <h2>Selamat datang di Manajemen Kelas!</h2>
-          <p>Mata Pelajaran: <strong>{matpel}</strong></p>
+          <p>
+            Mata Pelajaran: <strong>{matpel}</strong>
+          </p>
           <p>Di sini Anda bisa mengelola materi dan daftar murid.</p>
-          
+
           <div style={styles.buttonContainer}>
             <Button style={styles.primaryButton}>Lihat Materi</Button>
             <Button style={styles.primaryButton}>Lihat Daftar Murid</Button>
@@ -64,9 +97,9 @@ const styles = {
     marginBottom: "10px",
     background: "#ccc",
   },
-  name: { 
-    fontSize: "22px", 
-    marginBottom: "20px" 
+  name: {
+    fontSize: "22px",
+    marginBottom: "20px",
   },
   menuBtn: {
     width: "80%",
@@ -98,9 +131,9 @@ const styles = {
     marginRight: "15px",
     padding: "8px 12px",
   },
-  title: { 
-    fontSize: "28px", 
-    fontWeight: "700" 
+  title: {
+    fontSize: "28px",
+    fontWeight: "700",
   },
   card: {
     background: "white",
