@@ -42,7 +42,7 @@ export default function DetailMataPelajaranSiswa() {
 
   const handlePelajariClick = (kelasId, e) => {
     e.stopPropagation();
-    navigate(`/materi-siswa/${subject}`);
+    navigate(`/materi-siswa/${subject}/${kelasId}`);
   };
 
   return (
