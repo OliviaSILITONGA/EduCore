@@ -2,7 +2,6 @@ import { Link, useNavigate } from "react-router-dom";
 import Logo from "../assets/images/Educore_Logo_White.png";
 import Button from "../components/Button";
 import useTeacherProfile from "../hooks/useTeacherProfile";
-import utamaGuru from "../assets/images/utama_guru.jpg";
 import Makima from "../assets/images/Ellipse_14.png";
 
 export default function ProfilGuru() {
@@ -20,12 +19,12 @@ export default function ProfilGuru() {
           className="focus:outline-none hover:opacity-80 transition"
         >
           <img
-            src={profile.foto || utamaGuru}
+            src={profile.foto || Makima}
             className="w-32 h-32 rounded-full mb-3 object-cover"
           />
         </button>
 
-        <h2 className="text-2xl font-semibold mb-6">Halo, Temanku!!</h2>
+        <h2 className="text-2xl font-semibold mb-6">Halo, Guru!</h2>
 
         <Button
           variant="menu"
@@ -43,7 +42,7 @@ export default function ProfilGuru() {
       {/* KONTEN */}
       <main className="flex-1 p-6 flex flex-col items-center space-y-6">
         {/* DATA PROFIL */}
-        <div className="bg-white p-6 rounded-xl shadow w-[450px]">
+        <div className="bg-white p-6 rounded-xl max-w-xl w-full shadow">
           <div className="flex items-center gap-4">
             <img
               src={profile.foto || Makima}
@@ -66,7 +65,7 @@ export default function ProfilGuru() {
         </div>
 
         {/* DETAIL ALAMAT */}
-        <div className="bg-white p-6 rounded-xl shadow w-[450px]">
+        <div className="bg-white p-6 rounded-xl max-w-xl w-full shadow">
           <h2 className="font-bold text-xl mb-3">Detail alamat</h2>
           <p className="font-semibold">Provinsi</p>
           <p>{profile.provinsi}</p>
@@ -77,7 +76,7 @@ export default function ProfilGuru() {
         </div>
 
         {/* DETAIL SEKOLAH */}
-        <div className="bg-white p-6 rounded-xl shadow w-[450px]">
+        <div className="bg-white p-6 rounded-xl max-w-xl w-full shadow">
           <h2 className="font-bold text-xl mb-3">Detail sekolah</h2>
           <p className="font-semibold">Provinsi</p>
           <p>{profile.sekolahProvinsi}</p>

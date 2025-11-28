@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
-import gambarGuru from "../assets/images/gambar_guru.jpg";
-import gambarSiswa from "../assets/images/gambar_siswa.jpg";
+import Makima from "../assets/images/Ellipse_14.png";
+import Aki from "../assets/images/Ellipse_15.png";
 import Logo from "../components/Logo";
 
 export default function SelectAccount() {
@@ -19,7 +19,7 @@ export default function SelectAccount() {
           className="w-full flex items-center gap-4 bg-[#27B4E3] hover:bg-[#BAD6EB] transition text-white text-xl font-semibold px-6 py-4 rounded-2xl mb-6 shadow-lg"
         >
           <img
-            src={gambarGuru}
+            src={Makima}
             alt="Guru"
             className="w-16 h-16 rounded-full object-cover"
           />
@@ -32,7 +32,7 @@ export default function SelectAccount() {
           className="w-full flex items-center gap-4 bg-[#27B4E3] hover:bg-[#BAD6EB] transition text-white text-xl font-semibold px-6 py-4 rounded-2xl shadow-lg"
         >
           <img
-            src={gambarSiswa}
+            src={Aki}
             alt="Siswa"
             className="w-16 h-16 rounded-full object-cover"
           />

@@ -1,122 +1,197 @@
-import React, { useState } from "react";
-import utamaGuru from "../assets/images/utama_guru.jpg";
-import Logo from "../assets/images/Educore_Logo_White.png";
+import { useNavigate } from "react-router-dom";
+import Navbar_guru from "../components/Navbar_guru";
+import useTeacherProfile from "../hooks/useTeacherProfile";
+import { useState } from "react";
+import Makima from "../assets/images/Ellipse_14.png"; // ✅ PERBAIKAN PENTING
 
 export default function EditProfilGuru() {
-  const [form, setForm] = useState({
-    nama: "",
-    email: "",
-    telepon: "",
-    provinsi: "",
-    kota: "",
-    alamat: "",
-    sekolah: "",
-    tingkat: "",
-  });
+  const navigate = useNavigate();
+  const { profile, saveProfile } = useTeacherProfile();
+
+  const [form, setForm] = useState(profile);
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    // Simpan data ke backend di sini
-    alert("Profil guru berhasil disimpan!");
+  const handleImage = (e) => {
+    const file = e.target.files[0];
+    const reader = new FileReader();
+
+    reader.onloadend = () => {
+      setForm({ ...form, foto: reader.result });
+    };
+
+    if (file) reader.readAsDataURL(file);
+  };
+
+  const handleSave = () => {
+    saveProfile(form);
+    navigate("/profil-guru");
   };
 
   return (
-    <div className="min-h-screen bg-gray-200 flex">
-      {/* Sidebar mirip Navbar_guru */}
-      <div className="w-[250px] bg-[#27B4E3] text-white flex flex-col items-center pt-8 h-screen fixed">
-        <img src={Logo} alt="EduCore Logo" className="h-25 left-10" />
-        <button className="focus:outline-none hover:opacity-80 transition">
-          <img
-            src={utamaGuru}
-            alt="Profil Guru"
-            className="w-32 h-32 rounded-full mb-3 object-cover"
-          />
-        </button>
-        <h2 className="text-2xl font-semibold mb-6">Halo, Guru!</h2>
-        <button className="w-[80%] bg-blue-300 text-blue-900 font-bold py-2 rounded-xl mb-2">
-          Dashboard
-        </button>
-        <button className="w-[80%] bg-blue-300 text-blue-900 font-bold py-2 rounded-xl mb-2">
-          Data Siswa
-        </button>
-        <button className="w-[80%] bg-blue-300 text-blue-900 font-bold py-2 rounded-xl">
-          Materi
-        </button>
-      </div>
-      {/* Form Profil Guru */}
-      <div className="flex-1 p-8 ml-[250px]">
-        <form
-          onSubmit={handleSubmit}
-          className="bg-white p-6 rounded-2xl shadow max-w-xl mx-auto space-y-4"
-        >
-          <h2 className="font-bold text-xl mb-4">Detail Profil Guru</h2>
-          <label className="block font-semibold">Nama Lengkap</label>
+    <div className="min-h-screen bg-[#D9D9D9]">
+      <Navbar_guru />
+      <div className="p-4 space-y-6 mt-6">
+        {/* DETAIL PROFIL */}
+        <div className="bg-white p-6 rounded-xl shadow max-w-xl  mt-20 mx-auto">
+          <h2 className="font-bold text-xl mb-4">
+            Ayo isi data tentang diri anda!
+          </h2>
+
+          <p className="font-semibold">Nama Lengkap</p>
           <input
             name="nama"
             value={form.nama}
             onChange={handleChange}
-            className="w-full bg-blue-100 p-2 rounded mb-2"
+            className="w-full bg-blue-100 p-2 rounded mb-3"
           />
-          <label className="block font-semibold">Email</label>
-          <input
-            name="email"
-            value={form.email}
-            onChange={handleChange}
-            className="w-full bg-blue-100 p-2 rounded mb-2"
-          />
-          <label className="block font-semibold">Nomor Telepon</label>
+
+          <p className="font-semibold">Jenis Kelamin</p>
+          <div className="relative mb-3">
+            <select
+              name="gender"
+              value={form.gender}
+              onChange={handleChange}
+              className="w-full bg-blue-100 p-2 rounded cursor-pointer appearance-none"
+            >
+              <option value="">Pilih jenis kelamin</option>
+              <option value="Laki-laki">Laki-laki</option>
+              <option value="Perempuan">Perempuan</option>
+            </select>
+
+            <svg
+              className="w-5 h-5 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M6 9l6 6 6-6"
+              />
+            </svg>
+          </div>
+
+          <p className="font-semibold">Nomor Telepon</p>
           <input
             name="telepon"
             value={form.telepon}
             onChange={handleChange}
-            className="w-full bg-blue-100 p-2 rounded mb-2"
+            className="w-full bg-blue-100 p-2 rounded mb-3"
           />
-          <label className="block font-semibold">Provinsi</label>
+
+          <div className="flex items-center gap-4">
+            <img
+              src={form.foto || Makima}
+              className="w-20 h-20 rounded-full object-cover border-4 border-gray-300"
+            />
+
+            <label className="text-blue-600 font-semibold underline cursor-pointer">
+              Ganti foto profil
+              <input type="file" className="hidden" onChange={handleImage} />
+            </label>
+          </div>
+        </div>
+
+        {/* DETAIL ALAMAT */}
+        <div className="bg-white p-6 rounded-xl shadow max-w-xl mx-auto">
+          <h2 className="font-bold text-xl mb-4">Detail alamat</h2>
+
+          <p className="font-semibold">Provinsi</p>
           <input
             name="provinsi"
             value={form.provinsi}
             onChange={handleChange}
-            className="w-full bg-blue-100 p-2 rounded mb-2"
+            className="w-full bg-blue-100 p-2 rounded mb-3"
           />
-          <label className="block font-semibold">Kota</label>
+
+          <p className="font-semibold">Kota/Kabupaten</p>
           <input
             name="kota"
             value={form.kota}
             onChange={handleChange}
-            className="w-full bg-blue-100 p-2 rounded mb-2"
+            className="w-full bg-blue-100 p-2 rounded mb-3"
           />
-          <label className="block font-semibold">Alamat</label>
+
+          <p className="font-semibold">Alamat</p>
           <input
             name="alamat"
             value={form.alamat}
             onChange={handleChange}
-            className="w-full bg-blue-100 p-2 rounded mb-2"
+            className="w-full bg-blue-100 p-2 rounded"
           />
-          <label className="block font-semibold">Nama Sekolah</label>
+        </div>
+
+        {/* DETAIL SEKOLAH */}
+        <div className="bg-white p-6 rounded-xl shadow max-w-xl mx-auto">
+          <h2 className="font-bold text-xl mb-4">Detail sekolah</h2>
+
+          <p className="font-semibold">Provinsi</p>
           <input
-            name="sekolah"
-            value={form.sekolah}
+            name="sekolahProvinsi"
+            value={form.sekolahProvinsi}
             onChange={handleChange}
-            className="w-full bg-blue-100 p-2 rounded mb-2"
+            className="w-full bg-blue-100 p-2 rounded mb-3"
           />
-          <label className="block font-semibold">Tingkat</label>
+
+          <p className="font-semibold">Kota/Kabupaten</p>
           <input
-            name="tingkat"
-            value={form.tingkat}
+            name="sekolahKota"
+            value={form.sekolahKota}
             onChange={handleChange}
-            className="w-full bg-blue-100 p-2 rounded mb-2"
+            className="w-full bg-blue-100 p-2 rounded mb-3"
           />
+
+          <p className="font-semibold">Nama Sekolah</p>
+          <input
+            name="namaSekolah"
+            value={form.namaSekolah}
+            onChange={handleChange}
+            className="w-full bg-blue-100 p-2 rounded mb-3"
+          />
+
+          <p className="font-semibold">Tingkat</p>
+          <div className="relative mb-3">
+            <select
+              name="gender"
+              value={form.gender}
+              onChange={handleChange}
+              className="w-full bg-blue-100 p-2 rounded cursor-pointer appearance-none"
+            >
+              <option value="">Pilih jenis tingkat Sekolah</option>
+              <option value="SD">SD</option>
+              <option value="SMP">SMP</option>
+              <option value="SMA">SMA</option>
+            </select>
+
+            <svg
+              className="w-5 h-5 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M6 9l6 6 6-6"
+              />
+            </svg>
+          </div>
+        </div>
+
+        <div className="max-w-xl mx-auto pb-10">
           <button
-            type="submit"
-            className="w-full bg-blue-300 py-3 rounded-xl text-blue-900 font-bold text-lg mt-4"
+            onClick={handleSave}
+            className="w-full bg-blue-300 py-3 rounded-xl text-blue-900 font-bold text-lg"
           >
             Simpan
           </button>
-        </form>
+        </div>
       </div>
     </div>
   );

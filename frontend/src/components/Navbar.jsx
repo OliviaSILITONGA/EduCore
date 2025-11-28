@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import Logo from "../assets/images/Educore_Logo_White.png";
 
-export default function Navbar_siswa() {
+export default function Navbar() {
   const navigate = useNavigate();
 
   return (
@@ -9,7 +9,7 @@ export default function Navbar_siswa() {
       <nav className="max-w-7xl mx-auto px-6 md:px-10 py-3 flex items-center justify-between">
         {/* LOGO */}
         <button
-          onClick={() => navigate("/beranda-guru")}
+          onClick={() => navigate("/")}
           className="focus:outline-none hover:opacity-80 transition"
         >
           <img src={Logo} alt="Educore Logo" className="h-12 w-auto" />

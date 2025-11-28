@@ -1,41 +1,17 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import FACEBOOK_LOGO from "../assets/images/FB.png";
-import GOOGLE_LOGO from "../assets/images/GOOGLE.png";
+import Navbar from "../components/Navbar";
 
 export default function RegisterGuru() {
   return (
     <div className="min-h-screen bg-[#E5E5E5] flex flex-col">
-      {/* HEADER */}
-      <header className="bg-[#19A7CE] w-full py-6 px-10 text-white text-3xl font-bold">
-        Educore
-      </header>
-
+      <Navbar />
       {/* CARD */}
       <div className="flex justify-center py-10">
         <div className="bg-white w-[750px] rounded-md shadow p-10">
           <h2 className="text-center text-lg font-semibold mb-6">
             Yuk buat akun Educore kamu!
           </h2>
-
-          {/* FACEBOOK BUTTON */}
-          <button className="w-full flex items-center gap-3 justify-center bg-[#1877F2] text-white py-3 rounded-md font-semibold text-sm mb-4">
-            <img src={FACEBOOK_LOGO} alt="Facebook Logo" className="w-8 h-8" />
-            Daftar dengan akun Facebook
-          </button>
-
-          {/* GOOGLE BUTTON */}
-          <button className="w-full flex items-center gap-3 justify-center border py-3 rounded-md font-semibold text-sm mb-6">
-            <img src={GOOGLE_LOGO} alt="Google Logo" className="w-8 h-8" />
-            Daftar dengan akun Google
-          </button>
-
-          {/* GARIS PEMBATAS */}
-          <div className="flex items-center gap-4 my-6">
-            <div className="flex-1 h-[1px] bg-gray-300"></div>
-            <span className="text-gray-600 font-semibold text-sm">ATAU</span>
-            <div className="flex-1 h-[1px] bg-gray-300"></div>
-          </div>
 
           {/* FORM */}
           <div className="space-y-6">

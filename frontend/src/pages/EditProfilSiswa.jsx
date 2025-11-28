@@ -2,7 +2,7 @@ import { useNavigate } from "react-router-dom";
 import Navbar_siswa from "../components/Navbar_siswa";
 import useStudentProfile from "../hooks/useStudentProfile";
 import { useState } from "react";
-import siswaImg from "../assets/images/utama_siswa.jpg"; // ✅ PERBAIKAN PENTING
+import Aki from "../assets/images/Ellipse_15.png"; // ✅ PERBAIKAN PENTING
 
 export default function EditProfilSiswa() {
   const navigate = useNavigate();
@@ -33,7 +33,7 @@ export default function EditProfilSiswa() {
   return (
     <div className="min-h-screen bg-[#D9D9D9]">
       <Navbar_siswa />
-      <div className="p-4 space-y-6">
+      <div className="p-4 space-y-6 mt-6">
         {/* DETAIL PROFIL */}
         <div className="bg-white p-6 rounded-xl shadow max-w-xl  mt-20 mx-auto">
           <h2 className="font-bold text-xl mb-4">
@@ -86,7 +86,7 @@ export default function EditProfilSiswa() {
 
           <div className="flex items-center gap-4">
             <img
-              src={form.foto || siswaImg} // ✅ SUDAH AMAN
+              src={form.foto || Aki} // ✅ SUDAH AMAN
               className="w-20 h-20 rounded-full object-cover border-4 border-gray-300"
             />
 

@@ -4,7 +4,7 @@ import Button from "../components/Button";
 import useStudentProfile from "../hooks/useStudentProfile";
 
 // IMPORT GAMBAR
-import utamaGuru from "../assets/images/utama_guru.jpg";
+import Aki from "../assets/images/Ellipse_15.png";
 import mtk from "../assets/images/mtk.jpg";
 import indo from "../assets/images/B.indo.jpg";
 import inggris from "../assets/images/B.inggris.jpg";
@@ -46,7 +46,7 @@ export default function BerandaSiswa() {
           className="focus:outline-none hover:opacity-80 transition"
         >
           <img
-            src={profile.foto || utamaGuru}
+            src={profile.foto || Aki}
             className="w-32 h-32 rounded-full mb-3 object-cover"
           />
         </button>

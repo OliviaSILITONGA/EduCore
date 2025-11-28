@@ -2,7 +2,6 @@ import { Link, useNavigate } from "react-router-dom";
 import Logo from "../assets/images/Educore_Logo_White.png";
 import Button from "../components/Button";
 import useStudentProfile from "../hooks/useStudentProfile";
-import utamaGuru from "../assets/images/utama_guru.jpg";
 import Aki from "../assets/images/Ellipse_15.png";
 
 export default function ProfilSiswa() {
@@ -20,7 +19,7 @@ export default function ProfilSiswa() {
           className="focus:outline-none hover:opacity-80 transition"
         >
           <img
-            src={profile.foto || utamaGuru}
+            src={profile.foto || Aki}
             className="w-32 h-32 rounded-full mb-3 object-cover"
           />
         </button>

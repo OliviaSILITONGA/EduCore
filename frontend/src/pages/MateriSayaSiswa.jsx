@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import Button from "../components/Button";
 import Logo from "../assets/images/Educore_Logo_White.png";
-import utamaGuru from "../assets/images/utama_guru.jpg";
+import Aki from "../assets/images/Ellipse_15.png";
 import useStudentProfile from "../hooks/useStudentProfile";
 
 export default function MateriSayaSiswa() {
@@ -53,7 +53,7 @@ export default function MateriSayaSiswa() {
           className="focus:outline-none hover:opacity-80 transition"
         >
           <img
-            src={profile?.foto || utamaGuru}
+            src={profile?.foto || Aki}
             alt="Foto Profil"
             className="w-32 h-32 rounded-full mb-3 object-cover"
           />

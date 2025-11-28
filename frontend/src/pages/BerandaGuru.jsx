@@ -1,6 +1,7 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import Button from "../components/Button";
+import useTeacherProfile from "../hooks/useTeacherProfile";
 
 // IMPORT GAMBAR
 import mtk from "../assets/images/mtk.jpg";
@@ -12,11 +13,12 @@ import fisika from "../assets/images/fisika.jpg";
 import geografi from "../assets/images/geografi.jpg";
 import ekonomi from "../assets/images/ekonomi.jpg";
 import sejarah from "../assets/images/sejarah.jpg";
-import utamaGuru from "../assets/images/utama_guru.jpg";
+import Makima from "../assets/images/Ellipse_14.png";
 import Logo from "../assets/images/Educore_Logo_White.png";
 
 export default function BerandaGuru() {
   const navigate = useNavigate();
+  const { profile } = useTeacherProfile();
 
   const subjects = [
     { title: "Matematika", img: mtk },
@@ -45,8 +47,7 @@ export default function BerandaGuru() {
           className="focus:outline-none hover:opacity-80 transition"
         >
           <img
-            src={utamaGuru}
-            alt="Profil Guru"
+            src={profile.foto || Makima}
             className="w-32 h-32 rounded-full mb-3 object-cover"
           />
         </button>

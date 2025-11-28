@@ -1,12 +1,14 @@
 import React from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import Button from "../components/Button";
-import utamaGuru from "../assets/images/utama_guru.jpg";
+import Makima from "../assets/images/Ellipse_14.png";
 import Logo from "../assets/images/Educore_Logo_White.png";
+import useTeacherProfile from "../hooks/useTeacherProfile";
 
 export default function ManajemenKelas() {
   const navigate = useNavigate();
   const { matpel } = useParams();
+  const { profile } = useTeacherProfile();
 
   return (
     <div style={styles.page}>
@@ -15,12 +17,11 @@ export default function ManajemenKelas() {
         <img src={Logo} alt="EduCore Logo" className="h-25 left-10" />
 
         <button
-          onClick={() => navigate("/profil-siswa")}
+          onClick={() => navigate("/profil-guru")}
           className="focus:outline-none hover:opacity-80 transition"
         >
           <img
-            src={utamaGuru}
-            alt="Profil Guru"
+            src={profile.foto || Makima}
             className="w-32 h-32 rounded-full mb-3 object-cover"
           />
         </button>
