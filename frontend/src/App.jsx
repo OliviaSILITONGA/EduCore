@@ -51,7 +51,10 @@ export default function App() {
           <Route path="/manajemen-kelas/:matpel" element={<ManajemenKelas />} />
 
           {/* materi siswa */}
-          <Route path="/materi-siswa/:subject" element={<MateriSayaSiswa />} />
+          <Route
+            path="/materi-siswa/:subject/:kelasId"
+            element={<MateriSayaSiswa />}
+          />
           <Route path="/belajar/:subject/:materiId" element={<Belajar />} />
 
           {/* profil siswa*/}
