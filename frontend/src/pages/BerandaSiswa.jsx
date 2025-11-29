@@ -39,7 +39,7 @@ export default function BerandaSiswa() {
     <div className="flex w-screen h-screen bg-gray-100">
       {/* SIDEBAR */}
       <aside className="w-[250px] bg-[#27B4E3] text-white flex flex-col items-center pt-8 min-h-screen">
-        <img src={Logo} className="h-20 mb-6" />
+        <img src={Logo} className="h-25 left-10" />
 
         <button
           onClick={() => navigate("/profil-siswa")}

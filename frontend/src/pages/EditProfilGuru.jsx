@@ -33,7 +33,7 @@ export default function EditProfilGuru() {
   return (
     <div className="min-h-screen bg-[#D9D9D9]">
       <Navbar_guru />
-      <div className="p-4 space-y-6 mt-6">
+      <div className="p-4 space-y-6 mt-10">
         {/* DETAIL PROFIL */}
         <div className="bg-white p-6 rounded-xl shadow max-w-xl  mt-20 mx-auto">
           <h2 className="font-bold text-xl mb-4">

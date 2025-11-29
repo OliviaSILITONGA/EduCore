@@ -12,7 +12,7 @@ export default function Navbar_siswa() {
           onClick={() => navigate("/beranda-guru")}
           className="focus:outline-none hover:opacity-80 transition"
         >
-          <img src={Logo} alt="Educore Logo" className="h-12 w-auto" />
+          <img src={Logo} alt="Educore Logo" className="h-20 w-auto" />
         </button>
       </nav>
     </header>

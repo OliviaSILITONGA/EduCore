@@ -1,4 +1,3 @@
-// pages/DetailMataPelajaran.jsx - UPDATE DENGAN DESAIN GAMBAR
 import { useParams, useNavigate } from "react-router-dom";
 import Button from "../components/Button";
 import Makima from "../assets/images/Ellipse_14.png";
@@ -10,7 +9,6 @@ export default function DetailMataPelajaran() {
   const navigate = useNavigate();
   const { profile } = useTeacherProfile();
 
-  // Data kelas sesuai gambar
   const kelasList = [
     { id: 1, name: "KELAS 1", pelajaran: "", status: "Tambah" },
     { id: 2, name: "KELAS 2", pelajaran: "", status: "Tambah" },
@@ -27,21 +25,19 @@ export default function DetailMataPelajaran() {
   ];
 
   const handleKelasClick = (kelasId, e) => {
-    e.stopPropagation(); // Mencegah event bubbling
-    console.log("Kelas diklik:", kelasId);
-    // Navigate ke halaman ManajemenKelas
+    e.stopPropagation();
     navigate(`/manajemen-kelas/${subject}`);
   };
 
   return (
-    <div style={styles.page}>
+    <div className="flex w-screen h-screen bg-[#f4f4f4] font-sans overflow-hidden">
       {/* SIDEBAR */}
       <div className="w-[250px] bg-[#27B4E3] text-white flex flex-col items-center pt-8">
-        <img src={Logo} alt="EduCore Logo" className="h-25 left-10" />
+        <img src={Logo} alt="EduCore Logo" className="h-25 mb-6" />
 
         <button
           onClick={() => navigate("/profil-guru")}
-          className="focus:outline-none hover:opacity-80 transition"
+          className="hover:opacity-80 transition"
         >
           <img
             src={profile.foto || Makima}
@@ -69,38 +65,50 @@ export default function DetailMataPelajaran() {
       </div>
 
       {/* CONTENT */}
-      <div style={styles.content}>
+      <div className="flex-1 p-10 overflow-y-auto">
         {/* HEADER */}
-        <div style={styles.header}>
+        <div className="flex items-center gap-5 mb-10">
           <Button
-            onClick={() => navigate("/beranda-guru")}
-            style={styles.backBtn}
             variant="link"
+            onClick={() => navigate("/beranda-guru")}
+            className="text-blue-700 font-semibold text-lg"
           >
             Kembali
           </Button>
-          <h1 style={styles.subjectTitle}>
+
+          <h1 className="text-4xl font-bold">
             {subject ? subject.toUpperCase() : "MATA PELAJARAN"}
           </h1>
         </div>
 
-        {/* GRID KELAS - SESUAI GAMBAR */}
-        <div style={styles.grid}>
+        {/* GRID KELAS */}
+        <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
           {kelasList.map((kelas) => (
-            <div key={kelas.id} style={styles.kelasCard}>
-              <div style={styles.kelasHeader}>
-                <h3 style={styles.kelasName}>{kelas.name}</h3>
+            <div
+              key={kelas.id}
+              className="bg-white rounded-xl shadow-md border-2 border-gray-200 p-5 h-40 flex flex-col justify-between cursor-pointer"
+            >
+              {/* Header */}
+              <div className="flex justify-between items-start">
+                <h3 className="text-xl font-bold">{kelas.name}</h3>
+
                 {kelas.pelajaran && (
-                  <span style={styles.pelajaranText}>{kelas.pelajaran}</span>
+                  <span className="text-xs bg-gray-100 px-2 py-1 rounded font-semibold text-gray-600">
+                    {kelas.pelajaran}
+                  </span>
                 )}
               </div>
 
-              <div style={styles.kelasFooter}>
+              {/* Footer */}
+              <div className="flex justify-between items-center mt-3">
                 {kelas.pelajaran && kelas.pelajaran !== "UJIAN" && (
-                  <span style={styles.tambahText}>Tambahkan</span>
+                  <span className="text-xs text-gray-600 italic">
+                    Tambahkan
+                  </span>
                 )}
+
                 <Button
-                  style={styles.statusBtn}
+                  className="bg-[#003cbd] text-white px-4 py-2 rounded-md text-sm font-semibold"
                   onClick={(e) => handleKelasClick(kelas.id, e)}
                 >
                   {kelas.status}
@@ -113,150 +121,3 @@ export default function DetailMataPelajaran() {
     </div>
   );
 }
-
-// STYLES - UPDATE SESUAI GAMBAR
-const styles = {
-  page: {
-    display: "flex",
-    width: "100vw",
-    height: "100vh",
-    background: "#f4f4f4",
-    fontFamily: "Arial, sans-serif",
-  },
-
-  sidebar: {
-    width: "250px",
-    background: "#808080",
-    color: "white",
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    paddingTop: "30px",
-  },
-
-  profileSection: {
-    textAlign: "center",
-    marginBottom: "30px",
-  },
-
-  profileCircle: {
-    width: "80px",
-    height: "80px",
-    borderRadius: "50%",
-    background: "#ccc",
-    margin: "0 auto 10px",
-  },
-
-  name: {
-    fontSize: "18px",
-    margin: 0,
-    fontWeight: "600",
-  },
-
-  menuBtn: {
-    width: "80%",
-    padding: "12px",
-    background: "white",
-    color: "#A52A2A",
-    borderRadius: "8px",
-    border: "none",
-    cursor: "pointer",
-    marginBottom: "10px",
-    fontWeight: "600",
-  },
-
-  content: {
-    flex: 1,
-    padding: "30px 40px",
-    overflowY: "auto",
-  },
-
-  header: {
-    display: "flex",
-    alignItems: "center",
-    marginBottom: "30px",
-    gap: "20px",
-  },
-
-  backBtn: {
-    background: "none",
-    border: "none",
-    fontSize: "18px",
-    cursor: "pointer",
-    color: "#003cbd",
-    fontWeight: "600",
-    padding: "8px 0",
-  },
-
-  subjectTitle: {
-    fontSize: "32px",
-    fontWeight: "700",
-    color: "#000",
-    margin: 0,
-  },
-
-  grid: {
-    display: "grid",
-    gridTemplateColumns: "repeat(4, 1fr)",
-    gap: "20px",
-  },
-
-  kelasCard: {
-    background: "white",
-    borderRadius: "12px",
-    padding: "20px",
-    boxShadow: "0 4px 10px rgba(0,0,0,0.1)",
-    cursor: "pointer",
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "space-between",
-    height: "140px",
-    border: "2px solid #e0e0e0",
-  },
-
-  kelasHeader: {
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "flex-start",
-  },
-
-  kelasName: {
-    margin: 0,
-    fontSize: "18px",
-    fontWeight: "700",
-    color: "#000",
-  },
-
-  pelajaranText: {
-    fontSize: "12px",
-    color: "#666",
-    background: "#f0f0f0",
-    padding: "4px 8px",
-    borderRadius: "6px",
-    fontWeight: "600",
-  },
-
-  kelasFooter: {
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginTop: "15px",
-  },
-
-  tambahText: {
-    fontSize: "12px",
-    color: "#666",
-    fontStyle: "italic",
-  },
-
-  statusBtn: {
-    background: "#003cbd",
-    color: "white",
-    border: "none",
-    padding: "8px 16px",
-    borderRadius: "6px",
-    cursor: "pointer",
-    fontSize: "14px",
-    fontWeight: "600",
-  },
-};

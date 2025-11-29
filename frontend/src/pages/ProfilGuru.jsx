@@ -12,7 +12,7 @@ export default function ProfilGuru() {
     <div className="flex bg-gray-200 min-h-screen">
       {/* SIDEBAR */}
       <aside className="w-[250px] bg-[#27B4E3] text-white flex flex-col items-center pt-8 min-h-screen">
-        <img src={Logo} className="h-20 mb-6" />
+        <img src={Logo} className="h-25 left-10" />
 
         <button
           onClick={() => navigate("/profil-guru")}
@@ -32,6 +32,10 @@ export default function ProfilGuru() {
           className="w-[80%]"
         >
           Dashboard
+        </Button>
+
+        <Button variant="menu" className="w-[80%]">
+          Data Siswa
         </Button>
 
         <Button variant="menu" className="w-[80%]">

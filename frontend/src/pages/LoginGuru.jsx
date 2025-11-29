@@ -41,7 +41,7 @@ export default function LoginGuru() {
     <div className="w-screen h-screen grid grid-cols-1 md:grid-cols-2 font-sans">
       {/* LEFT SECTION */}
       <div className="flex flex-col justify-center px-12 bg-gradient-to-b from-[#27B4E3] to-[#0029A2] text-white">
-        <img src={Logo} alt="Educore Logo" className="h-110 w-auto" />
+        <img src={Logo} alt="Educore Logo" className="h-auto w-auto" />
       </div>
 
       {/* RIGHT SECTION */}
