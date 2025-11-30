@@ -10,4 +10,4 @@ app.use(express.json());
 app.use("/api", router);
 
 const PORT = 3000;
-app.listen(PORT, () => console.log(`Backend running on port ${PORT}`));
+app.listen(PORT, () => console.log(`Backend berjalan di port ${PORT}`));
