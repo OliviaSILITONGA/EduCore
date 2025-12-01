@@ -70,9 +70,12 @@ export default function LoginGuru() {
         />
 
         {/* FORGOT PASSWORD */}
-        <a href="#" className="text-blue-700 text-sm font-semibold mt-2 block">
+        <Link
+          to="/lupasandi-guru"
+          className="text-blue-700 text-sm font-semibold mt-2 block"
+        >
           Lupa kata sandi?
-        </a>
+        </Link>
 
         {/* LOGIN BUTTON */}
         <button
