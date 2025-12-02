@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import Button from "../components/Button";
+import { tandaiMateriSelesai, cekStatusMateri, getToken } from "../services/api";
 
 export default function Belajar() {
   const { subject, materiId } = useParams();
@@ -8,6 +9,8 @@ export default function Belajar() {
   const location = useLocation();
   const [kelas, setKelas] = useState("1");
   const [isTeacher, setIsTeacher] = useState(false);
+  const [isCompleted, setIsCompleted] = useState(false);
+  const [loading, setLoading] = useState(false);
   const TOTAL_MATERI = 3; // used for percent calculations (dummy)
 
   // dummy content - replace with API data later
@@ -53,7 +56,25 @@ export default function Belajar() {
     const qs = new URLSearchParams(location.search);
     const role = qs.get("role") || localStorage.getItem("role");
     setIsTeacher(role === "guru");
-  }, [location.search]);
+    
+    // Cek status materi
+    checkCompletionStatus();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [location.search, materiId, kelas]);
+
+  const checkCompletionStatus = async () => {
+    if (getToken()) {
+      try {
+        const res = await cekStatusMateri(materiId);
+        setIsCompleted(res.selesai || false);
+        return;
+      } catch (err) {
+        console.log("Fallback ke localStorage untuk status");
+      }
+    }
+    // Fallback ke localStorage
+    setIsCompleted(isCompletedForClass(subject, kelas, materiId));
+  };
 
   const storageKey = (subject, kelas) => `completed::${subject || "unknown"}::kelas-${kelas}`;
 
@@ -68,16 +89,34 @@ export default function Belajar() {
     }
   }
 
-  function markCompleted(subject, kelas, materiId) {
+  async function markCompleted(subject, kelas, materiIdToMark) {
+    setLoading(true);
+    
+    // Coba simpan ke API jika ada token
+    if (getToken()) {
+      try {
+        await tandaiMateriSelesai(materiIdToMark);
+        setIsCompleted(true);
+        setLoading(false);
+        return true;
+      } catch (err) {
+        console.log("Fallback ke localStorage untuk marking:", err);
+      }
+    }
+
+    // Fallback ke localStorage
     try {
       const key = storageKey(subject, kelas);
       const raw = localStorage.getItem(key);
       const arr = raw ? JSON.parse(raw) : [];
-      const idNum = Number(materiId);
+      const idNum = Number(materiIdToMark);
       if (!arr.includes(idNum)) arr.push(idNum);
       localStorage.setItem(key, JSON.stringify(arr));
+      setIsCompleted(true);
+      setLoading(false);
       return true;
     } catch (e) {
+      setLoading(false);
       return false;
     }
   }
@@ -139,10 +178,12 @@ export default function Belajar() {
                   </select>
                 </div>
 
-                <Button onClick={() => {
-                  const ok = markCompleted(subject, kelas, id);
+                <Button onClick={async () => {
+                  const ok = await markCompleted(subject, kelas, id);
                   if (ok) alert('Tersimpan: Materi ditandai selesai untuk ' + `KELAS ${kelas}`);
-                }} style={{ width: 180 }}>Tandai Selesai</Button>
+                }} style={{ width: 180 }} disabled={loading || isCompleted}>
+                  {isCompleted ? "✓ Sudah Selesai" : (loading ? "Menyimpan..." : "Tandai Selesai")}
+                </Button>
 
                 <Button onClick={handleNext}>{materiData[id + 1] ? "Selanjutnya" : "Selesai"}</Button>
               </div>

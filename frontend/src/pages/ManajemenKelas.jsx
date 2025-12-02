@@ -4,6 +4,7 @@ import Button from "../components/Button";
 import Makima from "../assets/images/Ellipse_14.png";
 import Logo from "../assets/images/Educore_Logo_White.png";
 import useTeacherProfile from "../hooks/useTeacherProfile";
+import { getMateriBySubject, createMateri, deleteMateri as deleteMateriAPI, getToken } from "../services/api";
 
 export default function ManajemenKelas() {
   const navigate = useNavigate();
@@ -14,6 +15,8 @@ export default function ManajemenKelas() {
   const [folderName, setFolderName] = useState("");
   const [savedMaterials, setSavedMaterials] = useState([]);
   const [selectedKelas, setSelectedKelas] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [deskripsi, setDeskripsi] = useState("");
 
   const kelasList = [
     { id: 1, name: "Kelas 1" },
@@ -31,13 +34,31 @@ export default function ManajemenKelas() {
   ];
 
   useEffect(() => {
-    // Load materi dari localStorage saat komponen dimount
     loadMaterials();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [matpel]);
 
-  const loadMaterials = () => {
-    // Load semua materi dari semua kelas untuk mata pelajaran ini
+  const loadMaterials = async () => {
+    // Coba load dari API jika ada token
+    if (getToken()) {
+      try {
+        let allMaterials = [];
+        for (let i = 1; i <= 12; i++) {
+          const res = await getMateriBySubject(matpel, `kelas-${i}`);
+          if (res.data && res.data.length > 0) {
+            allMaterials = [...allMaterials, ...res.data.map(m => ({ ...m, kelas: i }))];
+          }
+        }
+        if (allMaterials.length > 0) {
+          setSavedMaterials(allMaterials);
+          return;
+        }
+      } catch (err) {
+        console.log("Fallback ke localStorage");
+      }
+    }
+
+    // Fallback ke localStorage
     let allMaterials = [];
     for (let i = 1; i <= 12; i++) {
       const materials = JSON.parse(
@@ -83,7 +104,7 @@ export default function ManajemenKelas() {
     }
   };
 
-  const handleSaveMateri = () => {
+  const handleSaveMateri = async () => {
     if (uploadedFiles.length === 0) {
       alert("Silakan pilih file atau folder terlebih dahulu!");
       return;
@@ -94,9 +115,8 @@ export default function ManajemenKelas() {
       return;
     }
 
-    // Simpan ke localStorage per kelas
-    const storageKey = `materi_${matpel}_kelas${selectedKelas}`;
-    const savedMaterials = JSON.parse(localStorage.getItem(storageKey) || "[]");
+    setLoading(true);
+
     const newMaterial = {
       id: Date.now(),
       folderName: folderName,
@@ -111,8 +131,38 @@ export default function ManajemenKelas() {
       })),
     };
 
-    savedMaterials.push(newMaterial);
-    localStorage.setItem(storageKey, JSON.stringify(savedMaterials));
+    // Coba simpan ke API jika ada token
+    if (getToken()) {
+      try {
+        await createMateri({
+          matpel: matpel,
+          kelas: `kelas-${selectedKelas}`,
+          judul: folderName,
+          deskripsi: deskripsi || `Materi ${folderName}`,
+          files: newMaterial.files,
+        });
+        
+        alert(
+          `Berhasil mengupload "${folderName}" untuk Kelas ${selectedKelas} dengan ${uploadedFiles.length} file!`
+        );
+        setShowUploadModal(false);
+        setUploadedFiles([]);
+        setFolderName("");
+        setSelectedKelas("");
+        setDeskripsi("");
+        loadMaterials();
+        setLoading(false);
+        return;
+      } catch (err) {
+        console.log("API error, fallback ke localStorage:", err);
+      }
+    }
+
+    // Fallback ke localStorage
+    const storageKey = `materi_${matpel}_kelas${selectedKelas}`;
+    const existingMaterials = JSON.parse(localStorage.getItem(storageKey) || "[]");
+    existingMaterials.push(newMaterial);
+    localStorage.setItem(storageKey, JSON.stringify(existingMaterials));
 
     alert(
       `Berhasil mengupload "${folderName}" untuk Kelas ${selectedKelas} dengan ${uploadedFiles.length} file!`
@@ -121,11 +171,26 @@ export default function ManajemenKelas() {
     setUploadedFiles([]);
     setFolderName("");
     setSelectedKelas("");
-    loadMaterials(); // Reload materi setelah upload
+    setDeskripsi("");
+    loadMaterials();
+    setLoading(false);
   };
 
-  const handleDeleteMateri = (id, kelas) => {
+  const handleDeleteMateri = async (id, kelas) => {
     if (confirm("Apakah Anda yakin ingin menghapus materi ini?")) {
+      // Coba hapus via API jika ada token
+      if (getToken()) {
+        try {
+          await deleteMateriAPI(id);
+          loadMaterials();
+          alert("Materi berhasil dihapus!");
+          return;
+        } catch (err) {
+          console.log("API error, fallback ke localStorage:", err);
+        }
+      }
+
+      // Fallback ke localStorage
       const storageKey = `materi_${matpel}_kelas${kelas}`;
       const materials = JSON.parse(localStorage.getItem(storageKey) || "[]");
       const updatedMaterials = materials.filter((m) => m.id !== id);

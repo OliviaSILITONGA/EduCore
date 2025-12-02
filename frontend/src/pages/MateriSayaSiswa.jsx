@@ -4,6 +4,7 @@ import Button from "../components/Button";
 import Logo from "../assets/images/Educore_Logo_White.png";
 import Aki from "../assets/images/Ellipse_15.png";
 import useStudentProfile from "../hooks/useStudentProfile";
+import { getMateriBySubject, getToken } from "../services/api";
 
 export default function MateriSayaSiswa() {
   const navigate = useNavigate();
@@ -12,15 +13,38 @@ export default function MateriSayaSiswa() {
   const { profile } = useStudentProfile();
   const [materiList, setMateriList] = useState([]);
   const [expandedMateri, setExpandedMateri] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Load materi dari localStorage yang diupload oleh guru untuk kelas ini
+    loadMateri();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [subject, kelasId]);
+
+  const loadMateri = async () => {
+    setLoading(true);
+    
+    // Coba load dari API jika ada token
+    if (getToken()) {
+      try {
+        const res = await getMateriBySubject(subject, `kelas-${kelasId}`);
+        if (res.data && res.data.length > 0) {
+          setMateriList(res.data);
+          setLoading(false);
+          return;
+        }
+      } catch (err) {
+        console.log("Fallback ke localStorage:", err);
+      }
+    }
+
+    // Fallback ke localStorage
     const storageKey = `materi_${subject}_kelas${kelasId}`;
     const loadedMaterials = JSON.parse(
       localStorage.getItem(storageKey) || "[]"
     );
     setMateriList(loadedMaterials);
-  }, [subject, kelasId]);
+    setLoading(false);
+  };
 
   const toggleExpand = (materiId) => {
     setExpandedMateri(expandedMateri === materiId ? null : materiId);
