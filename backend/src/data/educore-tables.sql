@@ -1,67 +1,97 @@
--- Masing-masing masukkan dulu ke pgAdmin, nama databasenya "educore" (gk pake petik)
+CREATE TYPE user_role AS ENUM ('siswa','guru');
 
--- Password pake hash nantinya
+CREATE TABLE akun (
+  id SERIAL PRIMARY KEY,
+  email VARCHAR(100) UNIQUE NOT NULL,
+  password VARCHAR(255) NOT NULL,
+  role user_role NOT NULL,
+  foto_profil TEXT,
+  created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMP NOT NULL DEFAULT NOW()
+);
+
+CREATE TABLE sesi (
+  token TEXT PRIMARY KEY,
+  id_akun INT NOT NULL REFERENCES akun(id),
+  waktu_berakhir TIMESTAMP NOT NULL DEFAULT NOW() + INTERVAL '7 days'
+);
+
 CREATE TABLE siswa (
-	id_siswa SERIAL PRIMARY KEY,
-	nama_siswa VARCHAR(100) NOT NULL,
-	email_siswa VARCHAR(100) UNIQUE NOT NULL,
-	password_siswa VARCHAR(255) NOT NULL
+  id SERIAL PRIMARY KEY,
+  id_akun INT NOT NULL REFERENCES akun(id),
+  nama VARCHAR(100) UNIQUE NOT NULL,
+  provinsi_alamat VARCHAR(100),
+  kota_alamat VARCHAR(100),
+  alamat TEXT,
+  provinsi_sekolah VARCHAR(100),
+  kota_sekolah VARCHAR(100),
+  nama_sekolah VARCHAR(100),
+  tingkat VARCHAR(3) NOT NULL,
+  ortu_wali VARCHAR(100) NOT NULL,
+  telp_ortu_wali VARCHAR(14) NOT NULL,
+  created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMP NOT NULL DEFAULT NOW()
 );
 
--- Password pake hash nantinya
 CREATE TABLE guru (
-	id_guru SERIAL PRIMARY KEY,
-	nama_guru VARCHAR(100) NOT NULL,
-	email_guru VARCHAR(100) UNIQUE NOT NULL,
-	password_guru VARCHAR(255) NOT NULL
+  id SERIAL PRIMARY KEY,
+  id_akun INT NOT NULL REFERENCES akun(id),
+  nama VARCHAR(100) UNIQUE NOT NULL,
+  provinsi_alamat VARCHAR(100),
+  kota_alamat VARCHAR(100),
+  alamat TEXT,
+  created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMP NOT NULL DEFAULT NOW()
 );
 
--- Contoh id_mapel: MTK (Matematika), FIS (Fisika), BIO (Biologi)
-CREATE TABLE mata_pelajaran (
-	id_mapel CHAR(3) PRIMARY KEY,
-	nama_mapel VARCHAR(100)
+CREATE TABLE matpel (
+  id SERIAL PRIMARY KEY,
+  nama VARCHAR(100) NOT NULL,
+  url_gambar TEXT
 );
 
--- Contoh id_kelas: MTK1 (Matematika Kelas 1), FIS12 (Fisika Kelas 12)
 CREATE TABLE kelas (
-	id_kelas VARCHAR(5) PRIMARY KEY,
-	id_mapel CHAR(3) REFERENCES mata_pelajaran (id_mapel),
-	id_guru SERIAL REFERENCES guru (id_guru),
-	nama_kelas VARCHAR(100),
-	jenjang VARCHAR(3)
+  id VARCHAR(100) PRIMARY KEY,
+  nama VARCHAR(100) NOT NULL,
+  no_kelas INT CHECK (no_kelas BETWEEN 1 AND 12),
+  tingkat VARCHAR(3) NOT NULL
 );
 
--- Contoh id_pelajaran: MTK1-2 (Pelajaran 2 Matematika Kelas 1)
-CREATE TABLE pelajaran (
-	id_pelajaran VARCHAR(7) PRIMARY KEY,
-	id_kelas VARCHAR(5) REFERENCES kelas (id_kelas),
-	nama_pelajaran VARCHAR(100),
-	durasi VARCHAR(20),
-	level VARCHAR(20),
-	deskripsi TEXT,
-	tanggal DATE DEFAULT CURRENT_DATE
-);
-
-CREATE TABLE enrollment (
-	id_enrollment SERIAL PRIMARY KEY,
-	id_siswa SERIAL REFERENCES siswa (id_siswa),
-	id_kelas VARCHAR(5) REFERENCES kelas (id_kelas),
-	tgl_enrollment DATE DEFAULT CURRENT_DATE,
-	progres DECIMAL(1, 2) DEFAULT 0.00,
-	nilai_ujian INT CHECK (nilai_ujian >= 0 AND nilai_ujian <= 100)
+CREATE TABLE materi (
+  id SERIAL PRIMARY KEY,
+  id_guru INT NOT NULL REFERENCES guru(id),
+  id_matpel INT NOT NULL REFERENCES matpel(id),
+  id_kelas VARCHAR(100) NOT NULL REFERENCES kelas(id),
+  nama VARCHAR(100) NOT NULL,
+  deskripsi TEXT,
+  isi TEXT,
+  catatan TEXT,
+  url_media TEXT,
+  tanggal_pembuatan DATE DEFAULT CURRENT_DATE
 );
 
 CREATE TABLE pembelajaran (
-	id_pembelajaran SERIAL PRIMARY KEY,
-	id_enrollment SERIAL REFERENCES enrollment (id_enrollment),
-	id_pelajaran VARCHAR(7) REFERENCES pelajaran (id_pelajaran),
-	nilai_latihan INT CHECK (nilai_latihan >= 0 AND nilai_latihan <= 100)
+  id SERIAL PRIMARY KEY,
+  id_siswa INT NOT NULL REFERENCES siswa(id),
+  id_materi INT NOT NULL REFERENCES materi(id),
+  selesai BOOLEAN DEFAULT false,
+  UNIQUE (id_siswa, id_materi)
 );
 
-CREATE TABLE materi_detail (
-    id_section SERIAL PRIMARY KEY,
-    id_pelajaran VARCHAR(7) REFERENCES pelajaran(id_pelajaran),
-    judul_section VARCHAR(200),
-    isi_section TEXT,
-    urutan INT
+CREATE TABLE detail_kelas (
+  id SERIAL PRIMARY KEY,
+  id_siswa INT NOT NULL REFERENCES siswa(id),
+  id_matpel INT NOT NULL REFERENCES matpel(id),
+  id_kelas VARCHAR(100) NOT NULL REFERENCES kelas(id),
+  tgl_masuk DATE DEFAULT CURRENT_DATE,
+  progres INT CHECK (progres BETWEEN 0 AND 100)
 );
+
+/**
+ * INDEX untuk performance
+ */
+CREATE INDEX idx_akun_email ON akun(email);
+CREATE INDEX idx_sesi_id_akun ON sesi(id_akun);
+CREATE INDEX idx_detail_kelas_siswa ON detail_kelas(id_siswa);
+CREATE INDEX idx_materi_kelas ON materi(id_kelas);
+CREATE INDEX idx_pembelajaran_siswa ON pembelajaran(id_siswa);
