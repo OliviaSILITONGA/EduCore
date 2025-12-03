@@ -1,5 +1,5 @@
 // src/services/api.js
-const API_BASE_URL = "http://localhost:3000";
+const API_BASE_URL = "http://localhost:3000/api";
 
 // Helper untuk menyimpan dan mengambil token
 export const setToken = (token) => {

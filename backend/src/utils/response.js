@@ -12,7 +12,6 @@ function error(res, code, message) {
     status: "error",
     code,
     message,
-    data,
   });
 }
 

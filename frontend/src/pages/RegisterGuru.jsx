@@ -199,7 +199,7 @@ export default function RegisterGuru() {
             </button>
           </form>
 
-          <div className="my-10 h-[1px] bg-gray-300"></div>
+          <div className="my-10 h-px bg-gray-300"></div>
 
           <p className="text-center text-sm">
             Langsung{" "}

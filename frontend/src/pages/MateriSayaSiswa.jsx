@@ -100,7 +100,7 @@ export default function MateriSayaSiswa() {
         </div>
 
         {/* INFO CARD */}
-        <div className="bg-gradient-to-br from-indigo-500 to-purple-600 text-white rounded-xl p-6 mb-8 shadow-lg">
+        <div className="bg-linear-to-br from-indigo-500 to-purple-600 text-white rounded-xl p-6 mb-8 shadow-lg">
           <h2 className="text-2xl font-bold">Selamat Belajar! 🎓</h2>
           <p className="text-base opacity-90 mt-1">
             Di sini kamu bisa mempelajari semua materi{" "}
@@ -145,7 +145,7 @@ export default function MateriSayaSiswa() {
                 >
                   <div className="flex justify-between items-center p-5">
                     <div className="flex items-start gap-4 flex-1">
-                      <div className="flex-shrink-0 mt-1">
+                      <div className="shrink-0 mt-1">
                         <svg
                           width="40"
                           height="40"
