@@ -75,7 +75,7 @@ export default function MateriSayaSiswa() {
       }
       const folder = pathParts.slice(0, -1).join("/"); // all but last
       const filename = pathParts[pathParts.length - 1]; // last part
-      const base = "http://localhost:3000/api/uploads"; // backend uploads base
+      const base = "http://localhost:6000/api/uploads"; // backend uploads base
       const url = `${base}/download/${encodeURIComponent(folder)}/${encodeURIComponent(filename)}`;
       const headers = {};
       const token = getToken();

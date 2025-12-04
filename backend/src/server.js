@@ -93,7 +93,7 @@ app.delete("/api/materi/:id/files/:index", (req, res) => {
   res.json({ msg: "File dihapus" });
 });
 
-// 🚀 Start server PORT 3000
-app.listen(3001, () =>
-  console.log("Backend berjalan di http://localhost:3001")
+// 🚀 Start server PORT 6000
+app.listen(6000, () =>
+  console.log("Backend berjalan di http://localhost:6000")
 );

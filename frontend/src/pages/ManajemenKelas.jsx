@@ -217,7 +217,8 @@ export default function ManajemenKelas() {
     setSelectedKelas("");
   };
 
-  
+    cd D:\GitHub\EduCore\frontend
+  npm run dev
 
   return (
     <div style={styles.page}>

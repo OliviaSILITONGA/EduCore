@@ -22,7 +22,7 @@ process.on("uncaughtException", (err) => {
 
 app.use("/api", router);
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 6000;
 
 // Start server after DB bootstrap so errors are visible
 (async () => {
