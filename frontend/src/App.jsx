@@ -19,6 +19,7 @@ import EditProfilSiswa from "./pages/EditProfilSiswa";
 import ProfilGuru from "./pages/ProfilGuru";
 import EditProfilGuru from "./pages/EditProfilGuru";
 import ProgressSiswa from "./pages/ProgressSiswa";
+import Datasiswa from "./pages/Datasiswa";
 
 export default function App() {
   return (
@@ -69,6 +70,7 @@ export default function App() {
           {/* profil guru*/}
           <Route path="/profil-guru" element={<ProfilGuru />} />
           <Route path="/edit-profil-guru" element={<EditProfilGuru />} />
+          <Route path="/data-siswa" element={<Datasiswa />} />
         </Routes>
       </BrowserRouter>
     </div>

@@ -1,7 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import Button from "../components/Button";
-import { tandaiMateriSelesai, cekStatusMateri, getToken } from "../services/api";
+import {
+  tandaiMateriSelesai,
+  cekStatusMateri,
+  getToken,
+  getDetailMateri,
+} from "../services/api";
 
 export default function Belajar() {
   const { subject, materiId } = useParams();
@@ -11,6 +16,7 @@ export default function Belajar() {
   const [isTeacher, setIsTeacher] = useState(false);
   const [isCompleted, setIsCompleted] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [apiMateri, setApiMateri] = useState(null);
   const TOTAL_MATERI = 3; // used for percent calculations (dummy)
 
   // dummy content - replace with API data later
@@ -42,7 +48,16 @@ export default function Belajar() {
   };
 
   const id = Number(materiId);
-  const m = materiData[id] || { judul: `Materi ${materiId}`, durasi: "-", sections: [{ id: 1, title: "-", text: "Konten belum tersedia." }] };
+  const mFromDummy = materiData[id] || { judul: `Materi ${materiId}`, durasi: "-", sections: [{ id: 1, title: "-", text: "Konten belum tersedia." }] };
+  const m = apiMateri
+    ? {
+        judul: apiMateri.nama || mFromDummy.judul,
+        durasi: apiMateri.durasi || mFromDummy.durasi,
+        sections: apiMateri.isi
+          ? [{ id: 1, title: apiMateri.nama, text: apiMateri.deskripsi || apiMateri.isi }]
+          : mFromDummy.sections,
+      }
+    : mFromDummy;
 
   const handleNext = () => {
     const nextId = id + 1;
@@ -59,6 +74,17 @@ export default function Belajar() {
     
     // Cek status materi
     checkCompletionStatus();
+    // Jika user terhubung ke backend, coba ambil detail materi dari API
+    (async () => {
+      if (!getToken()) return;
+      try {
+        const res = await getDetailMateri(subject, materiId);
+        if (res && res.data) setApiMateri(res.data);
+      } catch (err) {
+        // tetap gunakan konten dummy jika API gagal
+        console.log("Tidak dapat memuat materi dari API, gunakan fallback");
+      }
+    })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [location.search, materiId, kelas]);
 
@@ -95,12 +121,22 @@ export default function Belajar() {
     // Coba simpan ke API jika ada token
     if (getToken()) {
       try {
-        await tandaiMateriSelesai(materiIdToMark);
-        setIsCompleted(true);
-        setLoading(false);
-        return true;
+        const res = await tandaiMateriSelesai(materiIdToMark);
+        console.log("tandaiMateriSelesai response:", res);
+        if (res && res.status === "success") {
+          setIsCompleted(true);
+          setLoading(false);
+          alert("Tersimpan di server: Materi ditandai selesai.");
+          return true;
+        } else {
+          // unexpected but show response
+          alert("Server merespon: " + (res.message || JSON.stringify(res)));
+          setLoading(false);
+          return false;
+        }
       } catch (err) {
-        console.log("Fallback ke localStorage untuk marking:", err);
+        console.error("API error saat tandaiMateriSelesai:", err);
+        alert("Gagal menyimpan ke server: " + (err.message || err));
       }
     }
 

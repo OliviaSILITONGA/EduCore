@@ -50,6 +50,9 @@ router.get("/belajar/:subject/:materiId", checkLogin, controller.getDetailMateri
 // Tandai selesai
 router.post("/materi/selesai", checkLogin, controller.doneMateriSiswa);
 
+// Guru: daftar siswa yang telah selesai (sidebar)
+router.get("/guru/selesai", checkLogin, controller.getSiswaSelesai);
+
 // Cek status selesai
 router.get("/materi/:idMateri/selesai", checkLogin, controller.cekStatusMateri);
 

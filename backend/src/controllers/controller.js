@@ -33,7 +33,13 @@ async function loginSiswa(req, res) {
   try {
     const user = await handleLogin(req.body, "siswa");
     if (!user) return error(res, 401, "Masuk gagal");
-    success(res, 200, "Masuk berhasil", user);
+    // Fetch siswa profile id
+    const profilRes = await pool.query(
+      `SELECT id FROM siswa WHERE id_akun = $1 LIMIT 1`,
+      [user.user.id]
+    );
+    const id_userProfil = profilRes.rows[0]?.id || null;
+    success(res, 200, "Masuk berhasil", { ...user, id_userProfil });
   } catch (e) {
     error(res, 500, "Masuk mengalami gangguan");
   }
@@ -47,7 +53,13 @@ async function loginGuru(req, res) {
   try {
     const user = await handleLogin(req.body, "guru");
     if (!user) return error(res, 401, "Masuk gagal");
-    success(res, 200, "Masuk berhasil", user);
+    // Fetch guru profile id
+    const profilRes = await pool.query(
+      `SELECT id FROM guru WHERE id_akun = $1 LIMIT 1`,
+      [user.user.id]
+    );
+    const id_userProfil = profilRes.rows[0]?.id || null;
+    success(res, 200, "Masuk berhasil", { ...user, id_userProfil });
   } catch (e) {
     error(res, 500, "Masuk mengalami gangguan");
   }
@@ -60,9 +72,11 @@ async function loginGuru(req, res) {
 async function registerSiswa(req, res) {
   try {
     const user = await handleRegister(req.body, "siswa");
+    if (!user) return error(res, 400, "Email sudah terdaftar");
     success(res, 201, "Akun dibuat", user);
   } catch (e) {
-    error(res, 500, "Registrasi tertunda");
+    console.error("Register Siswa Error:", e.message);
+    error(res, 500, e.message || "Registrasi tertunda");
   }
 }
 
@@ -73,9 +87,11 @@ async function registerSiswa(req, res) {
 async function registerGuru(req, res) {
   try {
     const user = await handleRegister(req.body, "guru");
+    if (!user) return error(res, 400, "Email sudah terdaftar");
     success(res, 201, "Akun dibuat", user);
   } catch (e) {
-    error(res, 500, "Registrasi tertunda");
+    console.error("Register Guru Error:", e.message);
+    error(res, 500, e.message || "Registrasi tertunda");
   }
 }
 
@@ -179,6 +195,24 @@ async function getMateriBySubject(req, res) {
     success(res, 200, "Materi", data);
   } catch (e) {
     error(res, 500, "Materi tertunda");
+  }
+}
+
+/**
+ * GURU: ambil daftar siswa yang telah menandai materi selesai (sidebar)
+ * GET /guru/selesai
+ */
+async function getSiswaSelesai(req, res) {
+  try {
+    // cari id guru dari akun yang sedang login
+    const r = await pool.query(`SELECT id FROM guru WHERE id_akun = $1 LIMIT 1`, [req.id_akun]);
+    if (r.rows.length === 0) return error(res, 403, "Akun bukan guru atau profil guru belum dibuat");
+    const idGuru = r.rows[0].id;
+    const data = await getSiswaSelesaiByGuru(idGuru);
+    success(res, 200, "Siswa selesai", data);
+  } catch (e) {
+    console.error("getSiswaSelesai error:", e.message);
+    error(res, 500, "Gagal memuat data siswa selesai");
   }
 }
 
@@ -299,8 +333,9 @@ async function doneMateriSiswa(req, res) {
     if (resProfil.rows.length === 0) return error(res, 403, "Akun bukan siswa");
 
     const idSiswa = resProfil.rows[0].id;
-
+    console.log(`doneMateriSiswa called - idSiswa=${idSiswa}, idMateri=${idMateri}`);
     const data = await tandaiMateriSelesai(idSiswa, idMateri);
+    console.log("tandaiMateriSelesai returned:", data);
     if (!data) return error(res, 404, "Gagal menandai");
 
     success(res, 200, "Status belajar disimpan", data);

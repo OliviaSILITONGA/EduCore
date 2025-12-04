@@ -148,6 +148,26 @@ async function tampilkanMateri(idKelas) {
   return res.rows;
 }
 
+// Ambil daftar siswa yang menandai materi selesai untuk guru tertentu
+async function getSiswaSelesaiByGuru(idGuru) {
+  if (!idGuru) return [];
+  const q = `
+    SELECT p.id AS pembelajaran_id,
+           s.id AS id_siswa,
+           s.nama AS nama_siswa,
+           mp.nama AS nama_matpel,
+           m.id_kelas AS kelas
+    FROM pembelajaran p
+    JOIN siswa s ON p.id_siswa = s.id
+    JOIN materi m ON p.id_materi = m.id
+    JOIN matpel mp ON m.id_matpel = mp.id
+    WHERE p.selesai = true AND m.id_guru = $1
+    ORDER BY p.id DESC
+  `;
+  const res = await pool.query(q, [idGuru]);
+  return res.rows;
+}
+
 async function tampilkanDetailMateri(id) {
   if (!id) return null;
   const q = `SELECT * FROM materi WHERE id = $1 LIMIT 1`;

@@ -46,6 +46,9 @@ export const loginSiswa = async (email, password) => {
   if (res.data?.token) {
     setToken(res.data.token);
     localStorage.setItem("role", "siswa");
+    if (res.data?.id_userProfil) {
+      localStorage.setItem("id_userProfil", res.data.id_userProfil);
+    }
   }
   return res;
 };
@@ -58,6 +61,9 @@ export const loginGuru = async (email, password) => {
   if (res.data?.token) {
     setToken(res.data.token);
     localStorage.setItem("role", "guru");
+    if (res.data?.id_userProfil) {
+      localStorage.setItem("id_userProfil", res.data.id_userProfil);
+    }
   }
   return res;
 };
@@ -79,6 +85,7 @@ export const registerGuru = async (data) => {
 export const logout = () => {
   removeToken();
   localStorage.removeItem("role");
+  localStorage.removeItem("id_userProfil");
   localStorage.removeItem("studentProfile");
   localStorage.removeItem("teacherProfile");
 };
@@ -155,4 +162,9 @@ export const tandaiMateriSelesai = async (idMateri) => {
 
 export const cekStatusMateri = async (idMateri) => {
   return authFetch(`/materi/${idMateri}/selesai`);
+};
+
+// GURU: ambil siswa yang telah menandai materi selesai (sidebar)
+export const getSiswaSelesai = async () => {
+  return authFetch(`/guru/selesai`);
 };

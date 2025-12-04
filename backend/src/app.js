@@ -12,10 +12,27 @@ app.use(express.json());
 const path = require("path");
 app.use("/uploads", express.static(path.join(__dirname, "..", "uploads")));
 
-db.createTables();
-db.createIndexes();
+// Global error logging to help debugging crashes
+process.on("unhandledRejection", (reason, p) => {
+	console.error("Unhandled Rejection at:", p, "reason:", reason);
+});
+process.on("uncaughtException", (err) => {
+	console.error("Uncaught Exception:", err);
+});
 
 app.use("/api", router);
 
-const PORT = 3000;
-app.listen(PORT, () => console.log(`Backend berjalan di port ${PORT}`));
+const PORT = process.env.PORT || 3000;
+
+// Start server after DB bootstrap so errors are visible
+(async () => {
+	try {
+		await db.createTables();
+		await db.createIndexes();
+
+		app.listen(PORT, () => console.log(`Backend berjalan di port ${PORT}`));
+	} catch (err) {
+		console.error("Failed to start backend:", err);
+		process.exit(1);
+	}
+})();

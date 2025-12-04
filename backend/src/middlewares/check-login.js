@@ -17,7 +17,7 @@ async function checkLogin(req, res, next) {
 
     const session = result.rows[0];
     if (new Date(session.waktu_berakhir) < new Date()) {
-      await pool.query("DELETE FROM sesi WHERE token = $1", [token]);
+      await db.query("DELETE FROM sesi WHERE token = $1", [token]);
       return error(res, 401, "Token kedaluwarsa");
     }
 

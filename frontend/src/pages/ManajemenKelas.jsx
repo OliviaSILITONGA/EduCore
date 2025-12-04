@@ -217,6 +217,8 @@ export default function ManajemenKelas() {
     setSelectedKelas("");
   };
 
+  
+
   return (
     <div style={styles.page}>
       {/* SIDEBAR */}
@@ -243,15 +245,18 @@ export default function ManajemenKelas() {
           Dashboard
         </Button>
 
-        <Button variant="menu" className="w-[80%]">
+        <Button
+          variant="menu"
+          className="w-[80%]"
+          onClick={() => navigate('/data-siswa')}
+        >
           Data Siswa
         </Button>
 
-        <Button variant="menu" className="w-[80%]">
-          Materi
-        </Button>
-      </div>
 
+        
+
+      </div>
       {/* CONTENT */}
       <div style={styles.content}>
         <div style={styles.header}>
