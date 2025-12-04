@@ -15,6 +15,7 @@ function validateRole(role) {
 
 async function handleLogin(data, role) {
   const { email, password } = data;
+  console.log(`handleLogin called - email=${email}, role=${role}`);
   if (
     !validateEmail(email) ||
     !validatePassword(password) ||
@@ -27,6 +28,7 @@ async function handleLogin(data, role) {
   try {
     const q = `SELECT id, email, password, role FROM akun WHERE email = $1 AND role = $2 LIMIT 1`;
     const res = await client.query(q, [email, role]);
+    console.log('login query result rows:', res.rows.length);
     if (res.rows.length === 0) return null;
 
     const user = res.rows[0];
@@ -34,6 +36,7 @@ async function handleLogin(data, role) {
     if (!match) return null;
 
     const token = crypto.randomBytes(32).toString("hex");
+    console.log('generated token for user id', user.id);
     await client.query(
       `INSERT INTO sesi (token, id_akun, waktu_berakhir) VALUES ($1, $2, DEFAULT)`,
       [token, user.id]

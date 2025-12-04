@@ -31,6 +31,7 @@ const validateRole = (r) => ["siswa", "guru"].includes(r);
  */
 async function loginSiswa(req, res) {
   try {
+    console.log('loginSiswa request body:', req.body);
     const user = await handleLogin(req.body, "siswa");
     if (!user) return error(res, 401, "Masuk gagal");
     // Fetch siswa profile id
@@ -51,6 +52,7 @@ async function loginSiswa(req, res) {
  */
 async function loginGuru(req, res) {
   try {
+    console.log('loginGuru request body:', req.body);
     const user = await handleLogin(req.body, "guru");
     if (!user) return error(res, 401, "Masuk gagal");
     // Fetch guru profile id

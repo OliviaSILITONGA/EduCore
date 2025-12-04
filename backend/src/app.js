@@ -1,6 +1,5 @@
 const express = require("express");
 const cors = require("cors");
-const router = require("./routes/router");
 const db = require("./database/create-database");
 
 const app = express();
@@ -20,9 +19,9 @@ process.on("uncaughtException", (err) => {
 	console.error("Uncaught Exception:", err);
 });
 
-app.use("/api", router);
+let router;
 
-const PORT = process.env.PORT || 6000;
+const PORT = process.env.PORT || 3000;
 
 // Start server after DB bootstrap so errors are visible
 (async () => {
@@ -30,9 +29,18 @@ const PORT = process.env.PORT || 6000;
 		await db.createTables();
 		await db.createIndexes();
 
+		// attempt DB bootstrap
+		// attempt to require router; if it fails, log and start server without routes
+		try {
+			router = require("./routes/router");
+			app.use("/api", router);
+		} catch (rErr) {
+			console.error("Failed to load router, continuing without API routes:", rErr);
+		}
+
 		app.listen(PORT, () => console.log(`Backend berjalan di port ${PORT}`));
 	} catch (err) {
-		console.error("Failed to start backend:", err);
-		process.exit(1);
+		console.error("Failed to start backend (bootstrap error):", err);
+		// don't exit immediately — keep process alive for debugging
 	}
 })();
