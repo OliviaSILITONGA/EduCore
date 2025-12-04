@@ -17,6 +17,7 @@ const {
 const { success, error } = require("../utils/response");
 const path = require("path");
 const fs = require("fs");
+const pool = require("../config/db");
 
 
 // Utility role validation
