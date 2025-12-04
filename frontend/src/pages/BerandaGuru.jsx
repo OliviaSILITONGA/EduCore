@@ -34,7 +34,7 @@ export default function BerandaGuru() {
   ];
 
   const handleCardClick = (subjectTitle) => {
-    navigate(`/mata-pelajaran/${subjectTitle.toLowerCase()}`);
+    navigate(`/manajemen-kelas/${subjectTitle.toLowerCase()}`);
   };
 
   return (

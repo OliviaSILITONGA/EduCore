@@ -8,12 +8,8 @@ import {
   getMateriBySubject,
   createMateri,
   deleteMateri as deleteMateriAPI,
-  updateMateri,
   getToken,
 } from "../services/api";
-import axios from "axios";
-
-const UPLOADS_BASE = "http://localhost:3000/api/uploads";
 
 export default function ManajemenKelas() {
   const navigate = useNavigate();
@@ -76,25 +72,10 @@ export default function ManajemenKelas() {
       const materials = JSON.parse(
         localStorage.getItem(`materi_${matpel}_kelas${i}`) || "[]"
       );
-      // Normalize file paths: ensure they are in format "folderName/filename"
-      const normalizedMaterials = materials.map((m) => {
-        if (m.files && Array.isArray(m.files)) {
-          return {
-            ...m,
-            kelas: i,
-            files: m.files.map((f) => {
-              // If path doesn't contain "/" or looks like old format, reconstruct it
-              if (!f.path || !f.path.includes("/")) {
-                // Use folderName from material
-                return { ...f, path: `${m.folderName}/${f.name}` };
-              }
-              return f;
-            }),
-          };
-        }
-        return { ...m, kelas: i };
-      });
-      allMaterials = [...allMaterials, ...normalizedMaterials];
+      allMaterials = [
+        ...allMaterials,
+        ...materials.map((m) => ({ ...m, kelas: i })),
+      ];
     }
     setSavedMaterials(allMaterials);
   };
@@ -144,42 +125,29 @@ export default function ManajemenKelas() {
 
     setLoading(true);
 
-    const materialFiles = uploadedFiles.map((f) => ({
-      name: f.name,
-      path: `${folderName}/${f.name}`,
-      size: f.size,
-      type: f.type,
-    }));
-
     const newMaterial = {
       id: Date.now(),
       folderName: folderName,
       kelas: selectedKelas,
       uploadDate: new Date().toISOString(),
       fileCount: uploadedFiles.length,
-      files: materialFiles,
+      files: uploadedFiles.map((f) => ({
+        name: f.name,
+        path: f.path,
+        size: f.size,
+        type: f.type,
+      })),
     };
 
+    // Coba simpan ke API jika ada token
     if (getToken()) {
       try {
-        const token = getToken();
-        // upload files one by one
-        for (const f of uploadedFiles) {
-          const formData = new FormData();
-          formData.append("folderName", folderName);
-          formData.append("file", f.file, f.name);
-          await axios.post(`${UPLOADS_BASE}/upload`, formData, {
-            headers: { Authorization: token },
-          });
-        }
-
-        // create materi metadata (may fail if DB not available)
         await createMateri({
           matpel: matpel,
           kelas: `kelas-${selectedKelas}`,
           judul: folderName,
           deskripsi: deskripsi || `Materi ${folderName}`,
-          files: materialFiles,
+          files: newMaterial.files,
         });
 
         alert(
@@ -218,27 +186,11 @@ export default function ManajemenKelas() {
     setLoading(false);
   };
 
-  const handleDeleteMateri = async (id, kelas, folderName) => {
+  const handleDeleteMateri = async (id, kelas) => {
     if (confirm("Apakah Anda yakin ingin menghapus materi ini?")) {
       // Coba hapus via API jika ada token
       if (getToken()) {
         try {
-          // remove folder files first
-          const token = getToken();
-          const headers = token ? { Authorization: token } : {};
-          if (folderName) {
-            try {
-              await axios.delete(
-                `${UPLOADS_BASE}/delete-folder/${encodeURIComponent(
-                  folderName
-                )}`,
-                { headers }
-              );
-            } catch (e) {
-              console.warn("Gagal menghapus folder fisik:", e);
-            }
-          }
-
           await deleteMateriAPI(id);
           loadMaterials();
           alert("Materi berhasil dihapus!");
@@ -258,42 +210,6 @@ export default function ManajemenKelas() {
     }
   };
 
-  // Delete single file inside a material folder
-  const handleDeleteFile = async (materiId, folderName, fileName) => {
-    if (!confirm(`Hapus file ${fileName} ?`)) return;
-    if (!getToken()) {
-      alert("Hanya guru yang terautentikasi dapat menghapus file di server");
-      return;
-    }
-    try {
-      const token = getToken();
-      const headers = token ? { Authorization: token } : {};
-      await axios.delete(
-        `${UPLOADS_BASE}/delete/${encodeURIComponent(
-          folderName
-        )}/${encodeURIComponent(fileName)}`,
-        { headers }
-      );
-
-      // update materi record to remove file
-      const material = savedMaterials.find((m) => m.id === materiId);
-      if (material) {
-        const updatedFiles = (material.files || []).filter(
-          (f) => f.name !== fileName
-        );
-        await updateMateri(materiId, {
-          files: updatedFiles,
-          fileCount: updatedFiles.length,
-        });
-      }
-      loadMaterials();
-      alert("File berhasil dihapus");
-    } catch (e) {
-      console.error(e);
-      alert("Gagal menghapus file, cek console");
-    }
-  };
-
   const handleCloseModal = () => {
     setShowUploadModal(false);
     setUploadedFiles([]);
@@ -302,7 +218,7 @@ export default function ManajemenKelas() {
   };
 
   return (
-    <div className="flex w-screen h-screen bg-gray-100">
+    <div style={styles.page}>
       {/* SIDEBAR */}
       <div className="w-[250px] bg-[#27B4E3] text-white flex flex-col items-center pt-8">
         <img src={Logo} alt="EduCore Logo" className="h-25 left-10" />
@@ -337,31 +253,29 @@ export default function ManajemenKelas() {
       </div>
 
       {/* CONTENT */}
-      <div className="flex-1 p-6 sm:px-10 lg:px-20 overflow-y-auto">
-        <div className="flex items-center mb-6">
+      <div style={styles.content}>
+        <div style={styles.header}>
           <Button
             onClick={() => navigate(-1)}
-            className="text-blue-500 text-base mr-4 p-2"
+            style={styles.backButton}
             variant="link"
           >
             Kembali
           </Button>
-          <h1 className="text-3xl font-bold">Manajemen Kelas {matpel}</h1>
+          <h1 style={styles.title}>Manajemen Kelas {matpel}</h1>
         </div>
 
-        <div className="bg-white rounded-xl p-8 shadow-md">
+        <div style={styles.card}>
           <h2>Selamat datang di Manajemen Kelas!</h2>
           <p>
             Mata Pelajaran: <strong>{matpel}</strong>
           </p>
           <p>Di sini Anda bisa mengelola materi dan daftar murid.</p>
-          <div className="flex gap-4 mt-5">
+
+          <div style={styles.buttonContainer}>
             <Button
-              className="bg-blue-500  text-white rounded-md px-4 py-2"
-              onClick={() => {
-                setSelectedKelas("");
-                setShowUploadModal(true);
-              }}
+              style={styles.primaryButton}
+              onClick={() => setShowUploadModal(true)}
             >
               Tambah Materi
             </Button>
@@ -370,18 +284,13 @@ export default function ManajemenKelas() {
 
         {/* Daftar Materi yang Sudah Diupload */}
         {savedMaterials.length > 0 && (
-          <div className="bg-white rounded-xl p-8 mt-6 shadow-md">
-            <h2 className="text-2xl font-bold text-gray-800">
-              Materi yang Tersimpan
-            </h2>
-            <div className="flex flex-col gap-4 mt-4">
+          <div style={styles.materiCard}>
+            <h2 style={styles.materiTitle}>Materi yang Tersimpan</h2>
+            <div style={styles.materiList}>
               {savedMaterials.map((material) => (
-                <div
-                  key={material.id}
-                  className="flex justify-between items-start p-4 bg-gray-100 rounded-md border border-gray-200 transition"
-                >
-                  <div className="flex gap-4 flex-1">
-                    <div className="shrink-0">
+                <div key={material.id} style={styles.materiItem}>
+                  <div style={styles.materiInfo}>
+                    <div style={styles.materiIcon}>
                       <svg
                         width="40"
                         height="40"
@@ -393,46 +302,27 @@ export default function ManajemenKelas() {
                         <path d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
                       </svg>
                     </div>
-                    <div className="flex-1">
-                      <h3 className="text-lg font-semibold text-gray-800">
-                        {material.folderName}
-                      </h3>
-                      <p className="text-sm text-gray-600 mt-1">
+                    <div style={styles.materiDetails}>
+                      <h3 style={styles.materiName}>{material.folderName}</h3>
+                      <p style={styles.materiMeta}>
                         Kelas {material.kelas} • {material.fileCount} file •
                         Diupload:{" "}
                         {new Date(material.uploadDate).toLocaleString("id-ID")}
                       </p>
                       {material.files && material.files.length > 0 && (
-                        <details className="mt-3">
-                          <summary className="cursor-pointer text-sm text-blue-500 font-medium py-1 select-none">
+                        <details style={styles.fileDetails}>
+                          <summary style={styles.fileDetailsSummary}>
                             Lihat daftar file ({material.files.length})
                           </summary>
-                          <div className="mt-2 pl-3 max-h-48 overflow-y-auto">
+                          <div style={styles.fileDetailsContent}>
                             {material.files.map((file, idx) => (
-                              <div
-                                key={idx}
-                                className="flex justify-between items-center py-2 border-b border-gray-200 text-sm"
-                              >
-                                <span className="text-gray-800 flex-1 mr-2">
+                              <div key={idx} style={styles.fileDetailItem}>
+                                <span style={styles.fileDetailName}>
                                   📄 {file.name}
                                 </span>
-                                <span className="text-xs text-gray-500">
+                                <span style={styles.fileDetailSize}>
                                   {(file.size / 1024).toFixed(2)} KB
                                 </span>
-                                <button
-                                  onClick={() =>
-                                    handleDeleteFile(
-                                      material.id,
-                                      material.kelas,
-                                      material.folderName,
-                                      file.name
-                                    )
-                                  }
-                                  className="bg-red-600 text-white rounded px-2 py-1 text-xs ml-3"
-                                  title="Hapus file"
-                                >
-                                  Hapus
-                                </button>
                               </div>
                             ))}
                           </div>
@@ -442,13 +332,9 @@ export default function ManajemenKelas() {
                   </div>
                   <button
                     onClick={() =>
-                      handleDeleteMateri(
-                        material.id,
-                        material.kelas,
-                        material.folderName
-                      )
+                      handleDeleteMateri(material.id, material.kelas)
                     }
-                    className="bg-red-600 text-white rounded-md px-2 py-1 flex items-center"
+                    style={styles.deleteButton}
                     title="Hapus materi"
                   >
                     <svg
@@ -470,19 +356,32 @@ export default function ManajemenKelas() {
 
         {/* Modal Upload Folder */}
         {showUploadModal && (
-          <div className="fixed inset-0 bg-black/50 flex justify-center items-center z-50">
-            <div className="bg-white rounded-xl p-6 max-w-3xl w-[90%] max-h-[80vh] overflow-y-auto shadow-xl">
-              <h2 className="text-xl font-bold text-gray-800 mb-4">
-                Upload Materi
-              </h2>
+          <div style={styles.modalOverlay}>
+            <div style={styles.modalContent}>
+              <h2 style={styles.modalTitle}>Upload Materi</h2>
 
-              {/* Pilih Kelas untuk upload (bisa didapat dari query param) */}
+              {/* Pilih Kelas */}
+              <div style={styles.uploadSection}>
+                <label style={styles.label}>Pilih Kelas</label>
+                <select
+                  value={selectedKelas}
+                  onChange={(e) => setSelectedKelas(e.target.value)}
+                  style={styles.selectKelas}
+                >
+                  <option value="">-- Pilih Kelas --</option>
+                  {kelasList.map((kelas) => (
+                    <option key={kelas.id} value={kelas.id}>
+                      {kelas.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
 
-              <div className="mb-4">
-                <label htmlFor="folderInput" className="block cursor-pointer">
-                  <div className="border-2 border-dashed border-blue-400 rounded-md p-6 text-center bg-gray-50 transition">
+              <div style={styles.uploadSection}>
+                <label htmlFor="folderInput" style={styles.uploadLabel}>
+                  <div style={styles.uploadBox}>
                     <svg
-                      className="w-12 h-12 mx-auto text-blue-400"
+                      style={styles.uploadIcon}
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
@@ -494,14 +393,14 @@ export default function ManajemenKelas() {
                         d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
                       />
                     </svg>
-                    <p className="text-base text-gray-600 mt-2">
+                    <p style={styles.uploadText}>
                       {uploadedFiles.length === 0
                         ? "Klik untuk memilih folder"
                         : `${uploadedFiles.length} file dipilih${
                             folderName ? ` dari "${folderName}"` : ""
                           }`}
                     </p>
-                    <p className="text-sm text-gray-400 mt-2">
+                    <p style={styles.uploadSubtext}>
                       Upload folder atau file individual
                     </p>
                   </div>
@@ -513,21 +412,19 @@ export default function ManajemenKelas() {
                   directory="true"
                   multiple
                   onChange={handleFileUpload}
-                  className="hidden"
+                  style={styles.hiddenInput}
                 />
               </div>
 
-              <div className="relative text-center my-5">
-                <span className="bg-white px-4 text-gray-500 font-semibold relative z-10">
-                  ATAU
-                </span>
+              <div style={styles.orDivider}>
+                <span style={styles.orText}>ATAU</span>
               </div>
 
-              <div className="mb-4">
-                <label htmlFor="fileInput" className="block cursor-pointer">
-                  <div className="border-2 border-dashed border-green-500 rounded-md p-6 text-center bg-gray-50 transition">
+              <div style={styles.uploadSection}>
+                <label htmlFor="fileInput" style={styles.uploadLabel}>
+                  <div style={{ ...styles.uploadBox, borderColor: "#27ae60" }}>
                     <svg
-                      className="w-12 h-12 mx-auto text-green-500"
+                      style={{ ...styles.uploadIcon, color: "#27ae60" }}
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
@@ -539,10 +436,10 @@ export default function ManajemenKelas() {
                         d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
                       />
                     </svg>
-                    <p className="text-base text-gray-600 mt-2">
+                    <p style={styles.uploadText}>
                       Klik untuk memilih file individual
                     </p>
-                    <p className="text-sm text-gray-400 mt-2">
+                    <p style={styles.uploadSubtext}>
                       PDF, Word, PPT, Excel, Gambar, Video, dll.
                     </p>
                   </div>
@@ -552,32 +449,27 @@ export default function ManajemenKelas() {
                   type="file"
                   multiple
                   onChange={handleFileUpload}
-                  className="hidden"
+                  style={styles.hiddenInput}
                   accept="*/*"
                 />
               </div>
 
               {uploadedFiles.length > 0 && (
-                <div className="mt-4 mb-4">
-                  <h3 className="text-sm font-semibold text-gray-800">
+                <div style={styles.filesList}>
+                  <h3 style={styles.filesListTitle}>
                     File yang akan diupload:
                   </h3>
-                  <div className="bg-gray-50 rounded-md p-4 max-h-48 overflow-y-auto mt-2">
+                  <div style={styles.filesContainer}>
                     {uploadedFiles.slice(0, 10).map((file, index) => (
-                      <div
-                        key={index}
-                        className="py-2 border-b border-gray-200 flex justify-between items-center"
-                      >
-                        <span className="text-sm text-gray-800 flex-1 mr-2">
-                          {file.path}
-                        </span>
-                        <span className="text-xs text-gray-500">
+                      <div key={index} style={styles.fileItem}>
+                        <span style={styles.fileName}>{file.path}</span>
+                        <span style={styles.fileSize}>
                           ({(file.size / 1024).toFixed(2)} KB)
                         </span>
                       </div>
                     ))}
                     {uploadedFiles.length > 10 && (
-                      <p className="mt-2 text-sm italic text-gray-600">
+                      <p style={styles.moreFiles}>
                         ... dan {uploadedFiles.length - 10} file lainnya
                       </p>
                     )}
@@ -585,22 +477,11 @@ export default function ManajemenKelas() {
                 </div>
               )}
 
-              <div className="flex gap-4 justify-end mt-6">
-                <Button
-                  className="bg-gray-400 text-white rounded-md px-4 py-2"
-                  onClick={handleCloseModal}
-                >
+              <div style={styles.modalButtons}>
+                <Button style={styles.cancelButton} onClick={handleCloseModal}>
                   Batal
                 </Button>
-                <Button
-                  className={
-                    !selectedKelas || uploadedFiles.length === 0
-                      ? "bg-green-600 text-white rounded-md px-4 py-2 opacity-60 cursor-not-allowed"
-                      : "bg-green-600 text-white rounded-md px-4 py-2"
-                  }
-                  onClick={handleSaveMateri}
-                  disabled={!selectedKelas || uploadedFiles.length === 0}
-                >
+                <Button style={styles.saveButton} onClick={handleSaveMateri}>
                   Simpan Materi
                 </Button>
               </div>
@@ -611,3 +492,338 @@ export default function ManajemenKelas() {
     </div>
   );
 }
+
+const styles = {
+  page: {
+    display: "flex",
+    width: "100vw",
+    height: "100vh",
+    background: "#f4f4f4",
+  },
+  sidebar: {
+    width: "250px",
+    background: "#808080",
+    color: "white",
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    paddingTop: "30px",
+  },
+  profilePlaceholder: {
+    width: "120px",
+    height: "120px",
+    borderRadius: "50%",
+    marginBottom: "10px",
+    background: "#ccc",
+  },
+  name: {
+    fontSize: "22px",
+    marginBottom: "20px",
+  },
+  menuBtn: {
+    width: "80%",
+    padding: "12px",
+    background: "white",
+    color: "#A52A2A",
+    borderRadius: "8px",
+    border: "none",
+    cursor: "pointer",
+    marginBottom: "10px",
+    fontWeight: "600",
+  },
+  content: {
+    flex: 1,
+    padding: "25px 40px",
+    overflowY: "auto",
+  },
+  header: {
+    display: "flex",
+    alignItems: "center",
+    marginBottom: "25px",
+  },
+  backButton: {
+    background: "none",
+    border: "none",
+    color: "#3498db",
+    fontSize: "16px",
+    cursor: "pointer",
+    marginRight: "15px",
+    padding: "8px 12px",
+  },
+  title: {
+    fontSize: "28px",
+    fontWeight: "700",
+  },
+  card: {
+    background: "white",
+    borderRadius: "12px",
+    padding: "30px",
+    boxShadow: "0 4px 10px rgba(0,0,0,0.1)",
+  },
+  buttonContainer: {
+    display: "flex",
+    gap: "15px",
+    marginTop: "20px",
+  },
+  primaryButton: {
+    padding: "12px 24px",
+    background: "#3498db",
+    color: "white",
+    border: "none",
+    borderRadius: "8px",
+    cursor: "pointer",
+    fontSize: "16px",
+  },
+  modalOverlay: {
+    position: "fixed",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    background: "rgba(0, 0, 0, 0.5)",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    zIndex: 1000,
+  },
+  modalContent: {
+    background: "white",
+    borderRadius: "12px",
+    padding: "30px",
+    maxWidth: "600px",
+    width: "90%",
+    maxHeight: "80vh",
+    overflowY: "auto",
+    boxShadow: "0 10px 40px rgba(0,0,0,0.3)",
+  },
+  modalTitle: {
+    fontSize: "24px",
+    fontWeight: "700",
+    marginBottom: "20px",
+    color: "#333",
+  },
+  uploadSection: {
+    marginBottom: "20px",
+  },
+  uploadLabel: {
+    cursor: "pointer",
+    display: "block",
+  },
+  uploadBox: {
+    border: "2px dashed #3498db",
+    borderRadius: "8px",
+    padding: "40px",
+    textAlign: "center",
+    background: "#f8f9fa",
+    transition: "all 0.3s ease",
+  },
+  uploadIcon: {
+    width: "48px",
+    height: "48px",
+    margin: "0 auto 15px",
+    color: "#3498db",
+  },
+  uploadText: {
+    fontSize: "16px",
+    color: "#666",
+    margin: 0,
+  },
+  uploadSubtext: {
+    fontSize: "13px",
+    color: "#999",
+    marginTop: "8px",
+  },
+  orDivider: {
+    textAlign: "center",
+    margin: "20px 0",
+    position: "relative",
+  },
+  orText: {
+    background: "white",
+    padding: "0 15px",
+    color: "#999",
+    fontSize: "14px",
+    fontWeight: "600",
+    position: "relative",
+    zIndex: 1,
+  },
+  hiddenInput: {
+    display: "none",
+  },
+  filesList: {
+    marginTop: "20px",
+    marginBottom: "20px",
+  },
+  filesListTitle: {
+    fontSize: "16px",
+    fontWeight: "600",
+    marginBottom: "10px",
+    color: "#333",
+  },
+  filesContainer: {
+    background: "#f8f9fa",
+    borderRadius: "8px",
+    padding: "15px",
+    maxHeight: "200px",
+    overflowY: "auto",
+  },
+  fileItem: {
+    padding: "8px 0",
+    borderBottom: "1px solid #e0e0e0",
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  fileName: {
+    fontSize: "14px",
+    color: "#333",
+    flex: 1,
+    marginRight: "10px",
+  },
+  fileSize: {
+    fontSize: "12px",
+    color: "#999",
+  },
+  moreFiles: {
+    marginTop: "10px",
+    fontSize: "14px",
+    color: "#666",
+    fontStyle: "italic",
+  },
+  modalButtons: {
+    display: "flex",
+    gap: "15px",
+    justifyContent: "flex-end",
+    marginTop: "25px",
+  },
+  cancelButton: {
+    padding: "10px 20px",
+    background: "#95a5a6",
+    color: "white",
+    border: "none",
+    borderRadius: "8px",
+    cursor: "pointer",
+    fontSize: "16px",
+  },
+  saveButton: {
+    padding: "10px 20px",
+    background: "#27ae60",
+    color: "white",
+    border: "none",
+    borderRadius: "8px",
+    cursor: "pointer",
+    fontSize: "16px",
+  },
+  label: {
+    display: "block",
+    fontSize: "16px",
+    fontWeight: "600",
+    color: "#333",
+    marginBottom: "8px",
+  },
+  selectKelas: {
+    width: "100%",
+    padding: "12px",
+    fontSize: "16px",
+    border: "2px solid #e0e0e0",
+    borderRadius: "8px",
+    background: "white",
+    cursor: "pointer",
+    transition: "border-color 0.3s ease",
+  },
+  materiCard: {
+    background: "white",
+    borderRadius: "12px",
+    padding: "30px",
+    marginTop: "25px",
+    boxShadow: "0 4px 10px rgba(0,0,0,0.1)",
+  },
+  materiTitle: {
+    fontSize: "22px",
+    fontWeight: "700",
+    marginBottom: "20px",
+    color: "#333",
+  },
+  materiList: {
+    display: "flex",
+    flexDirection: "column",
+    gap: "15px",
+  },
+  materiItem: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "flex-start",
+    padding: "20px",
+    background: "#f8f9fa",
+    borderRadius: "8px",
+    border: "1px solid #e0e0e0",
+    transition: "all 0.3s ease",
+  },
+  materiInfo: {
+    display: "flex",
+    gap: "15px",
+    flex: 1,
+  },
+  materiIcon: {
+    flexShrink: 0,
+  },
+  materiDetails: {
+    flex: 1,
+  },
+  materiName: {
+    fontSize: "18px",
+    fontWeight: "600",
+    color: "#333",
+    marginBottom: "8px",
+  },
+  materiMeta: {
+    fontSize: "14px",
+    color: "#666",
+    margin: "0 0 10px 0",
+  },
+  fileDetails: {
+    marginTop: "10px",
+  },
+  fileDetailsSummary: {
+    cursor: "pointer",
+    fontSize: "14px",
+    color: "#3498db",
+    fontWeight: "500",
+    padding: "5px 0",
+    userSelect: "none",
+  },
+  fileDetailsContent: {
+    marginTop: "10px",
+    paddingLeft: "10px",
+    maxHeight: "200px",
+    overflowY: "auto",
+  },
+  fileDetailItem: {
+    display: "flex",
+    justifyContent: "space-between",
+    padding: "6px 0",
+    borderBottom: "1px solid #e0e0e0",
+    fontSize: "13px",
+  },
+  fileDetailName: {
+    color: "#555",
+    flex: 1,
+  },
+  fileDetailSize: {
+    color: "#999",
+    marginLeft: "10px",
+  },
+  deleteButton: {
+    background: "#e74c3c",
+    color: "white",
+    border: "none",
+    borderRadius: "6px",
+    padding: "8px 12px",
+    cursor: "pointer",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    transition: "all 0.3s ease",
+    flexShrink: 0,
+  },
+};
