@@ -510,22 +510,7 @@ export default function ManajemenKelas() {
                           )}
                         </div>
 
-                        <div className="flex gap-2">
-                          <Button
-                            variant="secondary"
-                            className="flex-1 text-sm"
-                            onClick={() => alert(`Membuka materi: ${material.folderName}`)}
-                          >
-                            Buka
-                          </Button>
-                          <Button
-                            variant="secondary"
-                            className="flex-1 text-sm"
-                            onClick={() => alert(`Mengedit materi: ${material.folderName}`)}
-                          >
-                            Edit
-                          </Button>
-                        </div>
+                        
                       </div>
                     </div>
                   ))}
