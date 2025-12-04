@@ -18,6 +18,7 @@ import ProfilSiswa from "./pages/ProfilSiswa";
 import EditProfilSiswa from "./pages/EditProfilSiswa";
 import ProfilGuru from "./pages/ProfilGuru";
 import EditProfilGuru from "./pages/EditProfilGuru";
+import ProgressSiswa from "./pages/ProgressSiswa";
 
 export default function App() {
   return (
@@ -56,6 +57,10 @@ export default function App() {
             element={<MateriSayaSiswa />}
           />
           <Route path="/belajar/:subject/:materiId" element={<Belajar />} />
+          <Route
+            path="/progress/:subject/:kelasId"
+            element={<ProgressSiswa />}
+          />
 
           {/* profil siswa*/}
           <Route path="/profil-siswa" element={<ProfilSiswa />} />

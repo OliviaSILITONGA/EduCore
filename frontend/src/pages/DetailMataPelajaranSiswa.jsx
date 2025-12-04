@@ -3,53 +3,41 @@ import Logo from "../assets/images/Educore_Logo_White.png";
 import Aki from "../assets/images/Ellipse_15.png";
 import Button from "../components/Button";
 import useStudentProfile from "../hooks/useStudentProfile";
-
-const TOTAL_MATERI = 3;
-
-function getCompletedCount(subject, kelasId) {
-  try {
-    const raw = localStorage.getItem(
-      `completed::${subject || "unknown"}::kelas-${kelasId}`
-    );
-    if (!raw) return 0;
-    const arr = JSON.parse(raw);
-    return Array.isArray(arr) ? arr.length : 0;
-  } catch (e) {
-    return 0;
-  }
-}
+import { useState } from "react";
 
 export default function DetailMataPelajaranSiswa() {
   const { subject } = useParams();
   const navigate = useNavigate();
   const { profile } = useStudentProfile();
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const kelasList = [
-    { id: 1, name: "KELAS 1", pelajaran: "", status: "Pelajari" },
-    { id: 2, name: "KELAS 2", pelajaran: "", status: "Pelajari" },
-    { id: 3, name: "KELAS 3", pelajaran: "", status: "Pelajari" },
-    { id: 4, name: "KELAS 4", pelajaran: "", status: "Pelajari" },
-    { id: 5, name: "KELAS 5", pelajaran: "", status: "Pelajari" },
-    { id: 6, name: "KELAS 6", pelajaran: "", status: "Pelajari" },
-    { id: 7, name: "KELAS 7", pelajaran: "", status: "Pelajari" },
-    { id: 8, name: "KELAS 8", pelajaran: "", status: "Pelajari" },
-    { id: 9, name: "KELAS 9", pelajaran: "", status: "Pelajari" },
-    { id: 10, name: "KELAS 10", pelajaran: "", status: "Pelajari" },
-    { id: 11, name: "KELAS 11", pelajaran: "", status: "Pelajari" },
-    { id: 12, name: "KELAS 12", pelajaran: "", status: "Pelajari" },
-    { id: 13, name: "UJIAN", pelajaran: "UJIAN", status: "Tes" },
+    { id: 1, name: "KELAS 1" },
+    { id: 2, name: "KELAS 2" },
+    { id: 3, name: "KELAS 3" },
+    { id: 4, name: "KELAS 4" },
+    { id: 5, name: "KELAS 5" },
+    { id: 6, name: "KELAS 6" },
+    { id: 7, name: "KELAS 7" },
+    { id: 8, name: "KELAS 8" },
+    { id: 9, name: "KELAS 9" },
+    { id: 10, name: "KELAS 10" },
+    { id: 11, name: "KELAS 11" },
+    { id: 12, name: "KELAS 12" },
   ];
 
-  const handlePelajariClick = (kelasId, e) => {
-    e.stopPropagation();
-    navigate(`/materi-siswa/${subject}/${kelasId}`);
-  };
-
   return (
-    <div className="flex w-screen h-screen bg-gray-100 font-sans">
+    <div className="flex h-screen bg-gray-100 overflow-hidden">
       {/* SIDEBAR */}
-      <aside className="w-[250px] bg-[#27B4E3] text-white flex flex-col items-center pt-8 min-h-screen">
-        <img src={Logo} className="h-20 mb-6" alt="Logo Educore" />
+      <div
+        className={`bg-[#27B4E3] text-white flex flex-col items-center pt-6
+          fixed md:relative top-0 left-0 h-full w-[250px] z-50
+          transition-transform duration-300
+          ${
+            sidebarOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"
+          }`}
+      >
+        <img src={Logo} alt="EduCore Logo" className="h-20 md:h-28 mb-6" />
 
         <button
           onClick={() => navigate("/profil-siswa")}
@@ -57,104 +45,67 @@ export default function DetailMataPelajaranSiswa() {
         >
           <img
             src={profile.foto || Aki}
-            alt="Foto Profil"
-            className="w-32 h-32 rounded-full mb-3 object-cover"
+            className="w-24 h-24 md:w-28 md:h-28 rounded-full mb-3 object-cover"
           />
         </button>
 
-        <h2 className="text-2xl font-semibold mb-6">Halo, Temanku!!</h2>
+        <h2 className="text-lg md:text-2xl font-semibold mb-6">
+          Halo, {profile.nama || "My friends!!"}!
+        </h2>
 
-        <Button
-          variant="menu"
-          onClick={() => navigate("/beranda-siswa")}
-          className="w-[80%]"
-        >
-          Dashboard
-        </Button>
+        <div className="flex md:flex-col gap-3 mb-4 w-full px-4">
+          <Button
+            variant="menu"
+            onClick={() => navigate("/beranda-siswa")}
+            className="w-full"
+          >
+            Dashboard
+          </Button>
+        </div>
+      </div>
 
-        <Button variant="menu" className="w-[80%]">
-          Materi
-        </Button>
-      </aside>
+      {/* TOGGLE BUTTON MOBILE */}
+      <button
+        onClick={() => setSidebarOpen(!sidebarOpen)}
+        className="md:hidden absolute top-4 left-4 bg-[#27B4E3] text-white px-3 py-2 rounded-md shadow-md z-50"
+      >
+        ☰
+      </button>
 
       {/* CONTENT */}
-      <div className="flex-1 p-10 overflow-y-auto">
-        {/* HEADER */}
-        <div className="flex items-center gap-5 mb-10">
+      <div className="flex-1 p-6 overflow-y-auto">
+        {/* Header */}
+        <div className="flex items-center gap-4 mb-6">
           <Button
-            variant="link"
             onClick={() => navigate("/beranda-siswa")}
-            className="text-blue-700 font-semibold text-lg"
+            variant="link"
+            className="text-blue-700 font-semibold"
           >
             Kembali
           </Button>
 
-          <h1 className="text-4xl font-bold text-black">
-            {subject ? subject.toUpperCase() : "MATA PELAJARAN"}
+          <h1 className="text-2xl sm:text-3xl font-bold">
+            {subject?.toUpperCase()}
           </h1>
         </div>
 
-        {/* GRID KELAS */}
-        <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
+        {/* GRID */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
           {kelasList.map((kelas) => (
             <div
               key={kelas.id}
-              className="bg-white rounded-xl shadow p-5 border-2 border-gray-200 flex flex-col justify-between h-40"
+              className="bg-white rounded-xl shadow-md border p-4 flex flex-col justify-between hover:shadow-lg transition"
             >
-              {/* HEADER KELAS */}
-              <div className="flex justify-between items-start">
-                <h3 className="text-lg font-bold">{kelas.name}</h3>
+              <h3 className="text-lg font-bold">{kelas.name}</h3>
 
-                {kelas.pelajaran && (
-                  <span className="text-xs bg-gray-100 px-2 py-1 rounded font-semibold text-gray-600">
-                    {kelas.pelajaran}
-                  </span>
-                )}
-              </div>
-
-              {/* FOOTER */}
-              <div className="flex justify-between items-center mt-4">
-                {/* Progress Section */}
-                <div className="flex flex-col">
-                  {kelas.pelajaran && kelas.pelajaran !== "UJIAN" && (
-                    <span className="text-xs italic text-gray-600">
-                      Mulai belajar
-                    </span>
-                  )}
-
-                  <div className="flex items-center gap-2 mt-1">
-                    <div className="w-36 h-2 bg-gray-200 rounded overflow-hidden">
-                      <div
-                        className="h-full bg-cyan-300 rounded"
-                        style={{
-                          width: `${Math.round(
-                            (getCompletedCount(subject, kelas.id) /
-                              TOTAL_MATERI) *
-                              100
-                          )}%`,
-                        }}
-                      ></div>
-                    </div>
-
-                    <span className="text-xs font-semibold text-gray-600">
-                      {Math.round(
-                        (getCompletedCount(subject, kelas.id) / TOTAL_MATERI) *
-                          100
-                      )}
-                      %
-                    </span>
-                  </div>
-                </div>
-
+              <div className="flex justify-end mt-6">
                 <Button
-                  className={`px-4 py-2 text-sm font-semibold rounded ${
-                    kelas.pelajaran === "UJIAN"
-                      ? "bg-red-500 text-white"
-                      : "bg-cyan-400 text-white shadow"
-                  }`}
-                  onClick={(e) => handlePelajariClick(kelas.id, e)}
+                  onClick={() =>
+                    navigate(`/materi-siswa/${subject}/${kelas.id}`)
+                  }
+                  className="bg-blue-600 text-white px-4 py-1 rounded-lg"
                 >
-                  {kelas.status}
+                  {kelas.ujian ? "Tes" : "Pelajari"}
                 </Button>
               </div>
             </div>

@@ -6,7 +6,7 @@ import Makima from "../assets/images/Ellipse_14.png";
 
 export default function ProfilGuru() {
   const navigate = useNavigate();
-  const { profile } = useTeacherProfile();
+  const { profile = {} } = useTeacherProfile() || {};
 
   return (
     <div className="flex bg-gray-200 min-h-screen">
@@ -19,7 +19,7 @@ export default function ProfilGuru() {
           className="focus:outline-none hover:opacity-80 transition"
         >
           <img
-            src={profile.foto || Makima}
+            src={profile?.foto || Makima}
             className="w-32 h-32 rounded-full mb-3 object-cover"
           />
         </button>
@@ -45,15 +45,15 @@ export default function ProfilGuru() {
         <div className="bg-white p-6 rounded-xl max-w-xl w-full shadow">
           <div className="flex items-center gap-4">
             <img
-              src={profile.foto || Makima}
+              src={profile?.foto || Makima}
               className="w-20 h-20 rounded-full object-cover border-gray-300"
             />
             <div>
               <p className="font-bold text-lg">
-                {profile.nama || "Nama belum diisi"}
+                {profile?.nama || "Nama belum diisi"}
               </p>
-              <p>{profile.gender}</p>
-              <p>{profile.telepon}</p>
+              <p>{profile?.gender || "-"}</p>
+              <p>{profile?.telepon || "-"}</p>
               <Link
                 to="/edit-profil-guru"
                 className="text-blue-600 underline text-sm font-semibold"
@@ -68,24 +68,24 @@ export default function ProfilGuru() {
         <div className="bg-white p-6 rounded-xl max-w-xl w-full shadow">
           <h2 className="font-bold text-xl mb-3">Detail alamat</h2>
           <p className="font-semibold">Provinsi</p>
-          <p>{profile.provinsi}</p>
+          <p>{profile?.provinsi || "-"}</p>
           <p className="font-semibold">Kota</p>
-          <p>{profile.kota}</p>
+          <p>{profile?.kota || "-"}</p>
           <p className="font-semibold">Alamat</p>
-          <p>{profile.alamat}</p>
+          <p>{profile?.alamat || "-"}</p>
         </div>
 
         {/* DETAIL SEKOLAH */}
         <div className="bg-white p-6 rounded-xl max-w-xl w-full shadow">
           <h2 className="font-bold text-xl mb-3">Detail sekolah</h2>
           <p className="font-semibold">Provinsi</p>
-          <p>{profile.sekolahProvinsi}</p>
+          <p>{profile?.sekolahProvinsi || "-"}</p>
           <p className="font-semibold">Kota</p>
-          <p>{profile.sekolahKota}</p>
+          <p>{profile?.sekolahKota || "-"}</p>
           <p className="font-semibold">Nama Sekolah</p>
-          <p>{profile.namaSekolah}</p>
+          <p>{profile?.namaSekolah || "-"}</p>
           <p className="font-semibold">Tingkat</p>
-          <p>{profile.tingkat}</p>
+          <p>{profile?.tingkat || "-"}</p>
         </div>
       </main>
     </div>

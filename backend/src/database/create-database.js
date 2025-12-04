@@ -3,6 +3,11 @@ const pool = require("../config/db");
 // Buat tabel yang diperlukan
 const createTables = async () => {
   try {
+    // jika variabel lingkungan DB belum diatur, lewati pembuatan tabel
+    if (!process.env.DB_HOST || !process.env.DB_USER || !process.env.DB_NAME) {
+      console.log("DB env not configured — skipping createTables");
+      return;
+    }
     // Buat enum user_role
     await pool.query(`
       DO $$
@@ -136,6 +141,10 @@ const createTables = async () => {
 // Buat index
 const createIndexes = async () => {
   try {
+    if (!process.env.DB_HOST || !process.env.DB_USER || !process.env.DB_NAME) {
+      console.log("DB env not configured — skipping createIndexes");
+      return;
+    }
     await pool.query(`
       CREATE INDEX IF NOT EXISTS idx_akun_email ON akun(email);
       CREATE INDEX IF NOT EXISTS idx_sesi_id_akun ON sesi(id_akun);

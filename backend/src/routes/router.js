@@ -53,4 +53,39 @@ router.post("/materi/selesai", checkLogin, controller.doneMateriSiswa);
 // Cek status selesai
 router.get("/materi/:idMateri/selesai", checkLogin, controller.cekStatusMateri);
 
+// Download materi (file) — siswa dapat mengunduh file yang diupload guru
+router.get("/materi/:id/download", checkLogin, controller.downloadMateri);
+
+// Download single file by path (query param `path`) - public (no DB required)
+router.get("/files/download", controller.downloadFile);
+
+// ───────────── UPLOADS / FILE MANAGEMENT (GURU) ─────────────
+const multer = require("multer");
+const fs = require("fs");
+const path = require("path");
+
+// ensure tmp upload folder exists
+const tmpDir = path.join(__dirname, "..", "..", "uploads", "_tmp");
+if (!fs.existsSync(tmpDir)) fs.mkdirSync(tmpDir, { recursive: true });
+
+const upload = multer({ dest: tmpDir });
+
+// List folders (public)
+router.get("/uploads/folders", controller.listFolders);
+
+// List files in a folder (public)
+router.get("/uploads/files/:folder", controller.listFiles);
+
+// Upload (form: folderName, file) - keep public for now (requires teacher auth later)
+router.post("/uploads/upload", upload.single("file"), controller.uploadFile);
+
+// Download specific file in folder (public)
+router.get("/uploads/download/:folder/:file", controller.downloadFolderFile);
+
+// Delete file (public for now; limit later)
+router.delete("/uploads/delete/:folder/:file", controller.deleteFile);
+
+// Delete folder (recursive)
+router.delete("/uploads/delete-folder/:folder", controller.deleteFolder);
+
 module.exports = router;

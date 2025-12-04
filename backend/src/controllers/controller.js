@@ -15,6 +15,9 @@ const {
 } = require("../services/service");
 
 const { success, error } = require("../utils/response");
+const path = require("path");
+const fs = require("fs");
+
 
 // Utility role validation
 const validateRole = (r) => ["siswa", "guru"].includes(r);
@@ -236,6 +239,46 @@ async function getDetailMateri(req, res) {
   }
 }
 
+/**
+ * DOWNLOAD MATERI (FILE)
+ * GET /materi/:id/download
+ */
+async function downloadMateri(req, res) {
+  try {
+    const id = req.params.id;
+    const data = await tampilkanDetailMateri(id);
+    if (!data) return error(res, 404, "Materi tidak ada");
+
+    const url = data.url_media;
+    if (!url) return error(res, 404, "Tidak ada file untuk diunduh");
+
+    // If url is an absolute http(s) link, redirect
+    if (/^https?:\/\//i.test(url)) {
+      return res.redirect(url);
+    }
+
+    // Otherwise treat url as relative path under project (e.g., /uploads/filename)
+    // Resolve to backend root
+    const uploadsDir = path.resolve(__dirname, "..", "..", "uploads");
+    const requestedPath = path.normalize(
+      path.join(uploadsDir, url.replace(/^\//, ""))
+    );
+
+    // Security: ensure requestedPath is inside uploadsDir
+    if (!requestedPath.startsWith(uploadsDir)) {
+      return error(res, 403, "Akses file ditolak");
+    }
+
+    if (!fs.existsSync(requestedPath))
+      return error(res, 404, "File tidak ditemukan");
+
+    return res.download(requestedPath);
+  } catch (e) {
+    console.error(e);
+    error(res, 500, "Gagal mengunduh file");
+  }
+}
+
 /* ───────────── PEMBELAJARAN SISWA ───────────── */
 
 /**
@@ -292,6 +335,148 @@ async function cekStatusMateri(req, res) {
   }
 }
 
+/* ───────────── FILES / UPLOAD MANAGEMENT ───────────── */
+
+// List folders under uploads
+async function listFolders(req, res) {
+  try {
+    const uploadsDir = path.resolve(__dirname, "..", "..", "uploads");
+    if (!fs.existsSync(uploadsDir)) return success(res, 200, "Folders", []);
+
+    const items = fs.readdirSync(uploadsDir, { withFileTypes: true });
+    const folders = items
+      .filter((it) => it.isDirectory() && it.name !== "_tmp")
+      .map((d) => d.name);
+    success(res, 200, "Folders", folders);
+  } catch (e) {
+    console.error(e);
+    error(res, 500, "Gagal memuat daftar folder");
+  }
+}
+
+// List files in a folder
+async function listFiles(req, res) {
+  try {
+    const folder = req.params.folder;
+    if (!folder) return error(res, 400, "Folder wajib");
+
+    const uploadsDir = path.resolve(__dirname, "..", "..", "uploads");
+    const folderPath = path.join(uploadsDir, folder);
+
+    if (!folderPath.startsWith(uploadsDir)) return error(res, 403, "Akses ditolak");
+    if (!fs.existsSync(folderPath)) return error(res, 404, "Folder tidak ditemukan");
+
+    const files = fs.readdirSync(folderPath).filter((f) => fs.statSync(path.join(folderPath, f)).isFile());
+    success(res, 200, "Files", files);
+  } catch (e) {
+    console.error(e);
+    error(res, 500, "Gagal memuat file folder");
+  }
+}
+
+// Upload handler: expects multer to have stored the file in tmp; move to uploads/<folderName>/originalname
+async function uploadFile(req, res) {
+  try {
+    const folderName = req.body.folderName || req.body.folder || "default";
+    const file = req.file;
+    if (!file) return error(res, 400, "File wajib diupload");
+
+    const uploadsDir = path.resolve(__dirname, "..", "..", "uploads");
+    const targetDir = path.join(uploadsDir, folderName);
+    if (!targetDir.startsWith(uploadsDir)) return error(res, 403, "Akses ditolak");
+    if (!fs.existsSync(targetDir)) fs.mkdirSync(targetDir, { recursive: true });
+
+    const targetPath = path.join(targetDir, file.originalname);
+
+    // Move file from temp to target
+    fs.renameSync(file.path, targetPath);
+
+    success(res, 201, "File diupload", { folder: folderName, file: file.originalname });
+  } catch (e) {
+    console.error(e);
+    error(res, 500, "Gagal mengupload file");
+  }
+}
+
+// Download a file inside an uploads folder
+async function downloadFolderFile(req, res) {
+  try {
+    const folder = req.params.folder;
+    const file = req.params.file;
+    if (!folder || !file) return error(res, 400, "Folder dan file wajib");
+
+    const uploadsDir = path.resolve(__dirname, "..", "..", "uploads");
+    const requestedPath = path.normalize(path.join(uploadsDir, folder, file));
+
+    if (!requestedPath.startsWith(uploadsDir)) return error(res, 403, "Akses file ditolak");
+    if (!fs.existsSync(requestedPath)) return error(res, 404, "File tidak ditemukan");
+
+    return res.download(requestedPath);
+  } catch (e) {
+    console.error(e);
+    error(res, 500, "Gagal mengunduh file");
+  }
+}
+
+// Delete a single file
+async function deleteFile(req, res) {
+  try {
+    const folder = req.params.folder;
+    const file = req.params.file;
+    if (!folder || !file) return error(res, 400, "Folder dan file wajib");
+
+    const uploadsDir = path.resolve(__dirname, "..", "..", "uploads");
+    const targetPath = path.normalize(path.join(uploadsDir, folder, file));
+    if (!targetPath.startsWith(uploadsDir)) return error(res, 403, "Akses ditolak");
+    if (!fs.existsSync(targetPath)) return error(res, 404, "File tidak ditemukan");
+
+    fs.unlinkSync(targetPath);
+    success(res, 200, "File dihapus");
+  } catch (e) {
+    console.error(e);
+    error(res, 500, "Gagal menghapus file");
+  }
+}
+
+// Delete a folder recursively
+async function deleteFolder(req, res) {
+  try {
+    const folder = req.params.folder;
+    if (!folder) return error(res, 400, "Folder wajib");
+
+    const uploadsDir = path.resolve(__dirname, "..", "..", "uploads");
+    const targetDir = path.normalize(path.join(uploadsDir, folder));
+    if (!targetDir.startsWith(uploadsDir)) return error(res, 403, "Akses ditolak");
+    if (!fs.existsSync(targetDir)) return error(res, 404, "Folder tidak ditemukan");
+
+    // recursive delete
+    fs.rmSync(targetDir, { recursive: true, force: true });
+    success(res, 200, "Folder dihapus");
+  } catch (e) {
+    console.error(e);
+    error(res, 500, "Gagal menghapus folder");
+  }
+}
+
+// Download by query path ?path=relative/path
+async function downloadFile(req, res) {
+  try {
+    const q = req.query.path;
+    if (!q) return error(res, 400, "Query path wajib");
+
+    const uploadsDir = path.resolve(__dirname, "..", "..", "uploads");
+    const requestedPath = path.normalize(path.join(uploadsDir, q.replace(/^\//, "")));
+
+    if (!requestedPath.startsWith(uploadsDir)) return error(res, 403, "Akses file ditolak");
+    if (!fs.existsSync(requestedPath)) return error(res, 404, "File tidak ditemukan");
+
+    return res.download(requestedPath);
+  } catch (e) {
+    console.error(e);
+    error(res, 500, "Gagal mengunduh file");
+  }
+}
+
 module.exports = {
   loginSiswa,
   loginGuru,
@@ -310,4 +495,13 @@ module.exports = {
   getDetailMateri,
   doneMateriSiswa,
   cekStatusMateri,
+  // file management
+  listFolders,
+  listFiles,
+  uploadFile,
+  downloadFolderFile,
+  deleteFile,
+  deleteFolder,
+  downloadFile,
+  downloadMateri,
 };

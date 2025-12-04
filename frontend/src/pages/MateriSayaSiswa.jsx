@@ -22,7 +22,7 @@ export default function MateriSayaSiswa() {
 
   const loadMateri = async () => {
     setLoading(true);
-    
+
     // Coba load dari API jika ada token
     if (getToken()) {
       try {
@@ -42,12 +42,66 @@ export default function MateriSayaSiswa() {
     const loadedMaterials = JSON.parse(
       localStorage.getItem(storageKey) || "[]"
     );
-    setMateriList(loadedMaterials);
+    // Normalize file paths to "folderName/filename" format
+    const normalized = loadedMaterials.map((m) => {
+      if (m.files && Array.isArray(m.files)) {
+        return {
+          ...m,
+          files: m.files.map((f) => {
+            // If path doesn't contain "/" or looks malformed, reconstruct it
+            if (!f.path || !f.path.includes("/")) {
+              return { ...f, path: `${m.folderName}/${f.name}` };
+            }
+            return f;
+          }),
+        };
+      }
+      return m;
+    });
+    setMateriList(normalized);
     setLoading(false);
   };
 
   const toggleExpand = (materiId) => {
     setExpandedMateri(expandedMateri === materiId ? null : materiId);
+  };
+
+  const downloadFile = async (file) => {
+    try {
+      // parse file.path as "folderName/filename"
+      const pathParts = (file.path || "").split("/");
+      if (pathParts.length < 2) {
+        throw new Error("Invalid file path format");
+      }
+      const folder = pathParts.slice(0, -1).join("/"); // all but last
+      const filename = pathParts[pathParts.length - 1]; // last part
+      const base = "http://localhost:3000/api/uploads"; // backend uploads base
+      const url = `${base}/download/${encodeURIComponent(folder)}/${encodeURIComponent(filename)}`;
+      const headers = {};
+      const token = getToken();
+      if (token) headers.Authorization = token;
+
+      const res = await fetch(url, { headers });
+      if (!res.ok) throw new Error(`Download failed: ${res.status} ${res.statusText}`);
+
+      const blob = await res.blob();
+      const blobUrl = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = blobUrl;
+      a.download = file.name || "download";
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(blobUrl);
+      alert("File berhasil diunduh!");
+    } catch (err) {
+      console.error("Download error:", err);
+      alert("Gagal mengunduh file. Cek console untuk detail.");
+    }
+  };
+
+  const handleSelesai = () => {
+    navigate(`/progress/${subject}/${kelasId}`);
   };
 
   return (
@@ -111,7 +165,15 @@ export default function MateriSayaSiswa() {
 
         {/* LIST MATERI */}
         <div className="bg-white rounded-xl p-6 shadow-md">
-          <h2 className="text-2xl font-semibold mb-5">Materi Pembelajaran</h2>
+          <div className="flex justify-between items-center mb-5">
+            <h2 className="text-2xl font-semibold">Materi Pembelajaran</h2>
+            <button
+              onClick={handleSelesai}
+              className="bg-orange-500 hover:bg-orange-600 text-white font-semibold px-4 py-2 rounded-md shadow-sm"
+            >
+              📊 Lihat Progress
+            </button>
+          </div>
 
           {materiList.length === 0 ? (
             <div className="text-center py-10">
@@ -248,6 +310,14 @@ export default function MateriSayaSiswa() {
                                     {(file.size / 1024).toFixed(2)} KB
                                   </p>
                                 </div>
+                              </div>
+                              <div className="flex items-center gap-3">
+                                <button
+                                  onClick={() => downloadFile(file)}
+                                  className="inline-block bg-green-500 hover:bg-green-600 text-white text-sm px-3 py-1 rounded-md"
+                                >
+                                  Unduh
+                                </button>
                               </div>
                             </div>
                           ))}

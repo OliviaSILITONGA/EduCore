@@ -36,10 +36,14 @@ export default function LoginGuru() {
   };
 
   return (
-    <div className="w-screen h-screen grid grid-cols-1 md:grid-cols-2 font-sans">
-      {/* LEFT SECTION */}
-      <div className="flex flex-col justify-center px-12 bg-linear-to-b from-[#27B4E3] to-[#0029A2] text-white">
-        <img src={Logo} alt="Educore Logo" className="h-110 w-auto" />
+    <div className="min-h-screen w-full grid grid-cols-1 md:grid-cols-2 font-sans">
+      {/* LEFT SECTION FOR DESKTOP */}
+      <div className="hidden md:flex flex-col justify-center items-center bg-linear-to-b from-[#27B4E3] to-[#0029A2] text-white">
+        <img
+          src={Logo}
+          alt="Educore Logo"
+          className="w-72 lg:w-96 h-auto drop-shadow-lg"
+        />
       </div>
 
       {/* RIGHT SECTION */}
@@ -75,7 +79,10 @@ export default function LoginGuru() {
           />
 
           {/* FORGOT PASSWORD */}
-          <a href="#" className="text-blue-700 text-sm font-semibold mt-2 block">
+          <a
+            href="#"
+            className="text-blue-700 text-sm font-semibold mt-2 block"
+          >
             Lupa kata sandi?
           </a>
 
@@ -83,7 +90,7 @@ export default function LoginGuru() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-3 rounded-xl bg-blue-200 text-blue-800 font-bold text-xl mt-6 hover:bg-blue-300 transition-colors disabled:opacity-50"
+            className="w-full py-3 rounded-xl bg-blue-200 text-blue-800 font-bold text-xl mt-6 hover:bg-blue-300 disabled:opacity-50"
           >
             {loading ? "Memproses..." : "Masuk"}
           </button>
