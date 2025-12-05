@@ -59,15 +59,19 @@ export default function ProgressSiswa() {
       if (getToken()) {
         console.log("Loading materi - subject:", subject, "kelasId:", kelasId);
         const res = await getMateriBySubject(subject, `kelas-${kelasId}`);
-        console.log("API Response:", res);
-        if (res && res.data && res.data.length > 0) {
-          console.log("Materi loaded from API:", res.data);
+        console.log("API Response full object:", res);
+        console.log("API Response data:", res.data);
+        console.log("API Response data type:", typeof res.data);
+        console.log("API Response data length:", res.data?.length);
+        
+        if (res && res.data && Array.isArray(res.data) && res.data.length > 0) {
+          console.log("✅ Materi loaded from API:", res.data);
           setMateriList(res.data);
           calculateProgress(res.data);
           setLoading(false);
           return;
         } else {
-          console.warn("API returned empty data:", res);
+          console.warn("⚠️ API returned empty or invalid data:", res);
         }
       } else {
         console.warn("No token found, cannot load from API");
