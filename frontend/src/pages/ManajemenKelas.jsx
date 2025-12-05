@@ -133,11 +133,14 @@ export default function ManajemenKelas() {
       return;
     }
 
+    // Generate default folder name if not provided
+    const materiName = folderName.trim() || `Materi ${matpel} - ${new Date().toLocaleDateString('id-ID')}`;
+
     setLoading(true);
 
     const newMaterial = {
       id: Date.now(),
-      folderName: folderName,
+      folderName: materiName,
       kelas: selectedKelas,
       uploadDate: new Date().toISOString(),
       fileCount: uploadedFiles.length,
@@ -151,16 +154,26 @@ export default function ManajemenKelas() {
 
     if (getToken()) {
       try {
-        await createMateri({
+        console.log("=== SAVING MATERI TO DATABASE ===");
+        console.log("Data being sent:", {
           matpel: matpel,
           kelas: `kelas-${selectedKelas}`,
-          judul: folderName,
-          deskripsi: deskripsi || `Materi ${folderName}`,
+          judul: materiName,
+          deskripsi: deskripsi || `Materi ${materiName}`,
+        });
+        
+        const response = await createMateri({
+          matpel: matpel,
+          kelas: `kelas-${selectedKelas}`,
+          judul: materiName,
+          deskripsi: deskripsi || `Materi ${materiName}`,
           files: newMaterial.files,
         });
+        
+        console.log("✅ Materi saved to database:", response);
 
         alert(
-          `Berhasil mengupload "${folderName}" untuk Kelas ${selectedKelas} dengan ${uploadedFiles.length} file!`
+          `✅ Berhasil menyimpan "${materiName}" untuk Kelas ${selectedKelas} dengan ${uploadedFiles.length} file ke database!`
         );
         setShowUploadModal(false);
         setUploadedFiles([]);
@@ -171,7 +184,8 @@ export default function ManajemenKelas() {
         setLoading(false);
         return;
       } catch (err) {
-        console.log("API error, fallback ke localStorage:", err);
+        console.error("❌ API error:", err);
+        alert(`Gagal menyimpan ke database: ${err.message}\n\nMateri akan disimpan ke localStorage saja.`);
       }
     }
 
