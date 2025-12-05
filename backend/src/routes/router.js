@@ -23,6 +23,7 @@ router.use(
 // ───────────── AUTH ROUTES ─────────────
 router.post("/login-siswa", controller.loginSiswa);
 router.post("/login-guru", controller.loginGuru);
+router.post("/logout", checkLogin, controller.logout);
 router.post("/register-siswa", controller.registerSiswa);
 router.post("/register-guru", controller.registerGuru);
 

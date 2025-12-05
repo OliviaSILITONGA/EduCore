@@ -2,43 +2,56 @@
 const bcrypt = require("bcryptjs");
 const crypto = require("crypto");
 const pool = require("../config/db");
+const logger = require("../utils/logger");
 
 function validateEmail(email) {
   return typeof email === "string" && /\S+@\S+\.\S+/.test(email);
 }
+
 function validatePassword(pw) {
-  return typeof pw === "string" && pw.length >= 8;
+  if (typeof pw !== "string" || pw.length < 8) return false;
+  
+  // Minimal harus ada:
+  // - 1 huruf besar
+  // - 1 huruf kecil  
+  // - 1 angka
+  const hasUpperCase = /[A-Z]/.test(pw);
+  const hasLowerCase = /[a-z]/.test(pw);
+  const hasNumber = /[0-9]/.test(pw);
+  
+  return hasUpperCase && hasLowerCase && hasNumber;
 }
+
 function validateRole(role) {
   return role === "siswa" || role === "guru";
 }
 
 async function handleLogin(data, role) {
   const { email, password } = data;
-  console.log(`handleLogin called - email=${email}, role=${role}`);
-  
+  logger.info(`Login attempt - email=${email}, role=${role}`);
+
   if (!validateEmail(email)) {
-    console.log("Email validation failed");
+    logger.warn("Email validation failed", { email });
     throw new Error("Invalid email format");
   }
-  
+
   if (!validatePassword(password)) {
-    console.log("Password validation failed - length:", password?.length);
-    throw new Error("Password must be at least 8 characters");
+    logger.warn("Password validation failed", { passwordLength: password?.length });
+    throw new Error("Password must be at least 8 characters with uppercase, lowercase, and number");
   }
-  
+
   if (!validateRole(role)) {
-    console.log("Role validation failed");
+    logger.warn("Role validation failed", { role });
     throw new Error("Invalid role");
   }
 
   let client;
   try {
-    console.log("Attempting to connect to database...");
+    logger.debug("Attempting database connection...");
     client = await pool.connect();
-    console.log("Database connection successful");
+    logger.debug("Database connection successful");
   } catch (connectErr) {
-    console.error("Database connection error:", connectErr.message);
+    logger.error("Database connection error", { error: connectErr.message });
     throw new Error(
       "Database connection failed. Please check database configuration."
     );
@@ -47,7 +60,7 @@ async function handleLogin(data, role) {
   try {
     const q = `SELECT id, email, password, role FROM akun WHERE email = $1 AND role = $2 LIMIT 1`;
     const res = await client.query(q, [email, role]);
-    console.log("login query result rows:", res.rows.length);
+    logger.debug("Login query result", { rowCount: res.rows.length });
     if (res.rows.length === 0) return null;
 
     const user = res.rows[0];
@@ -55,7 +68,7 @@ async function handleLogin(data, role) {
     if (!match) return null;
 
     const token = crypto.randomBytes(32).toString("hex");
-    console.log("generated token for user id", user.id);
+    logger.info("Login successful", { userId: user.id, email: user.email, role: user.role });
     await client.query(
       `INSERT INTO sesi (token, id_akun, waktu_berakhir) VALUES ($1, $2, DEFAULT)`,
       [token, user.id]
@@ -63,7 +76,7 @@ async function handleLogin(data, role) {
 
     return { token, user: { id: user.id, email: user.email, role: user.role } };
   } catch (err) {
-    console.error("Login service error:", err.message);
+    logger.error("Login service error", { error: err.message, stack: err.stack });
     throw err;
   } finally {
     if (client) client.release();
@@ -126,7 +139,7 @@ async function handleRegister(data, role) {
     return newUser;
   } catch (err) {
     await client.query("ROLLBACK").catch(() => {});
-    console.error("Register service error");
+    logger.error("Register service error", { error: err.message, stack: err.stack });
     throw err;
   } finally {
     client.release();
@@ -173,7 +186,7 @@ async function tampilkanMateri(idKelas) {
     const res = await client.query(q, [idKelas]);
     return res.rows;
   } catch (err) {
-    console.error("tampilkanMateri error:", err.message);
+    logger.error("tampilkanMateri error", { error: err.message, kelasId: idKelas });
     throw err;
   } finally {
     if (client) client.release();
@@ -268,7 +281,7 @@ async function tambahMateri(data) {
     ]);
     return res.rows[0];
   } catch (err) {
-    console.error("tambahMateri error:", err.message);
+    logger.error("updateMateri error", { error: err.message, idMateri, data });
     throw err;
   } finally {
     if (client) client.release();
@@ -380,7 +393,7 @@ async function updateProfil(idAkun, role, data) {
     return null;
   } catch (err) {
     await client.query("ROLLBACK").catch(() => {});
-    console.error("Update profil error");
+    logger.error("Update profil error", { error: err.message, idAkun, role });
     throw err;
   } finally {
     client.release();
@@ -406,7 +419,7 @@ async function updateMateri(id, data) {
     ]);
     return res.rows[0] || null;
   } catch (err) {
-    console.error("updateMateri error:", err.message);
+    logger.error("updateMateri error", { error: err.message, idMateri, data });
     throw err;
   } finally {
     if (client) client.release();
@@ -423,7 +436,7 @@ async function deleteMateri(id) {
     const res = await client.query(q, [id]);
     return res.rows[0] || null;
   } catch (err) {
-    console.error("deleteMateri error:", err.message);
+    logger.error("deleteMateri error", { error: err.message, idMateri: id });
     throw err;
   } finally {
     if (client) client.release();
@@ -472,7 +485,7 @@ async function tandaiMateriSelesai(idSiswa, idMateri) {
     return res.rows[0];
   } catch (err) {
     await client.query("ROLLBACK").catch(() => {});
-    console.error("Tandai materi selesai error");
+    logger.error("Tandai materi selesai error", { error: err.message, idSiswa, idMateri });
     throw err;
   } finally {
     client.release();

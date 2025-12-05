@@ -3,8 +3,10 @@
 ## Base URL
 
 ```
-http://localhost:3000/api
+http://localhost:5000/api
 ```
+
+**Note:** Port 5000 adalah default. Sesuaikan dengan PORT di file `.env` Anda.
 
 ---
 
@@ -147,6 +149,41 @@ Authorization: Bearer <token>
     },
     "id_userProfil": 1
   }
+}
+```
+
+---
+
+### 1.5 Logout
+
+**Endpoint:** `POST /logout`  
+**Auth Required:** ✅ (Siswa atau Guru)
+
+**Headers:**
+```
+Authorization: <token>
+```
+
+**Request Body:** (Tidak perlu)
+
+**Response (200 OK):**
+
+```json
+{
+  "status": "success",
+  "code": 200,
+  "message": "Logout berhasil",
+  "data": null
+}
+```
+
+**Response (401 Unauthorized):**
+
+```json
+{
+  "status": "error",
+  "code": 401,
+  "message": "Tidak ada token"
 }
 ```
 
