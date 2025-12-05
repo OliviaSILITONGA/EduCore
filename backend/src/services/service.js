@@ -389,6 +389,7 @@ module.exports = {
   tampilkanKelas,
   tampilkanMateri,
   tampilkanDetailMateri,
+  getSiswaSelesaiByGuru,
   tambahMateri,
   updateProfil,
   updateMateri,

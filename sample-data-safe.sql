@@ -54,12 +54,12 @@ WHERE NOT EXISTS (SELECT 1 FROM siswa WHERE id_akun = 5);
 
 -- Insert detail_kelas
 INSERT INTO detail_kelas (id_siswa, id_matpel, id_kelas, progres) VALUES
-  (3, 1, 'K1_SD', 50),
-  (3, 2, 'K1_SD', 60),
-  (4, 1, 'K1_SD', 40),
-  (4, 2, 'K1_SD', 55),
-  (5, 1, 'K1_SMP', 70),
-  (5, 3, 'K1_SMP', 65)
+  (1, 1, 'K1_SD', 50),
+  (1, 2, 'K1_SD', 60),
+  (2, 1, 'K1_SD', 40),
+  (2, 2, 'K1_SD', 55),
+  (3, 1, 'K1_SMP', 70),
+  (3, 3, 'K1_SMP', 65)
 ON CONFLICT DO NOTHING;
 
 -- Insert sample materi

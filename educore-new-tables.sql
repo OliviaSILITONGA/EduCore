@@ -72,7 +72,7 @@ CREATE TABLE matpel (
 CREATE TABLE kelas (
   id VARCHAR(100) PRIMARY KEY,
   nama VARCHAR(100) NOT NULL,
-  no_kelas INT CHECK (no_kelas BETWEEN 1 AND 12),
+  no_kelas INT CHECK (no_kelas BETWEEN 1 AND 6),
   tingkat VARCHAR(3) NOT NULL
 );
 
