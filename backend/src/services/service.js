@@ -10,15 +10,15 @@ function validateEmail(email) {
 
 function validatePassword(pw) {
   if (typeof pw !== "string" || pw.length < 8) return false;
-  
+
   // Minimal harus ada:
   // - 1 huruf besar
-  // - 1 huruf kecil  
+  // - 1 huruf kecil
   // - 1 angka
   const hasUpperCase = /[A-Z]/.test(pw);
   const hasLowerCase = /[a-z]/.test(pw);
   const hasNumber = /[0-9]/.test(pw);
-  
+
   return hasUpperCase && hasLowerCase && hasNumber;
 }
 
@@ -36,8 +36,12 @@ async function handleLogin(data, role) {
   }
 
   if (!validatePassword(password)) {
-    logger.warn("Password validation failed", { passwordLength: password?.length });
-    throw new Error("Password must be at least 8 characters with uppercase, lowercase, and number");
+    logger.warn("Password validation failed", {
+      passwordLength: password?.length,
+    });
+    throw new Error(
+      "Password must be at least 8 characters with uppercase, lowercase, and number"
+    );
   }
 
   if (!validateRole(role)) {
@@ -68,7 +72,11 @@ async function handleLogin(data, role) {
     if (!match) return null;
 
     const token = crypto.randomBytes(32).toString("hex");
-    logger.info("Login successful", { userId: user.id, email: user.email, role: user.role });
+    logger.info("Login successful", {
+      userId: user.id,
+      email: user.email,
+      role: user.role,
+    });
     await client.query(
       `INSERT INTO sesi (token, id_akun, waktu_berakhir) VALUES ($1, $2, DEFAULT)`,
       [token, user.id]
@@ -76,7 +84,10 @@ async function handleLogin(data, role) {
 
     return { token, user: { id: user.id, email: user.email, role: user.role } };
   } catch (err) {
-    logger.error("Login service error", { error: err.message, stack: err.stack });
+    logger.error("Login service error", {
+      error: err.message,
+      stack: err.stack,
+    });
     throw err;
   } finally {
     if (client) client.release();
@@ -139,7 +150,10 @@ async function handleRegister(data, role) {
     return newUser;
   } catch (err) {
     await client.query("ROLLBACK").catch(() => {});
-    logger.error("Register service error", { error: err.message, stack: err.stack });
+    logger.error("Register service error", {
+      error: err.message,
+      stack: err.stack,
+    });
     throw err;
   } finally {
     client.release();
@@ -186,7 +200,10 @@ async function tampilkanMateri(idKelas) {
     const res = await client.query(q, [idKelas]);
     return res.rows;
   } catch (err) {
-    logger.error("tampilkanMateri error", { error: err.message, kelasId: idKelas });
+    logger.error("tampilkanMateri error", {
+      error: err.message,
+      kelasId: idKelas,
+    });
     throw err;
   } finally {
     if (client) client.release();
@@ -485,7 +502,11 @@ async function tandaiMateriSelesai(idSiswa, idMateri) {
     return res.rows[0];
   } catch (err) {
     await client.query("ROLLBACK").catch(() => {});
-    logger.error("Tandai materi selesai error", { error: err.message, idSiswa, idMateri });
+    logger.error("Tandai materi selesai error", {
+      error: err.message,
+      idSiswa,
+      idMateri,
+    });
     throw err;
   } finally {
     client.release();

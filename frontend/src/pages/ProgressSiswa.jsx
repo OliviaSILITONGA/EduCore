@@ -88,6 +88,9 @@ export default function ProgressSiswa() {
   };
 
   const handleMarkComplete = async (materiId) => {
+    console.log("=== TANDAI SELESAI ===");
+    console.log("materiId:", materiId, "type:", typeof materiId);
+    
     const progressKey = `progress_${subject}_kelas${kelasId}`;
     const completedList = JSON.parse(localStorage.getItem(progressKey) || "[]");
     if (!completedList.includes(materiId)) {
@@ -96,10 +99,13 @@ export default function ProgressSiswa() {
       
       // Kirim ke backend
       try {
-        await tandaiMateriSelesai(materiId);
-        console.log("Berhasil menandai materi selesai di database:", materiId);
+        console.log("Mengirim ke backend, idMateri:", materiId);
+        const response = await tandaiMateriSelesai(materiId);
+        console.log("Response dari backend:", response);
+        alert("Berhasil menandai materi selesai!");
       } catch (error) {
-        console.error("Gagal menandai materi selesai di database:", error);
+        console.error("ERROR menandai materi selesai:", error);
+        alert("Gagal menandai materi selesai: " + error.message);
         // Tetap simpan di localStorage meskipun gagal ke database
       }
       

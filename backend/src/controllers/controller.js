@@ -47,7 +47,9 @@ async function loginSiswa(req, res) {
       );
       id_userProfil = profilRes.rows[0]?.id || null;
     } catch (profileErr) {
-      logger.error("Error fetching siswa profile", { error: profileErr.message });
+      logger.error("Error fetching siswa profile", {
+        error: profileErr.message,
+      });
     }
 
     success(res, 200, "Masuk berhasil", { ...user, id_userProfil });
@@ -83,7 +85,9 @@ async function loginGuru(req, res) {
       );
       id_userProfil = profilRes.rows[0]?.id || null;
     } catch (profileErr) {
-      logger.error("Error fetching guru profile", { error: profileErr.message });
+      logger.error("Error fetching guru profile", {
+        error: profileErr.message,
+      });
     }
 
     success(res, 200, "Masuk berhasil", { ...user, id_userProfil });
@@ -111,7 +115,7 @@ async function logout(req, res) {
 
     // Hapus session dari database
     await pool.query("DELETE FROM sesi WHERE token = $1", [token]);
-    
+
     success(res, 200, "Logout berhasil", null);
   } catch (e) {
     logger.error("Logout error", { error: e.message });
@@ -544,6 +548,10 @@ async function downloadMateri(req, res) {
 async function doneMateriSiswa(req, res) {
   try {
     let idMateri = req.body.idMateri;
+    console.log("=== TANDAI SELESAI REQUEST ===");
+    console.log("Request body:", req.body);
+    console.log("idMateri:", idMateri, "type:", typeof idMateri);
+    
     if (!idMateri) return error(res, 400, "ID materi wajib");
 
     const resProfil = await pool.query(
@@ -562,7 +570,8 @@ async function doneMateriSiswa(req, res) {
 
     success(res, 200, "Status belajar disimpan", data);
   } catch (e) {
-    error(res, 500, "Gagal menandai materi");
+    console.error("ERROR doneMateriSiswa:", e);
+    error(res, 500, "Gagal menandai materi: " + e.message);
   }
 }
 

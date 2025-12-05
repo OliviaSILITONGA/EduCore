@@ -18,6 +18,7 @@ Platform pembelajaran berbasis web untuk guru dan siswa dengan fitur manajemen k
 ## ✨ Fitur
 
 ### Untuk Guru:
+
 - ✅ Manajemen kelas dan mata pelajaran
 - ✅ Upload dan distribusi materi pembelajaran
 - ✅ Monitoring progress siswa
@@ -25,6 +26,7 @@ Platform pembelajaran berbasis web untuk guru dan siswa dengan fitur manajemen k
 - ✅ Manajemen profil
 
 ### Untuk Siswa:
+
 - ✅ Akses materi pembelajaran per mata pelajaran
 - ✅ Tracking progress belajar
 - ✅ Tandai materi sebagai selesai
@@ -34,6 +36,7 @@ Platform pembelajaran berbasis web untuk guru dan siswa dengan fitur manajemen k
 ## 🛠 Teknologi
 
 ### Backend:
+
 - **Node.js** v22.x
 - **Express.js** v5.1.0
 - **PostgreSQL** v17
@@ -44,6 +47,7 @@ Platform pembelajaran berbasis web untuk guru dan siswa dengan fitur manajemen k
 - **Multer** - File uploads
 
 ### Frontend:
+
 - **React** v19.2.0
 - **Vite** v7.2.4
 - **React Router** v7.9.6
@@ -52,6 +56,7 @@ Platform pembelajaran berbasis web untuk guru dan siswa dengan fitur manajemen k
 - **Axios** v1.13.2
 
 ### Database:
+
 - **PostgreSQL** v17
 
 ## 📦 Prasyarat
@@ -59,11 +64,13 @@ Platform pembelajaran berbasis web untuk guru dan siswa dengan fitur manajemen k
 Pastikan sudah terinstall:
 
 1. **Node.js** >= 22.x
+
    ```bash
    node --version
    ```
 
 2. **PostgreSQL** >= 17
+
    ```bash
    psql --version
    ```
@@ -85,12 +92,14 @@ cd EduCore
 ### 2. Install Dependencies
 
 #### Backend:
+
 ```bash
 cd backend
 npm install
 ```
 
 #### Frontend:
+
 ```bash
 cd frontend
 npm install
@@ -101,6 +110,7 @@ npm install
 ### 1. Setup Database PostgreSQL
 
 #### a) Buat Database:
+
 ```bash
 # Login ke PostgreSQL
 psql -U postgres
@@ -111,12 +121,14 @@ CREATE DATABASE educore;
 ```
 
 #### b) Jalankan Script Database:
+
 ```bash
 # Dari root directory EduCore
 psql -U postgres -d educore -f setup-database.sql
 ```
 
 Atau lewat pgAdmin:
+
 1. Buka pgAdmin
 2. Klik kanan pada database `educore` → Query Tool
 3. Open file `setup-database.sql`
@@ -159,6 +171,7 @@ node test-db.js
 ```
 
 Jika berhasil, akan muncul:
+
 ```
 DB OK: { now: 2024-12-05T... }
 ```
@@ -168,6 +181,7 @@ DB OK: { now: 2024-12-05T... }
 ### Development Mode:
 
 #### 1. Jalankan Backend (Terminal 1):
+
 ```bash
 cd backend
 npm run dev
@@ -176,6 +190,7 @@ npm run dev
 Backend akan berjalan di: `http://localhost:5000`
 
 #### 2. Jalankan Frontend (Terminal 2):
+
 ```bash
 cd frontend
 npm run dev
@@ -186,6 +201,7 @@ Frontend akan berjalan di: `http://localhost:5173`
 ### Production Build:
 
 #### Frontend:
+
 ```bash
 cd frontend
 npm run build
@@ -244,6 +260,7 @@ EduCore/
 Dokumentasi lengkap API tersedia di: [API_DOCUMENTATION.md](./backend/API_DOCUMENTATION.md)
 
 ### Base URL:
+
 ```
 http://localhost:5000/api
 ```
@@ -251,6 +268,7 @@ http://localhost:5000/api
 ### Contoh Endpoints:
 
 #### Authentication:
+
 - `POST /api/login-siswa` - Login siswa
 - `POST /api/login-guru` - Login guru
 - `POST /api/register-siswa` - Register siswa
@@ -258,6 +276,7 @@ http://localhost:5000/api
 - `POST /api/logout` - Logout
 
 #### Protected Routes (butuh token):
+
 - `GET /api/profil-siswa` - Get profil siswa
 - `GET /api/profil-guru` - Get profil guru
 - `GET /api/matpel` - Get semua mata pelajaran
@@ -281,6 +300,7 @@ http://localhost:5000/api
 ### Sample Data:
 
 Database sudah include sample data:
+
 - 6 Mata Pelajaran (Matematika, Fisika, Kimia, dll)
 - 5 Kelas (10A, 10B, 11A, 11B, 12A)
 
@@ -291,6 +311,7 @@ Database sudah include sample data:
 **Error:** `Database connection failed`
 
 **Solusi:**
+
 ```bash
 # Cek PostgreSQL running
 # Windows:
@@ -305,6 +326,7 @@ Get-Service -Name postgresql*
 **Error:** `EADDRINUSE: address already in use :::5000`
 
 **Solusi:**
+
 ```bash
 # Windows - Cari process di port 5000
 netstat -ano | findstr :5000
@@ -321,6 +343,7 @@ PORT=5001
 **Error:** `Failed to fetch` atau `CORS error`
 
 **Solusi:**
+
 - Pastikan backend running di `http://localhost:5000`
 - Cek `API_BASE_URL` di `frontend/src/services/api.js`
 - CORS sudah enabled di backend
@@ -330,6 +353,7 @@ PORT=5001
 **Error:** `Password must be at least 8 characters`
 
 **Solusi:**
+
 - Password minimal 8 karakter
 - Harus ada huruf besar
 - Harus ada angka
@@ -338,12 +362,14 @@ PORT=5001
 ### 5. Upload file gagal
 
 **Solusi:**
+
 - Cek folder `backend/uploads/` ada dan writable
 - Cek file size tidak melebihi limit (default 10MB)
 
 ## 👥 Default Accounts
 
 ### Test Account (jika sudah register):
+
 - **Email:** test@guru.com
 - **Password:** password123
 - **Role:** Guru
@@ -371,7 +397,6 @@ This project is for educational purposes.
   - Basic authentication
   - Material management
   - Student progress tracking
-  
 - **v1.1.0** - Bug fixes & improvements
   - Fixed password validation (min 8 chars)
   - Added error logging

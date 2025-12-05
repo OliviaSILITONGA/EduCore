@@ -160,6 +160,7 @@ Authorization: Bearer <token>
 **Auth Required:** ✅ (Siswa atau Guru)
 
 **Headers:**
+
 ```
 Authorization: <token>
 ```
