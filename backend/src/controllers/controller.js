@@ -381,11 +381,23 @@ async function postMateri(req, res) {
 
         // If not found and kelas looks like "kelas-1", try extracting number
         if (kelasResult.rows.length === 0 && req.body.kelas.includes("-")) {
-          const kelasNum = req.body.kelas.split("-")[1];
+          const kelasNum = parseInt(req.body.kelas.split("-")[1]);
+          console.log("Extracted kelas number:", kelasNum);
+          
           kelasResult = await pool.query(
-            "SELECT id FROM kelas WHERE no_kelas = $1 LIMIT 1",
-            [parseInt(kelasNum)]
+            "SELECT id FROM kelas WHERE no_kelas = $1 ORDER BY id LIMIT 1",
+            [kelasNum]
           );
+          
+          // If still not found (e.g., kelas 1-9 don't exist), fallback to available kelas
+          if (kelasResult.rows.length === 0) {
+            console.log("⚠️ Kelas", kelasNum, "not found in database");
+            // Get first available kelas as fallback
+            kelasResult = await pool.query(
+              "SELECT id FROM kelas ORDER BY no_kelas LIMIT 1"
+            );
+            console.log("Using fallback kelas:", kelasResult.rows[0]?.id);
+          }
         }
 
         kelasId = kelasResult.rows[0]?.id;
