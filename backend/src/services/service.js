@@ -207,19 +207,28 @@ async function tampilkanMateri(idKelas) {
     let res = await client.query(q, [idKelas]);
     console.log("Exact match query returned", res.rows.length, "rows");
     
-    // Jika tidak ada hasil dan idKelas format "kelas-X", coba query tanpa prefix
+    // Jika tidak ada hasil dan idKelas format "kelas-X", coba cari berdasarkan no_kelas
     if (res.rows.length === 0 && idKelas.startsWith('kelas-')) {
-      const kelasNumber = idKelas.replace('kelas-', '');
+      const kelasNumber = parseInt(idKelas.replace('kelas-', ''));
       console.log("Trying alternative query with kelasNumber:", kelasNumber);
-      res = await client.query(q, [kelasNumber]);
-      console.log("Alternative query returned", res.rows.length, "rows");
+      
+      // Query berdasarkan no_kelas di tabel kelas
+      const altQ = `
+        SELECT m.* FROM materi m 
+        JOIN kelas k ON m.id_kelas = k.id 
+        WHERE k.no_kelas = $1 
+        ORDER BY m.tanggal_pembuatan DESC
+      `;
+      res = await client.query(altQ, [kelasNumber]);
+      console.log("Alternative query (by no_kelas) returned", res.rows.length, "rows");
     }
     
-    // Jika masih tidak ada, coba query LIKE untuk debug
+    // Jika masih tidak ada, tampilkan nilai id_kelas yang ada untuk debugging
     if (res.rows.length === 0) {
-      const debugQ = `SELECT DISTINCT id_kelas FROM materi LIMIT 10`;
+      const debugQ = `SELECT DISTINCT id_kelas FROM materi ORDER BY id_kelas LIMIT 20`;
       const debugRes = await client.query(debugQ);
-      console.log("Available id_kelas values in database:", debugRes.rows);
+      console.log("⚠️ No materi found! Available id_kelas values in database:", 
+        debugRes.rows.map(r => r.id_kelas));
     }
     
     return res.rows;
