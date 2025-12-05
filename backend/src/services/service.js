@@ -16,17 +16,27 @@ function validateRole(role) {
 async function handleLogin(data, role) {
   const { email, password } = data;
   console.log(`handleLogin called - email=${email}, role=${role}`);
-  if (
-    !validateEmail(email) ||
-    !validatePassword(password) ||
-    !validateRole(role)
-  ) {
-    throw new Error("Invalid input");
+  
+  if (!validateEmail(email)) {
+    console.log("Email validation failed");
+    throw new Error("Invalid email format");
+  }
+  
+  if (!validatePassword(password)) {
+    console.log("Password validation failed - length:", password?.length);
+    throw new Error("Password must be at least 8 characters");
+  }
+  
+  if (!validateRole(role)) {
+    console.log("Role validation failed");
+    throw new Error("Invalid role");
   }
 
   let client;
   try {
+    console.log("Attempting to connect to database...");
     client = await pool.connect();
+    console.log("Database connection successful");
   } catch (connectErr) {
     console.error("Database connection error:", connectErr.message);
     throw new Error(
@@ -154,10 +164,20 @@ async function tampilkanKelas(idSiswa, subject) {
 }
 
 async function tampilkanMateri(idKelas) {
-  if (!idKelas) return null;
-  const q = `SELECT * FROM materi WHERE id_kelas = $1 ORDER BY tanggal_pembuatan DESC`;
-  const res = await pool.query(q, [idKelas]);
-  return res.rows;
+  if (!idKelas) return [];
+
+  let client;
+  try {
+    client = await pool.connect();
+    const q = `SELECT * FROM materi WHERE id_kelas = $1 ORDER BY tanggal_pembuatan DESC`;
+    const res = await client.query(q, [idKelas]);
+    return res.rows;
+  } catch (err) {
+    console.error("tampilkanMateri error:", err.message);
+    throw err;
+  } finally {
+    if (client) client.release();
+  }
 }
 
 // Ambil daftar siswa yang menandai materi selesai untuk guru tertentu
@@ -231,18 +251,28 @@ async function tambahMateri(data) {
     data;
   if (!guruId || !matpelId || !kelasId || !nama)
     throw new Error("Missing required fields");
-  const q = `INSERT INTO materi (id_guru,id_matpel,id_kelas,nama,deskripsi,isi,catatan,url_media) VALUES ($1,$2,$3,$4,$5,$6,$7,$8) RETURNING *`;
-  const res = await pool.query(q, [
-    guruId,
-    matpelId,
-    kelasId,
-    nama,
-    deskripsi || null,
-    isi || null,
-    catatan || null,
-    urlMedia || null,
-  ]);
-  return res.rows[0];
+
+  let client;
+  try {
+    client = await pool.connect();
+    const q = `INSERT INTO materi (id_guru,id_matpel,id_kelas,nama,deskripsi,isi,catatan,url_media) VALUES ($1,$2,$3,$4,$5,$6,$7,$8) RETURNING *`;
+    const res = await client.query(q, [
+      guruId,
+      matpelId,
+      kelasId,
+      nama,
+      deskripsi || null,
+      isi || null,
+      catatan || null,
+      urlMedia || null,
+    ]);
+    return res.rows[0];
+  } catch (err) {
+    console.error("tambahMateri error:", err.message);
+    throw err;
+  } finally {
+    if (client) client.release();
+  }
 }
 
 async function updateProfil(idAkun, role, data) {
@@ -359,25 +389,45 @@ async function updateProfil(idAkun, role, data) {
 
 async function updateMateri(id, data) {
   if (!id) return null;
-  const q = `UPDATE materi SET id_matpel=$1,id_kelas=$2,nama=$3,deskripsi=$4,isi=$5,catatan=$6,url_media=$7 WHERE id=$8 RETURNING *`;
-  const res = await pool.query(q, [
-    data.matpelId,
-    data.kelasId,
-    data.nama,
-    data.deskripsi,
-    data.isi,
-    data.catatan,
-    data.urlMedia,
-    id,
-  ]);
-  return res.rows[0] || null;
+
+  let client;
+  try {
+    client = await pool.connect();
+    const q = `UPDATE materi SET id_matpel=$1,id_kelas=$2,nama=$3,deskripsi=$4,isi=$5,catatan=$6,url_media=$7 WHERE id=$8 RETURNING *`;
+    const res = await client.query(q, [
+      data.matpelId,
+      data.kelasId,
+      data.nama,
+      data.deskripsi,
+      data.isi,
+      data.catatan,
+      data.urlMedia,
+      id,
+    ]);
+    return res.rows[0] || null;
+  } catch (err) {
+    console.error("updateMateri error:", err.message);
+    throw err;
+  } finally {
+    if (client) client.release();
+  }
 }
 
 async function deleteMateri(id) {
   if (!id) return null;
-  const q = `DELETE FROM materi WHERE id = $1 RETURNING *`;
-  const res = await pool.query(q, [id]);
-  return res.rows[0] || null;
+
+  let client;
+  try {
+    client = await pool.connect();
+    const q = `DELETE FROM materi WHERE id = $1 RETURNING *`;
+    const res = await client.query(q, [id]);
+    return res.rows[0] || null;
+  } catch (err) {
+    console.error("deleteMateri error:", err.message);
+    throw err;
+  } finally {
+    if (client) client.release();
+  }
 }
 
 async function tandaiMateriSelesai(idSiswa, idMateri) {

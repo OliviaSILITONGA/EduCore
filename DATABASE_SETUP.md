@@ -40,8 +40,8 @@ Di pgAdmin Query Tool, jalankan:
 
 ```sql
 -- Cek semua tabel sudah dibuat
-SELECT table_name FROM information_schema.tables 
-WHERE table_schema = 'public' 
+SELECT table_name FROM information_schema.tables
+WHERE table_schema = 'public'
 ORDER BY table_name;
 
 -- Cek data sample
@@ -50,6 +50,7 @@ SELECT * FROM kelas;
 ```
 
 Seharusnya muncul 9 tabel:
+
 - akun
 - sesi
 - siswa
@@ -63,11 +64,13 @@ Seharusnya muncul 9 tabel:
 ## Langkah 5: Update Password di .env
 
 1. Buka file `.env`:
+
    ```bash
    notepad D:\EDUCOREEE\minggu4\EduCore\backend\.env
    ```
 
 2. Ganti `DB_PASSWORD` dengan password PostgreSQL Anda:
+
    ```env
    DB_USER=postgres
    DB_PASSWORD=password_postgres_anda
@@ -106,13 +109,16 @@ Jika berhasil, di terminal backend akan muncul:
 ## 🔍 Troubleshooting
 
 ### Error: "database educore does not exist"
+
 - Pastikan sudah membuat database `educore` di pgAdmin
 
 ### Error: "password authentication failed"
+
 - Cek password di file `.env` sudah benar
 - Password ini adalah password PostgreSQL Anda, bukan password database
 
 ### Error: "role user_role already exists"
+
 - Database sudah pernah di-setup sebelumnya
 - Aman untuk dijalankan ulang (script sudah ada DROP TABLE)
 

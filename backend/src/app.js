@@ -31,6 +31,7 @@ const PORT = process.env.PORT || 5000;
     try {
       await db.createTables();
       await db.createIndexes();
+      await db.insertSampleData();
       console.log("✅ Database tables and indexes created successfully");
     } catch (dbErr) {
       console.error(
