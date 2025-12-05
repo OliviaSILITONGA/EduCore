@@ -40,8 +40,18 @@ export default function LoginGuru() {
       return;
     }
 
-    if (password.length < 6) {
-      setError("Kata sandi harus minimal 6 karakter!");
+    if (password.length < 8) {
+      setError("Kata sandi harus minimal 8 karakter!");
+      return;
+    }
+
+    // Validasi kompleksitas password
+    const hasUpperCase = /[A-Z]/.test(password);
+    const hasLowerCase = /[a-z]/.test(password);
+    const hasNumber = /[0-9]/.test(password);
+
+    if (!hasUpperCase || !hasLowerCase || !hasNumber) {
+      setError("Kata sandi harus mengandung huruf besar, huruf kecil, dan angka!");
       return;
     }
 

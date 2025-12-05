@@ -63,6 +63,16 @@ export default function RegisterGuru() {
       return;
     }
 
+    // Validasi kompleksitas password
+    const hasUpperCase = /[A-Z]/.test(formData.password);
+    const hasLowerCase = /[a-z]/.test(formData.password);
+    const hasNumber = /[0-9]/.test(formData.password);
+
+    if (!hasUpperCase || !hasLowerCase || !hasNumber) {
+      setError("Kata sandi harus mengandung huruf besar, huruf kecil, dan angka!");
+      return;
+    }
+
     if (formData.password !== formData.confirmPassword) {
       setError("Kata sandi tidak cocok!");
       return;
