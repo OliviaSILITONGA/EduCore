@@ -55,37 +55,43 @@ export default function ProgressSiswa() {
   const loadMateriList = async () => {
     setLoading(true);
     try {
-      // Coba load dari API terlebih dahulu
+      // HARUS load dari API untuk mendapat ID database yang benar
       if (getToken()) {
         const res = await getMateriBySubject(subject, `kelas-${kelasId}`);
-        if (res.data && res.data.length > 0) {
+        console.log("API Response:", res);
+        if (res && res.data && res.data.length > 0) {
           console.log("Materi loaded from API:", res.data);
           setMateriList(res.data);
           calculateProgress(res.data);
           setLoading(false);
           return;
+        } else {
+          console.warn("API returned empty data or no data");
         }
+      } else {
+        console.warn("No token found, cannot load from API");
       }
       
-      // Fallback ke localStorage jika API gagal
-      const storageKey = `materi_${subject}_kelas${kelasId}`;
-      const storedMateri = JSON.parse(localStorage.getItem(storageKey) || "[]");
-      console.log("Materi loaded from localStorage:", storedMateri);
-      setMateriList(storedMateri);
-      calculateProgress(storedMateri);
+      // Jika API gagal atau kosong, tampilkan pesan kosong
+      console.log("No materi found from API, showing empty state");
+      setMateriList([]);
+      calculateProgress([]);
     } catch (error) {
-      console.error("Error loading materi:", error);
-      // Fallback ke localStorage
-      const storageKey = `materi_${subject}_kelas${kelasId}`;
-      const storedMateri = JSON.parse(localStorage.getItem(storageKey) || "[]");
-      setMateriList(storedMateri);
-      calculateProgress(storedMateri);
+      console.error("Error loading materi from API:", error);
+      // Tampilkan pesan error, jangan fallback ke localStorage
+      setMateriList([]);
+      calculateProgress([]);
     } finally {
       setLoading(false);
     }
   };
 
   const calculateProgress = (materiData = materiList) => {
+    if (!Array.isArray(materiData)) {
+      console.error("materiData is not an array:", materiData);
+      materiData = [];
+    }
+    
     // Load dari localStorage atau API
     const progressKey = `progress_${subject}_kelas${kelasId}`;
     const completedList = JSON.parse(localStorage.getItem(progressKey) || "[]");

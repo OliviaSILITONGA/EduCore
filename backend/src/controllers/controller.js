@@ -553,6 +553,11 @@ async function doneMateriSiswa(req, res) {
     console.log("idMateri:", idMateri, "type:", typeof idMateri);
     
     if (!idMateri) return error(res, 400, "ID materi wajib");
+    
+    // Validasi: ID harus integer valid (bukan timestamp localStorage)
+    if (idMateri > 2147483647) {
+      return error(res, 400, "Invalid ID - this appears to be a localStorage ID. Please refresh the page.");
+    }
 
     const resProfil = await pool.query(
       `SELECT id FROM siswa WHERE id_akun = $1 LIMIT 1`,
