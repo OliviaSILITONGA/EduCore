@@ -312,13 +312,24 @@ async function getSiswaLogin() {
 async function tambahMateri(data) {
   const { guruId, matpelId, kelasId, nama, deskripsi, isi, catatan, urlMedia } =
     data;
-  if (!guruId || !matpelId || !kelasId || !nama)
+  
+  console.log("=== tambahMateri received data ===");
+  console.log("guruId:", guruId, "type:", typeof guruId);
+  console.log("matpelId:", matpelId, "type:", typeof matpelId);
+  console.log("kelasId:", kelasId, "type:", typeof kelasId);
+  console.log("nama:", nama, "type:", typeof nama);
+  
+  if (!guruId || !matpelId || !kelasId || !nama) {
+    console.error("❌ Missing required fields!");
+    console.error("guruId:", guruId, "matpelId:", matpelId, "kelasId:", kelasId, "nama:", nama);
     throw new Error("Missing required fields");
+  }
 
   let client;
   try {
     client = await pool.connect();
     const q = `INSERT INTO materi (id_guru,id_matpel,id_kelas,nama,deskripsi,isi,catatan,url_media) VALUES ($1,$2,$3,$4,$5,$6,$7,$8) RETURNING *`;
+    console.log("Executing INSERT query with values:", [guruId, matpelId, kelasId, nama]);
     const res = await client.query(q, [
       guruId,
       matpelId,
@@ -329,9 +340,11 @@ async function tambahMateri(data) {
       catatan || null,
       urlMedia || null,
     ]);
+    console.log("✅ Materi inserted successfully, id:", res.rows[0].id);
     return res.rows[0];
   } catch (err) {
-    logger.error("updateMateri error", { error: err.message, idMateri, data });
+    console.error("❌ Database insert error:", err.message);
+    logger.error("tambahMateri error", { error: err.message, data });
     throw err;
   } finally {
     if (client) client.release();
