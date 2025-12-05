@@ -303,9 +303,14 @@ async function getMateriBySubject(req, res) {
   try {
     const matpel = req.params.subject;
     const kelas = req.query.kelas || null;
-    console.log("getMateriBySubject - matpel:", matpel, "kelas:", kelas);
+    console.log("=== GET MATERI BY SUBJECT ===");
+    console.log("matpel:", matpel, "kelas:", kelas);
 
     const data = await tampilkanMateri(kelas);
+    console.log("Data returned from tampilkanMateri:", data.length, "rows");
+    if (data.length > 0) {
+      console.log("Sample data:", data[0]);
+    }
     success(res, 200, "Materi", data);
   } catch (e) {
     console.error("getMateriBySubject error:", e.message);

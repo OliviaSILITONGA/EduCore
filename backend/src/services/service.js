@@ -191,13 +191,19 @@ async function tampilkanKelas(idSiswa, subject) {
 }
 
 async function tampilkanMateri(idKelas) {
-  if (!idKelas) return [];
+  console.log("tampilkanMateri called with idKelas:", idKelas);
+  if (!idKelas) {
+    console.log("No idKelas provided, returning empty array");
+    return [];
+  }
 
   let client;
   try {
     client = await pool.connect();
     const q = `SELECT * FROM materi WHERE id_kelas = $1 ORDER BY tanggal_pembuatan DESC`;
+    console.log("Executing query:", q, "with param:", idKelas);
     const res = await client.query(q, [idKelas]);
+    console.log("Query returned", res.rows.length, "rows");
     return res.rows;
   } catch (err) {
     logger.error("tampilkanMateri error", {
