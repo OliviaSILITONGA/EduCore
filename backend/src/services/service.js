@@ -16,19 +16,38 @@ function validateRole(role) {
 async function handleLogin(data, role) {
   const { email, password } = data;
   console.log(`handleLogin called - email=${email}, role=${role}`);
-  if (
-    !validateEmail(email) ||
-    !validatePassword(password) ||
-    !validateRole(role)
-  ) {
-    throw new Error("Invalid input");
+  
+  if (!validateEmail(email)) {
+    console.log("Email validation failed");
+    throw new Error("Invalid email format");
+  }
+  
+  if (!validatePassword(password)) {
+    console.log("Password validation failed - length:", password?.length);
+    throw new Error("Password must be at least 8 characters");
+  }
+  
+  if (!validateRole(role)) {
+    console.log("Role validation failed");
+    throw new Error("Invalid role");
   }
 
-  const client = await pool.connect();
+  let client;
+  try {
+    console.log("Attempting to connect to database...");
+    client = await pool.connect();
+    console.log("Database connection successful");
+  } catch (connectErr) {
+    console.error("Database connection error:", connectErr.message);
+    throw new Error(
+      "Database connection failed. Please check database configuration."
+    );
+  }
+
   try {
     const q = `SELECT id, email, password, role FROM akun WHERE email = $1 AND role = $2 LIMIT 1`;
     const res = await client.query(q, [email, role]);
-    console.log('login query result rows:', res.rows.length);
+    console.log("login query result rows:", res.rows.length);
     if (res.rows.length === 0) return null;
 
     const user = res.rows[0];
@@ -36,7 +55,7 @@ async function handleLogin(data, role) {
     if (!match) return null;
 
     const token = crypto.randomBytes(32).toString("hex");
-    console.log('generated token for user id', user.id);
+    console.log("generated token for user id", user.id);
     await client.query(
       `INSERT INTO sesi (token, id_akun, waktu_berakhir) VALUES ($1, $2, DEFAULT)`,
       [token, user.id]
@@ -44,10 +63,10 @@ async function handleLogin(data, role) {
 
     return { token, user: { id: user.id, email: user.email, role: user.role } };
   } catch (err) {
-    console.error("Login service error");
+    console.error("Login service error:", err.message);
     throw err;
   } finally {
-    client.release();
+    if (client) client.release();
   }
 }
 
@@ -145,10 +164,20 @@ async function tampilkanKelas(idSiswa, subject) {
 }
 
 async function tampilkanMateri(idKelas) {
-  if (!idKelas) return null;
-  const q = `SELECT * FROM materi WHERE id_kelas = $1 ORDER BY tanggal_pembuatan DESC`;
-  const res = await pool.query(q, [idKelas]);
-  return res.rows;
+  if (!idKelas) return [];
+
+  let client;
+  try {
+    client = await pool.connect();
+    const q = `SELECT * FROM materi WHERE id_kelas = $1 ORDER BY tanggal_pembuatan DESC`;
+    const res = await client.query(q, [idKelas]);
+    return res.rows;
+  } catch (err) {
+    console.error("tampilkanMateri error:", err.message);
+    throw err;
+  } finally {
+    if (client) client.release();
+  }
 }
 
 // Ambil daftar siswa yang menandai materi selesai untuk guru tertentu
@@ -178,23 +207,72 @@ async function tampilkanDetailMateri(id) {
   return res.rows[0] || null;
 }
 
+// Ambil daftar semua siswa yang terdaftar (untuk guru)
+async function getDaftarSiswa() {
+  const q = `
+    SELECT 
+      s.id,
+      s.nama,
+      a.email,
+      s.tingkat,
+      s.nama_sekolah,
+      s.kota_sekolah,
+      s.provinsi_sekolah,
+      a.created_at AS tanggal_daftar
+    FROM siswa s
+    JOIN akun a ON s.id_akun = a.id
+    ORDER BY a.created_at DESC
+  `;
+  const res = await pool.query(q);
+  return res.rows;
+}
+
+// Ambil daftar siswa yang login ke sistem (memiliki sesi aktif)
+async function getSiswaLogin() {
+  const q = `
+    SELECT 
+      s.id,
+      s.nama,
+      a.email,
+      s.tingkat,
+      se.waktu_berakhir AS sesi_berakhir
+    FROM siswa s
+    JOIN akun a ON s.id_akun = a.id
+    JOIN sesi se ON a.id = se.id_akun
+    WHERE se.waktu_berakhir > NOW()
+    ORDER BY se.waktu_berakhir DESC
+  `;
+  const res = await pool.query(q);
+  return res.rows;
+}
+
 async function tambahMateri(data) {
   const { guruId, matpelId, kelasId, nama, deskripsi, isi, catatan, urlMedia } =
     data;
   if (!guruId || !matpelId || !kelasId || !nama)
     throw new Error("Missing required fields");
-  const q = `INSERT INTO materi (id_guru,id_matpel,id_kelas,nama,deskripsi,isi,catatan,url_media) VALUES ($1,$2,$3,$4,$5,$6,$7,$8) RETURNING *`;
-  const res = await pool.query(q, [
-    guruId,
-    matpelId,
-    kelasId,
-    nama,
-    deskripsi || null,
-    isi || null,
-    catatan || null,
-    urlMedia || null,
-  ]);
-  return res.rows[0];
+
+  let client;
+  try {
+    client = await pool.connect();
+    const q = `INSERT INTO materi (id_guru,id_matpel,id_kelas,nama,deskripsi,isi,catatan,url_media) VALUES ($1,$2,$3,$4,$5,$6,$7,$8) RETURNING *`;
+    const res = await client.query(q, [
+      guruId,
+      matpelId,
+      kelasId,
+      nama,
+      deskripsi || null,
+      isi || null,
+      catatan || null,
+      urlMedia || null,
+    ]);
+    return res.rows[0];
+  } catch (err) {
+    console.error("tambahMateri error:", err.message);
+    throw err;
+  } finally {
+    if (client) client.release();
+  }
 }
 
 async function updateProfil(idAkun, role, data) {
@@ -311,25 +389,45 @@ async function updateProfil(idAkun, role, data) {
 
 async function updateMateri(id, data) {
   if (!id) return null;
-  const q = `UPDATE materi SET id_matpel=$1,id_kelas=$2,nama=$3,deskripsi=$4,isi=$5,catatan=$6,url_media=$7 WHERE id=$8 RETURNING *`;
-  const res = await pool.query(q, [
-    data.matpelId,
-    data.kelasId,
-    data.nama,
-    data.deskripsi,
-    data.isi,
-    data.catatan,
-    data.urlMedia,
-    id,
-  ]);
-  return res.rows[0] || null;
+
+  let client;
+  try {
+    client = await pool.connect();
+    const q = `UPDATE materi SET id_matpel=$1,id_kelas=$2,nama=$3,deskripsi=$4,isi=$5,catatan=$6,url_media=$7 WHERE id=$8 RETURNING *`;
+    const res = await client.query(q, [
+      data.matpelId,
+      data.kelasId,
+      data.nama,
+      data.deskripsi,
+      data.isi,
+      data.catatan,
+      data.urlMedia,
+      id,
+    ]);
+    return res.rows[0] || null;
+  } catch (err) {
+    console.error("updateMateri error:", err.message);
+    throw err;
+  } finally {
+    if (client) client.release();
+  }
 }
 
 async function deleteMateri(id) {
   if (!id) return null;
-  const q = `DELETE FROM materi WHERE id = $1 RETURNING *`;
-  const res = await pool.query(q, [id]);
-  return res.rows[0] || null;
+
+  let client;
+  try {
+    client = await pool.connect();
+    const q = `DELETE FROM materi WHERE id = $1 RETURNING *`;
+    const res = await client.query(q, [id]);
+    return res.rows[0] || null;
+  } catch (err) {
+    console.error("deleteMateri error:", err.message);
+    throw err;
+  } finally {
+    if (client) client.release();
+  }
 }
 
 async function tandaiMateriSelesai(idSiswa, idMateri) {
@@ -395,4 +493,7 @@ module.exports = {
   updateMateri,
   deleteMateri,
   tandaiMateriSelesai,
+  getDaftarSiswa,
+  getSiswaLogin,
+  getSiswaSelesaiByGuru,
 };

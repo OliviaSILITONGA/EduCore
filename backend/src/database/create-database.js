@@ -159,4 +159,44 @@ const createIndexes = async () => {
   }
 };
 
-module.exports = { createTables, createIndexes };
+// Insert sample data if tables are empty
+const insertSampleData = async () => {
+  try {
+    if (!process.env.DB_HOST || !process.env.DB_USER || !process.env.DB_NAME) {
+      return;
+    }
+
+    // Check if matpel table is empty
+    const matpelCount = await pool.query("SELECT COUNT(*) FROM matpel");
+    if (parseInt(matpelCount.rows[0].count) === 0) {
+      await pool.query(`
+        INSERT INTO matpel (nama, url_gambar) VALUES 
+        ('Matematika', '/images/matematika.png'),
+        ('Fisika', '/images/fisika.png'),
+        ('Kimia', '/images/kimia.png'),
+        ('Biologi', '/images/biologi.png'),
+        ('Bahasa Indonesia', '/images/bahasa-indonesia.png'),
+        ('Bahasa Inggris', '/images/bahasa-inggris.png')
+      `);
+      console.log("Sample matpel data inserted");
+    }
+
+    // Check if kelas table is empty
+    const kelasCount = await pool.query("SELECT COUNT(*) FROM kelas");
+    if (parseInt(kelasCount.rows[0].count) === 0) {
+      await pool.query(`
+        INSERT INTO kelas (id, nama, no_kelas, tingkat) VALUES 
+        ('10A', 'Kelas 10 A', 10, 'SMA'),
+        ('10B', 'Kelas 10 B', 10, 'SMA'),
+        ('11A', 'Kelas 11 A', 11, 'SMA'),
+        ('11B', 'Kelas 11 B', 11, 'SMA'),
+        ('12A', 'Kelas 12 A', 12, 'SMA')
+      `);
+      console.log("Sample kelas data inserted");
+    }
+  } catch (err) {
+    console.log("Error inserting sample data:", err.message);
+  }
+};
+
+module.exports = { createTables, createIndexes, insertSampleData };

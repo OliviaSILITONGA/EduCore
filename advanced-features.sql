@@ -1,46 +1,55 @@
-CREATE OR REPLACE FUNCTION update_progres_mapel()
+CREATE OR REPLACE FUNCTION update_progres_mapel_kelas()
 RETURNS TRIGGER AS $$
 DECLARE
     v_id_matpel INT;
+    v_id_kelas VARCHAR(100);
     total_materi INT;
     total_selesai INT;
     progres_baru INT;
 BEGIN
-    -- Ambil id_matpel dari materi yang sedang dikerjakan
-    SELECT id_matpel INTO v_id_matpel
+    -- Ambil mapel dan kelas dari materi terkait
+    SELECT id_matpel, id_kelas 
+    INTO v_id_matpel, v_id_kelas
     FROM materi
     WHERE id = NEW.id_materi;
 
-    -- Hitung total materi untuk mapel tersebut
+    -- Hitung total materi dalam MAPEL tersebut untuk KELAS tersebut
     SELECT COUNT(*) INTO total_materi
     FROM materi
-    WHERE id_matpel = v_id_matpel;
+    WHERE id_matpel = v_id_matpel
+      AND id_kelas = v_id_kelas;
 
-    -- Hitung jumlah materi yang selesai untuk siswa ini
+    -- Hitung jumlah materi yang SELesai untuk siswa ini
     SELECT COUNT(*) INTO total_selesai
     FROM pembelajaran p
     JOIN materi m ON p.id_materi = m.id
     WHERE p.id_siswa = NEW.id_siswa
       AND m.id_matpel = v_id_matpel
+      AND m.id_kelas = v_id_kelas
       AND p.selesai = TRUE;
 
-    -- Hitung progres persentase
-    progres_baru := (total_selesai * 100) / total_materi;
+    -- Hitung persentase progres (jaga-jaga 0 division)
+    IF total_materi = 0 THEN
+        progres_baru := 0;
+    ELSE
+        progres_baru := ROUND((total_selesai * 100) / total_materi);
+    END IF;
 
-    -- Update progres di detail_kelas
+    -- Update progres di tabel detail_kelas
     UPDATE detail_kelas
     SET progres = progres_baru
     WHERE id_siswa = NEW.id_siswa
-      AND id_matpel = v_id_matpel;
+      AND id_matpel = v_id_matpel
+      AND id_kelas = v_id_kelas;
 
     RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE TRIGGER trg_update_progres_mapel
+CREATE TRIGGER trg_update_progres_mapel_kelas
 AFTER INSERT OR UPDATE OF selesai ON pembelajaran
 FOR EACH ROW
-EXECUTE FUNCTION update_progres_mapel();
+EXECUTE FUNCTION update_progres_mapel_kelas();
 
 CREATE VIEW view_materi_lengkap AS
 SELECT 

@@ -31,7 +31,7 @@ import {
   Video,
   FileSpreadsheet,
   Presentation,
-  X
+  X,
 } from "lucide-react";
 
 export default function MateriSayaSiswa() {
@@ -105,14 +105,17 @@ export default function MateriSayaSiswa() {
       }
       const folder = pathParts.slice(0, -1).join("/"); // all but last
       const filename = pathParts[pathParts.length - 1]; // last part
-      const base = "http://localhost:6000/api/uploads"; // backend uploads base
-      const url = `${base}/download/${encodeURIComponent(folder)}/${encodeURIComponent(filename)}`;
+      const base = "http://localhost:5000/api/uploads"; // backend uploads base
+      const url = `${base}/download/${encodeURIComponent(
+        folder
+      )}/${encodeURIComponent(filename)}`;
       const headers = {};
       const token = getToken();
       if (token) headers.Authorization = token;
 
       const res = await fetch(url, { headers });
-      if (!res.ok) throw new Error(`Download failed: ${res.status} ${res.statusText}`);
+      if (!res.ok)
+        throw new Error(`Download failed: ${res.status} ${res.statusText}`);
 
       const blob = await res.blob();
       const blobUrl = URL.createObjectURL(blob);
@@ -135,44 +138,82 @@ export default function MateriSayaSiswa() {
   };
 
   const getFileIcon = (fileType, fileName) => {
-    if (fileType?.includes('pdf') || fileName?.endsWith('.pdf')) 
-      return { icon: <FileTextIcon size={20} className="text-red-500" />, color: "bg-red-50 border-red-100" };
-    if (fileType?.includes('word') || fileName?.endsWith('.doc') || fileName?.endsWith('.docx')) 
-      return { icon: <FileText size={20} className="text-blue-500" />, color: "bg-blue-50 border-blue-100" };
-    if (fileType?.includes('sheet') || fileName?.endsWith('.xls') || fileName?.endsWith('.xlsx')) 
-      return { icon: <FileSpreadsheet size={20} className="text-green-500" />, color: "bg-green-50 border-green-100" };
-    if (fileType?.includes('presentation') || fileName?.endsWith('.ppt') || fileName?.endsWith('.pptx')) 
-      return { icon: <Presentation size={20} className="text-orange-500" />, color: "bg-orange-50 border-orange-100" };
-    if (fileType?.includes('image')) 
-      return { icon: <Image size={20} className="text-purple-500" />, color: "bg-purple-50 border-purple-100" };
-    if (fileType?.includes('video')) 
-      return { icon: <Video size={20} className="text-pink-500" />, color: "bg-pink-50 border-pink-100" };
-    return { icon: <File size={20} className="text-gray-500" />, color: "bg-gray-50 border-gray-100" };
+    if (fileType?.includes("pdf") || fileName?.endsWith(".pdf"))
+      return {
+        icon: <FileTextIcon size={20} className="text-red-500" />,
+        color: "bg-red-50 border-red-100",
+      };
+    if (
+      fileType?.includes("word") ||
+      fileName?.endsWith(".doc") ||
+      fileName?.endsWith(".docx")
+    )
+      return {
+        icon: <FileText size={20} className="text-blue-500" />,
+        color: "bg-blue-50 border-blue-100",
+      };
+    if (
+      fileType?.includes("sheet") ||
+      fileName?.endsWith(".xls") ||
+      fileName?.endsWith(".xlsx")
+    )
+      return {
+        icon: <FileSpreadsheet size={20} className="text-green-500" />,
+        color: "bg-green-50 border-green-100",
+      };
+    if (
+      fileType?.includes("presentation") ||
+      fileName?.endsWith(".ppt") ||
+      fileName?.endsWith(".pptx")
+    )
+      return {
+        icon: <Presentation size={20} className="text-orange-500" />,
+        color: "bg-orange-50 border-orange-100",
+      };
+    if (fileType?.includes("image"))
+      return {
+        icon: <Image size={20} className="text-purple-500" />,
+        color: "bg-purple-50 border-purple-100",
+      };
+    if (fileType?.includes("video"))
+      return {
+        icon: <Video size={20} className="text-pink-500" />,
+        color: "bg-pink-50 border-pink-100",
+      };
+    return {
+      icon: <File size={20} className="text-gray-500" />,
+      color: "bg-gray-50 border-gray-100",
+    };
   };
 
-  const filteredMateriList = materiList.filter(materi =>
-    materi.folderName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    (materi.description && materi.description.toLowerCase().includes(searchTerm.toLowerCase()))
+  const filteredMateriList = materiList.filter(
+    (materi) =>
+      materi.folderName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (materi.description &&
+        materi.description.toLowerCase().includes(searchTerm.toLowerCase()))
   );
 
   // Calculate statistics
-  const totalFiles = materiList.reduce((acc, curr) => acc + (curr.files?.length || 0), 0);
-  const totalFileSizeMB = (materiList.reduce((acc, curr) => {
-    const filesSize = curr.files?.reduce((sum, file) => sum + (file.size || 0), 0) || 0;
-    return acc + filesSize;
-  }, 0) / (1024 * 1024)).toFixed(2);
+  const totalFiles = materiList.reduce(
+    (acc, curr) => acc + (curr.files?.length || 0),
+    0
+  );
+  const totalFileSizeMB = (
+    materiList.reduce((acc, curr) => {
+      const filesSize =
+        curr.files?.reduce((sum, file) => sum + (file.size || 0), 0) || 0;
+      return acc + filesSize;
+    }, 0) /
+    (1024 * 1024)
+  ).toFixed(2);
 
   return (
     <div className="min-h-screen bg-gray-50 flex">
       {/* SIDEBAR - DESKTOP */}
       <aside className="hidden md:flex flex-col w-64 bg-gradient-to-b from-blue-600 to-blue-700 text-white">
         <div className="p-6 flex flex-col items-center">
-          <img 
-            src={Logo} 
-            alt="EduCore Logo" 
-            className="h-10 mb-8" 
-          />
-          
+          <img src={Logo} alt="EduCore Logo" className="h-10 mb-8" />
+
           {/* PROFILE SECTION */}
           <button
             onClick={() => navigate("/profil-siswa")}
@@ -208,7 +249,7 @@ export default function MateriSayaSiswa() {
             >
               Dashboard
             </Button>
-            
+
             <Button
               variant="menu"
               onClick={() => navigate("/profil-siswa")}
@@ -217,8 +258,6 @@ export default function MateriSayaSiswa() {
             >
               Profil Siswa
             </Button>
-            
-          
           </nav>
         </div>
 
@@ -251,14 +290,14 @@ export default function MateriSayaSiswa() {
               </button>
               <img src={Logo} alt="Logo" className="h-8" />
             </div>
-            
+
             <div className="flex flex-col items-center">
               <h1 className="text-lg font-semibold">
                 {subject?.toUpperCase()}
               </h1>
               <p className="text-xs text-blue-100">Kelas {kelasId}</p>
             </div>
-            
+
             <button
               onClick={() => navigate("/beranda-siswa")}
               className="p-2 hover:bg-blue-500/30 rounded-lg transition-colors"
@@ -277,11 +316,13 @@ export default function MateriSayaSiswa() {
                   alt="Profile"
                 />
                 <div>
-                  <p className="font-semibold">{profile?.nama?.split(" ")[0] || "Siswa"}</p>
+                  <p className="font-semibold">
+                    {profile?.nama?.split(" ")[0] || "Siswa"}
+                  </p>
                   <p className="text-sm text-blue-100">Kelas {kelasId}</p>
                 </div>
               </div>
-              
+
               <Button
                 variant="menu"
                 onClick={() => {
@@ -293,7 +334,7 @@ export default function MateriSayaSiswa() {
               >
                 Dashboard
               </Button>
-              
+
               <Button
                 variant="menu"
                 onClick={() => {
@@ -305,8 +346,6 @@ export default function MateriSayaSiswa() {
               >
                 Profil Siswa
               </Button>
-              
-             
             </div>
           )}
         </header>
@@ -341,15 +380,20 @@ export default function MateriSayaSiswa() {
                           Kelas {kelasId}
                         </span>
                         <span className="text-gray-500">•</span>
-                        <span className="text-gray-600">{materiList.length} Materi</span>
+                        <span className="text-gray-600">
+                          {materiList.length} Materi
+                        </span>
                       </div>
                     </div>
                   </div>
                 </div>
-                
+
                 <div className="flex flex-col sm:flex-row gap-3">
                   <div className="relative">
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
+                    <Search
+                      className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+                      size={20}
+                    />
                     <input
                       type="text"
                       placeholder="Cari materi..."
@@ -383,7 +427,7 @@ export default function MateriSayaSiswa() {
                     </div>
                   </div>
                 </div>
-                
+
                 <div className="bg-white rounded-xl border border-gray-200 p-5 shadow-sm hover:shadow-md transition-shadow">
                   <div className="flex items-center justify-between">
                     <div>
@@ -397,7 +441,7 @@ export default function MateriSayaSiswa() {
                     </div>
                   </div>
                 </div>
-                
+
                 <div className="bg-white rounded-xl border border-gray-200 p-5 shadow-sm hover:shadow-md transition-shadow">
                   <div className="flex items-center justify-between">
                     <div>
@@ -411,20 +455,21 @@ export default function MateriSayaSiswa() {
                     </div>
                   </div>
                 </div>
-                
+
                 <div className="bg-white rounded-xl border border-gray-200 p-5 shadow-sm hover:shadow-md transition-shadow">
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-sm text-gray-500">Terakhir Diupdate</p>
                       <p className="text-lg font-bold text-gray-800 mt-1">
-                        {materiList.length > 0 
-                          ? new Date(materiList[materiList.length - 1].uploadDate).toLocaleDateString("id-ID", {
-                              day: 'numeric',
-                              month: 'short',
-                              year: 'numeric'
+                        {materiList.length > 0
+                          ? new Date(
+                              materiList[materiList.length - 1].uploadDate
+                            ).toLocaleDateString("id-ID", {
+                              day: "numeric",
+                              month: "short",
+                              year: "numeric",
                             })
-                          : '-'
-                        }
+                          : "-"}
                       </p>
                     </div>
                     <div className="w-12 h-12 bg-amber-50 rounded-lg flex items-center justify-center">
@@ -445,11 +490,14 @@ export default function MateriSayaSiswa() {
                       <div className="w-14 h-14 bg-white/20 rounded-xl flex items-center justify-center backdrop-blur-sm">
                         <GraduationCap size={28} />
                       </div>
-                      <h2 className="text-2xl font-bold">Selamat Belajar! 🎓</h2>
+                      <h2 className="text-2xl font-bold">
+                        Selamat Belajar! 🎓
+                      </h2>
                     </div>
                     <p className="text-white/90 max-w-2xl">
-                      Jelajahi semua materi pembelajaran <strong>{subject}</strong> untuk Kelas {kelasId}. 
-                      Setiap file dapat diunduh untuk dipelajari secara offline.
+                      Jelajahi semua materi pembelajaran{" "}
+                      <strong>{subject}</strong> untuk Kelas {kelasId}. Setiap
+                      file dapat diunduh untuk dipelajari secara offline.
                     </p>
                   </div>
                   <div className="flex items-center gap-6">
@@ -472,16 +520,19 @@ export default function MateriSayaSiswa() {
               <div className="p-6 border-b border-gray-100">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                   <div>
-                    <h2 className="text-xl font-bold text-gray-800">Daftar Materi</h2>
+                    <h2 className="text-xl font-bold text-gray-800">
+                      Daftar Materi
+                    </h2>
                     <p className="text-gray-600 mt-1">
-                      {filteredMateriList.length} dari {materiList.length} materi ditemukan
+                      {filteredMateriList.length} dari {materiList.length}{" "}
+                      materi ditemukan
                     </p>
                   </div>
-                  
+
                   {materiList.length > 0 && (
                     <div className="flex items-center gap-2">
                       <div className="text-sm text-gray-500">
-                        File aktif: {expandedMateri ? '1' : '0'} dibuka
+                        File aktif: {expandedMateri ? "1" : "0"} dibuka
                       </div>
                     </div>
                   )}
@@ -502,10 +553,9 @@ export default function MateriSayaSiswa() {
                     {searchTerm ? "Materi tidak ditemukan" : "Belum Ada Materi"}
                   </h3>
                   <p className="text-gray-500 max-w-md mx-auto mb-6">
-                    {searchTerm 
+                    {searchTerm
                       ? `Tidak ada materi yang sesuai dengan pencarian "${searchTerm}".`
-                      : `Guru akan segera mengupload materi pembelajaran untuk ${subject} Kelas ${kelasId}.`
-                    }
+                      : `Guru akan segera mengupload materi pembelajaran untuk ${subject} Kelas ${kelasId}.`}
                   </p>
                   {searchTerm && (
                     <button
@@ -534,7 +584,7 @@ export default function MateriSayaSiswa() {
                                 {index + 1}
                               </div>
                             </div>
-                            
+
                             <div className="flex-1 min-w-0">
                               <div className="flex flex-wrap items-center gap-2 mb-2">
                                 <h3 className="text-lg font-bold text-gray-800 break-words">
@@ -545,25 +595,29 @@ export default function MateriSayaSiswa() {
                                   {materi.files?.length || 0} file
                                 </span>
                               </div>
-                              
+
                               <div className="flex flex-wrap gap-3 text-sm text-gray-600 mb-3">
                                 <span className="flex items-center gap-2">
                                   <Calendar size={14} />
-                                  {new Date(materi.uploadDate).toLocaleDateString("id-ID", {
-                                    day: 'numeric',
-                                    month: 'long',
-                                    year: 'numeric'
+                                  {new Date(
+                                    materi.uploadDate
+                                  ).toLocaleDateString("id-ID", {
+                                    day: "numeric",
+                                    month: "long",
+                                    year: "numeric",
                                   })}
                                 </span>
                                 <span className="flex items-center gap-2">
                                   <Clock size={14} />
-                                  {new Date(materi.uploadDate).toLocaleTimeString("id-ID", {
-                                    hour: '2-digit',
-                                    minute: '2-digit'
+                                  {new Date(
+                                    materi.uploadDate
+                                  ).toLocaleTimeString("id-ID", {
+                                    hour: "2-digit",
+                                    minute: "2-digit",
                                   })}
                                 </span>
                               </div>
-                              
+
                               {materi.description && (
                                 <p className="text-gray-600 text-sm leading-relaxed max-w-3xl">
                                   {materi.description}
@@ -577,63 +631,80 @@ export default function MateriSayaSiswa() {
                           onClick={() => toggleExpand(materi.id)}
                           className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 text-white font-medium rounded-lg shadow-sm hover:shadow transition-all duration-300 min-w-[120px] justify-center"
                         >
-                          {expandedMateri === materi.id ? "Tutup" : "Lihat File"}
-                          {expandedMateri === materi.id ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
+                          {expandedMateri === materi.id
+                            ? "Tutup"
+                            : "Lihat File"}
+                          {expandedMateri === materi.id ? (
+                            <ChevronUp size={18} />
+                          ) : (
+                            <ChevronDown size={18} />
+                          )}
                         </button>
                       </div>
 
                       {/* Expanded File List */}
-                      {expandedMateri === materi.id && materi.files && materi.files.length > 0 && (
-                        <div className="mt-6 pt-6 border-t border-gray-100">
-                          <div className="flex items-center justify-between mb-4">
-                            <h4 className="text-lg font-semibold text-gray-700 flex items-center gap-2">
-                              <FileText size={20} className="text-blue-500" />
-                              Daftar File ({materi.files.length})
-                            </h4>
-                            <span className="text-sm text-gray-500">
-                              Klik unduh untuk menyimpan file
-                            </span>
-                          </div>
-                          
-                          <div className="grid gap-3">
-                            {materi.files.map((file, idx) => {
-                              const fileIcon = getFileIcon(file.type, file.name);
-                              
-                              return (
-                                <div
-                                  key={idx}
-                                  className="flex flex-col sm:flex-row sm:items-center justify-between p-4 bg-gray-50 rounded-xl border hover:border-gray-300 hover:bg-white transition-all group/file"
-                                >
-                                  <div className="flex items-center gap-4 flex-1 min-w-0 mb-3 sm:mb-0">
-                                    <div className={`w-12 h-12 rounded-xl border ${fileIcon.color} flex items-center justify-center flex-shrink-0`}>
-                                      {fileIcon.icon}
-                                    </div>
-                                    
-                                    <div className="flex-1 min-w-0">
-                                      <p className="font-medium text-gray-800 truncate group-hover/file:text-blue-700 transition-colors">
-                                        {file.name}
-                                      </p>
-                                      <div className="flex flex-wrap items-center gap-3 mt-1 text-sm text-gray-500">
-                                        <span className="truncate max-w-xs">{file.path}</span>
-                                        <span>•</span>
-                                        <span>{(file.size / 1024).toFixed(1)} KB</span>
+                      {expandedMateri === materi.id &&
+                        materi.files &&
+                        materi.files.length > 0 && (
+                          <div className="mt-6 pt-6 border-t border-gray-100">
+                            <div className="flex items-center justify-between mb-4">
+                              <h4 className="text-lg font-semibold text-gray-700 flex items-center gap-2">
+                                <FileText size={20} className="text-blue-500" />
+                                Daftar File ({materi.files.length})
+                              </h4>
+                              <span className="text-sm text-gray-500">
+                                Klik unduh untuk menyimpan file
+                              </span>
+                            </div>
+
+                            <div className="grid gap-3">
+                              {materi.files.map((file, idx) => {
+                                const fileIcon = getFileIcon(
+                                  file.type,
+                                  file.name
+                                );
+
+                                return (
+                                  <div
+                                    key={idx}
+                                    className="flex flex-col sm:flex-row sm:items-center justify-between p-4 bg-gray-50 rounded-xl border hover:border-gray-300 hover:bg-white transition-all group/file"
+                                  >
+                                    <div className="flex items-center gap-4 flex-1 min-w-0 mb-3 sm:mb-0">
+                                      <div
+                                        className={`w-12 h-12 rounded-xl border ${fileIcon.color} flex items-center justify-center flex-shrink-0`}
+                                      >
+                                        {fileIcon.icon}
+                                      </div>
+
+                                      <div className="flex-1 min-w-0">
+                                        <p className="font-medium text-gray-800 truncate group-hover/file:text-blue-700 transition-colors">
+                                          {file.name}
+                                        </p>
+                                        <div className="flex flex-wrap items-center gap-3 mt-1 text-sm text-gray-500">
+                                          <span className="truncate max-w-xs">
+                                            {file.path}
+                                          </span>
+                                          <span>•</span>
+                                          <span>
+                                            {(file.size / 1024).toFixed(1)} KB
+                                          </span>
+                                        </div>
                                       </div>
                                     </div>
+
+                                    <button
+                                      onClick={() => downloadFile(file)}
+                                      className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white font-medium rounded-lg shadow-sm hover:shadow transition-all duration-300 sm:w-auto w-full justify-center"
+                                    >
+                                      <Download size={16} />
+                                      Unduh
+                                    </button>
                                   </div>
-                                  
-                                  <button
-                                    onClick={() => downloadFile(file)}
-                                    className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white font-medium rounded-lg shadow-sm hover:shadow transition-all duration-300 sm:w-auto w-full justify-center"
-                                  >
-                                    <Download size={16} />
-                                    Unduh
-                                  </button>
-                                </div>
-                              );
-                            })}
+                                );
+                              })}
+                            </div>
                           </div>
-                        </div>
-                      )}
+                        )}
                     </div>
                   ))}
                 </div>
@@ -648,19 +719,26 @@ export default function MateriSayaSiswa() {
                     <Award size={24} className="text-white" />
                   </div>
                   <div>
-                    <h3 className="font-semibold text-gray-800">Tips Belajar Efektif</h3>
+                    <h3 className="font-semibold text-gray-800">
+                      Tips Belajar Efektif
+                    </h3>
                     <p className="text-gray-600 text-sm mt-1">
-                      Unduh materi dan pelajari secara berurutan. Luangkan waktu 30 menit setiap hari untuk hasil terbaik.
+                      Unduh materi dan pelajari secara berurutan. Luangkan waktu
+                      30 menit setiap hari untuk hasil terbaik.
                     </p>
                   </div>
                 </div>
                 <div className="flex items-center gap-4">
                   <div className="text-center">
-                    <p className="text-2xl font-bold text-blue-600">{expandedMateri ? 1 : 0}</p>
+                    <p className="text-2xl font-bold text-blue-600">
+                      {expandedMateri ? 1 : 0}
+                    </p>
                     <p className="text-xs text-gray-500">Materi dibuka</p>
                   </div>
                   <div className="text-center">
-                    <p className="text-2xl font-bold text-blue-600">{totalFiles}</p>
+                    <p className="text-2xl font-bold text-blue-600">
+                      {totalFiles}
+                    </p>
                     <p className="text-xs text-gray-500">File tersedia</p>
                   </div>
                 </div>
@@ -672,9 +750,13 @@ export default function MateriSayaSiswa() {
         {/* FOOTER */}
         <footer className="bg-white border-t border-gray-200 p-4">
           <div className="max-w-7xl mx-auto text-center text-sm text-gray-500">
-            <p>© {new Date().getFullYear()} EduCore. Materi Pembelajaran {subject?.toUpperCase()} Kelas {kelasId}.</p>
+            <p>
+              © {new Date().getFullYear()} EduCore. Materi Pembelajaran{" "}
+              {subject?.toUpperCase()} Kelas {kelasId}.
+            </p>
             <p className="mt-1">
-              {materiList.length} Materi • {totalFiles} File • {totalFileSizeMB} MB Total
+              {materiList.length} Materi • {totalFiles} File • {totalFileSizeMB}{" "}
+              MB Total
             </p>
           </div>
         </footer>
