@@ -12,13 +12,15 @@ const {
   updateMateri,
   deleteMateri,
   tandaiMateriSelesai,
+  getDaftarSiswa,
+  getSiswaLogin,
+  getSiswaSelesaiByGuru,
 } = require("../services/service");
 
 const { success, error } = require("../utils/response");
 const path = require("path");
 const fs = require("fs");
 const pool = require("../config/db");
-
 
 // Utility role validation
 const validateRole = (r) => ["siswa", "guru"].includes(r);
@@ -31,17 +33,32 @@ const validateRole = (r) => ["siswa", "guru"].includes(r);
  */
 async function loginSiswa(req, res) {
   try {
-    console.log('loginSiswa request body:', req.body);
+    console.log("loginSiswa request body:", req.body);
     const user = await handleLogin(req.body, "siswa");
     if (!user) return error(res, 401, "Masuk gagal");
-    // Fetch siswa profile id
-    const profilRes = await pool.query(
-      `SELECT id FROM siswa WHERE id_akun = $1 LIMIT 1`,
-      [user.user.id]
-    );
-    const id_userProfil = profilRes.rows[0]?.id || null;
+    
+    // Fetch siswa profile id dengan error handling
+    let id_userProfil = null;
+    try {
+      const profilRes = await pool.query(
+        `SELECT id FROM siswa WHERE id_akun = $1 LIMIT 1`,
+        [user.user.id]
+      );
+      id_userProfil = profilRes.rows[0]?.id || null;
+    } catch (profileErr) {
+      console.error("Error fetching siswa profile:", profileErr.message);
+    }
+    
     success(res, 200, "Masuk berhasil", { ...user, id_userProfil });
   } catch (e) {
+    console.error("loginSiswa error:", e.message);
+    if (e.message.includes("Database connection failed")) {
+      return error(
+        res,
+        503,
+        "Database tidak tersedia. Silakan hubungi administrator."
+      );
+    }
     error(res, 500, "Masuk mengalami gangguan");
   }
 }
@@ -52,17 +69,32 @@ async function loginSiswa(req, res) {
  */
 async function loginGuru(req, res) {
   try {
-    console.log('loginGuru request body:', req.body);
+    console.log("loginGuru request body:", req.body);
     const user = await handleLogin(req.body, "guru");
     if (!user) return error(res, 401, "Masuk gagal");
-    // Fetch guru profile id
-    const profilRes = await pool.query(
-      `SELECT id FROM guru WHERE id_akun = $1 LIMIT 1`,
-      [user.user.id]
-    );
-    const id_userProfil = profilRes.rows[0]?.id || null;
+    
+    // Fetch guru profile id dengan error handling
+    let id_userProfil = null;
+    try {
+      const profilRes = await pool.query(
+        `SELECT id FROM guru WHERE id_akun = $1 LIMIT 1`,
+        [user.user.id]
+      );
+      id_userProfil = profilRes.rows[0]?.id || null;
+    } catch (profileErr) {
+      console.error("Error fetching guru profile:", profileErr.message);
+    }
+    
     success(res, 200, "Masuk berhasil", { ...user, id_userProfil });
   } catch (e) {
+    console.error("loginGuru error:", e.message);
+    if (e.message.includes("Database connection failed")) {
+      return error(
+        res,
+        503,
+        "Database tidak tersedia. Silakan hubungi administrator."
+      );
+    }
     error(res, 500, "Masuk mengalami gangguan");
   }
 }
@@ -155,6 +187,60 @@ async function putProfilGuru(req, res) {
   }
 }
 
+/* ───────────── DATA SISWA (GURU) ───────────── */
+
+/**
+ * GURU: Lihat semua siswa yang terdaftar di sistem
+ * GET /guru/siswa
+ */
+async function getAllSiswa(req, res) {
+  try {
+    // Verifikasi bahwa user adalah guru
+    const r = await pool.query(
+      `SELECT id FROM guru WHERE id_akun = $1 LIMIT 1`,
+      [req.id_akun]
+    );
+    if (r.rows.length === 0)
+      return error(
+        res,
+        403,
+        "Akses ditolak: Hanya guru yang dapat melihat data ini"
+      );
+
+    const data = await getDaftarSiswa();
+    success(res, 200, "Daftar semua siswa", data);
+  } catch (e) {
+    console.error("getAllSiswa error:", e.message);
+    error(res, 500, "Gagal memuat daftar siswa");
+  }
+}
+
+/**
+ * GURU: Lihat siswa yang sedang login (memiliki sesi aktif)
+ * GET /guru/siswa-login
+ */
+async function getSiswaAktif(req, res) {
+  try {
+    // Verifikasi bahwa user adalah guru
+    const r = await pool.query(
+      `SELECT id FROM guru WHERE id_akun = $1 LIMIT 1`,
+      [req.id_akun]
+    );
+    if (r.rows.length === 0)
+      return error(
+        res,
+        403,
+        "Akses ditolak: Hanya guru yang dapat melihat data ini"
+      );
+
+    const data = await getSiswaLogin();
+    success(res, 200, "Daftar siswa yang sedang login", data);
+  } catch (e) {
+    console.error("getSiswaAktif error:", e.message);
+    error(res, 500, "Gagal memuat daftar siswa aktif");
+  }
+}
+
 /* ───────────── MATA PELAJARAN ───────────── */
 
 /**
@@ -207,8 +293,12 @@ async function getMateriBySubject(req, res) {
 async function getSiswaSelesai(req, res) {
   try {
     // cari id guru dari akun yang sedang login
-    const r = await pool.query(`SELECT id FROM guru WHERE id_akun = $1 LIMIT 1`, [req.id_akun]);
-    if (r.rows.length === 0) return error(res, 403, "Akun bukan guru atau profil guru belum dibuat");
+    const r = await pool.query(
+      `SELECT id FROM guru WHERE id_akun = $1 LIMIT 1`,
+      [req.id_akun]
+    );
+    if (r.rows.length === 0)
+      return error(res, 403, "Akun bukan guru atau profil guru belum dibuat");
     const idGuru = r.rows[0].id;
     const data = await getSiswaSelesaiByGuru(idGuru);
     success(res, 200, "Siswa selesai", data);
@@ -335,7 +425,9 @@ async function doneMateriSiswa(req, res) {
     if (resProfil.rows.length === 0) return error(res, 403, "Akun bukan siswa");
 
     const idSiswa = resProfil.rows[0].id;
-    console.log(`doneMateriSiswa called - idSiswa=${idSiswa}, idMateri=${idMateri}`);
+    console.log(
+      `doneMateriSiswa called - idSiswa=${idSiswa}, idMateri=${idMateri}`
+    );
     const data = await tandaiMateriSelesai(idSiswa, idMateri);
     console.log("tandaiMateriSelesai returned:", data);
     if (!data) return error(res, 404, "Gagal menandai");
@@ -401,10 +493,14 @@ async function listFiles(req, res) {
     const uploadsDir = path.resolve(__dirname, "..", "..", "uploads");
     const folderPath = path.join(uploadsDir, folder);
 
-    if (!folderPath.startsWith(uploadsDir)) return error(res, 403, "Akses ditolak");
-    if (!fs.existsSync(folderPath)) return error(res, 404, "Folder tidak ditemukan");
+    if (!folderPath.startsWith(uploadsDir))
+      return error(res, 403, "Akses ditolak");
+    if (!fs.existsSync(folderPath))
+      return error(res, 404, "Folder tidak ditemukan");
 
-    const files = fs.readdirSync(folderPath).filter((f) => fs.statSync(path.join(folderPath, f)).isFile());
+    const files = fs
+      .readdirSync(folderPath)
+      .filter((f) => fs.statSync(path.join(folderPath, f)).isFile());
     success(res, 200, "Files", files);
   } catch (e) {
     console.error(e);
@@ -421,7 +517,8 @@ async function uploadFile(req, res) {
 
     const uploadsDir = path.resolve(__dirname, "..", "..", "uploads");
     const targetDir = path.join(uploadsDir, folderName);
-    if (!targetDir.startsWith(uploadsDir)) return error(res, 403, "Akses ditolak");
+    if (!targetDir.startsWith(uploadsDir))
+      return error(res, 403, "Akses ditolak");
     if (!fs.existsSync(targetDir)) fs.mkdirSync(targetDir, { recursive: true });
 
     const targetPath = path.join(targetDir, file.originalname);
@@ -429,7 +526,10 @@ async function uploadFile(req, res) {
     // Move file from temp to target
     fs.renameSync(file.path, targetPath);
 
-    success(res, 201, "File diupload", { folder: folderName, file: file.originalname });
+    success(res, 201, "File diupload", {
+      folder: folderName,
+      file: file.originalname,
+    });
   } catch (e) {
     console.error(e);
     error(res, 500, "Gagal mengupload file");
@@ -446,8 +546,10 @@ async function downloadFolderFile(req, res) {
     const uploadsDir = path.resolve(__dirname, "..", "..", "uploads");
     const requestedPath = path.normalize(path.join(uploadsDir, folder, file));
 
-    if (!requestedPath.startsWith(uploadsDir)) return error(res, 403, "Akses file ditolak");
-    if (!fs.existsSync(requestedPath)) return error(res, 404, "File tidak ditemukan");
+    if (!requestedPath.startsWith(uploadsDir))
+      return error(res, 403, "Akses file ditolak");
+    if (!fs.existsSync(requestedPath))
+      return error(res, 404, "File tidak ditemukan");
 
     return res.download(requestedPath);
   } catch (e) {
@@ -465,8 +567,10 @@ async function deleteFile(req, res) {
 
     const uploadsDir = path.resolve(__dirname, "..", "..", "uploads");
     const targetPath = path.normalize(path.join(uploadsDir, folder, file));
-    if (!targetPath.startsWith(uploadsDir)) return error(res, 403, "Akses ditolak");
-    if (!fs.existsSync(targetPath)) return error(res, 404, "File tidak ditemukan");
+    if (!targetPath.startsWith(uploadsDir))
+      return error(res, 403, "Akses ditolak");
+    if (!fs.existsSync(targetPath))
+      return error(res, 404, "File tidak ditemukan");
 
     fs.unlinkSync(targetPath);
     success(res, 200, "File dihapus");
@@ -484,8 +588,10 @@ async function deleteFolder(req, res) {
 
     const uploadsDir = path.resolve(__dirname, "..", "..", "uploads");
     const targetDir = path.normalize(path.join(uploadsDir, folder));
-    if (!targetDir.startsWith(uploadsDir)) return error(res, 403, "Akses ditolak");
-    if (!fs.existsSync(targetDir)) return error(res, 404, "Folder tidak ditemukan");
+    if (!targetDir.startsWith(uploadsDir))
+      return error(res, 403, "Akses ditolak");
+    if (!fs.existsSync(targetDir))
+      return error(res, 404, "Folder tidak ditemukan");
 
     // recursive delete
     fs.rmSync(targetDir, { recursive: true, force: true });
@@ -503,10 +609,14 @@ async function downloadFile(req, res) {
     if (!q) return error(res, 400, "Query path wajib");
 
     const uploadsDir = path.resolve(__dirname, "..", "..", "uploads");
-    const requestedPath = path.normalize(path.join(uploadsDir, q.replace(/^\//, "")));
+    const requestedPath = path.normalize(
+      path.join(uploadsDir, q.replace(/^\//, ""))
+    );
 
-    if (!requestedPath.startsWith(uploadsDir)) return error(res, 403, "Akses file ditolak");
-    if (!fs.existsSync(requestedPath)) return error(res, 404, "File tidak ditemukan");
+    if (!requestedPath.startsWith(uploadsDir))
+      return error(res, 403, "Akses file ditolak");
+    if (!fs.existsSync(requestedPath))
+      return error(res, 404, "File tidak ditemukan");
 
     return res.download(requestedPath);
   } catch (e) {
@@ -532,7 +642,10 @@ module.exports = {
   delMateri,
   getDetailMateri,
   doneMateriSiswa,
+  getSiswaSelesai,
   cekStatusMateri,
+  getAllSiswa,
+  getSiswaAktif,
   // file management
   listFolders,
   listFiles,

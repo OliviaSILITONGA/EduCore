@@ -24,11 +24,20 @@ async function handleLogin(data, role) {
     throw new Error("Invalid input");
   }
 
-  const client = await pool.connect();
+  let client;
+  try {
+    client = await pool.connect();
+  } catch (connectErr) {
+    console.error("Database connection error:", connectErr.message);
+    throw new Error(
+      "Database connection failed. Please check database configuration."
+    );
+  }
+
   try {
     const q = `SELECT id, email, password, role FROM akun WHERE email = $1 AND role = $2 LIMIT 1`;
     const res = await client.query(q, [email, role]);
-    console.log('login query result rows:', res.rows.length);
+    console.log("login query result rows:", res.rows.length);
     if (res.rows.length === 0) return null;
 
     const user = res.rows[0];
@@ -36,7 +45,7 @@ async function handleLogin(data, role) {
     if (!match) return null;
 
     const token = crypto.randomBytes(32).toString("hex");
-    console.log('generated token for user id', user.id);
+    console.log("generated token for user id", user.id);
     await client.query(
       `INSERT INTO sesi (token, id_akun, waktu_berakhir) VALUES ($1, $2, DEFAULT)`,
       [token, user.id]
@@ -44,10 +53,10 @@ async function handleLogin(data, role) {
 
     return { token, user: { id: user.id, email: user.email, role: user.role } };
   } catch (err) {
-    console.error("Login service error");
+    console.error("Login service error:", err.message);
     throw err;
   } finally {
-    client.release();
+    if (client) client.release();
   }
 }
 
@@ -176,6 +185,45 @@ async function tampilkanDetailMateri(id) {
   const q = `SELECT * FROM materi WHERE id = $1 LIMIT 1`;
   const res = await pool.query(q, [id]);
   return res.rows[0] || null;
+}
+
+// Ambil daftar semua siswa yang terdaftar (untuk guru)
+async function getDaftarSiswa() {
+  const q = `
+    SELECT 
+      s.id,
+      s.nama,
+      a.email,
+      s.tingkat,
+      s.nama_sekolah,
+      s.kota_sekolah,
+      s.provinsi_sekolah,
+      a.created_at AS tanggal_daftar
+    FROM siswa s
+    JOIN akun a ON s.id_akun = a.id
+    ORDER BY a.created_at DESC
+  `;
+  const res = await pool.query(q);
+  return res.rows;
+}
+
+// Ambil daftar siswa yang login ke sistem (memiliki sesi aktif)
+async function getSiswaLogin() {
+  const q = `
+    SELECT 
+      s.id,
+      s.nama,
+      a.email,
+      s.tingkat,
+      se.waktu_berakhir AS sesi_berakhir
+    FROM siswa s
+    JOIN akun a ON s.id_akun = a.id
+    JOIN sesi se ON a.id = se.id_akun
+    WHERE se.waktu_berakhir > NOW()
+    ORDER BY se.waktu_berakhir DESC
+  `;
+  const res = await pool.query(q);
+  return res.rows;
 }
 
 async function tambahMateri(data) {
@@ -394,4 +442,7 @@ module.exports = {
   updateMateri,
   deleteMateri,
   tandaiMateriSelesai,
+  getDaftarSiswa,
+  getSiswaLogin,
+  getSiswaSelesaiByGuru,
 };

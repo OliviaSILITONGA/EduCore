@@ -13,10 +13,12 @@ const helmet = require("helmet");
 
 // ───────────── GLOBAL SECURITY ─────────────
 router.use(helmet()); // hardening HTTP header
-router.use(rateLimit({
-  windowMs: 60 * 1000,
-  max: 120
-}));
+router.use(
+  rateLimit({
+    windowMs: 60 * 1000,
+    max: 120,
+  })
+);
 
 // ───────────── AUTH ROUTES ─────────────
 router.post("/login-siswa", controller.loginSiswa);
@@ -34,10 +36,18 @@ router.put("/edit-profil-guru", checkLogin, controller.putProfilGuru);
 router.get("/matpel", checkLogin, controller.getMatpel);
 
 // Ambil kelas yang diikuti siswa pada suatu mapel
-router.get("/materi-siswa/:subject/kelas", checkLogin, controller.getKelasMapelSiswa);
+router.get(
+  "/materi-siswa/:subject/kelas",
+  checkLogin,
+  controller.getKelasMapelSiswa
+);
 
 // Materi berdasarkan mapel (query: ?kelas=xxx)
-router.get("/materi-siswa/:subject/materi", checkLogin, controller.getMateriBySubject);
+router.get(
+  "/materi-siswa/:subject/materi",
+  checkLogin,
+  controller.getMateriBySubject
+);
 
 // ───────────── MATERI CRUD (GURU) ─────────────
 router.post("/materi", checkLogin, controller.postMateri);
@@ -45,13 +55,24 @@ router.put("/materi/:id", checkLogin, controller.putMateri);
 router.delete("/materi/:id", checkLogin, controller.delMateri);
 
 // ───────────── BELAJAR ─────────────
-router.get("/belajar/:subject/:materiId", checkLogin, controller.getDetailMateri);
+router.get(
+  "/belajar/:subject/:materiId",
+  checkLogin,
+  controller.getDetailMateri
+);
 
 // Tandai selesai
 router.post("/materi/selesai", checkLogin, controller.doneMateriSiswa);
 
 // Guru: daftar siswa yang telah selesai (sidebar)
 router.get("/guru/selesai", checkLogin, controller.getSiswaSelesai);
+
+// ───────────── DATA SISWA (GURU) ─────────────
+// Guru: lihat semua siswa yang terdaftar
+router.get("/guru/siswa", checkLogin, controller.getAllSiswa);
+
+// Guru: lihat siswa yang sedang login (sesi aktif)
+router.get("/guru/siswa-login", checkLogin, controller.getSiswaAktif);
 
 // Cek status selesai
 router.get("/materi/:idMateri/selesai", checkLogin, controller.cekStatusMateri);
