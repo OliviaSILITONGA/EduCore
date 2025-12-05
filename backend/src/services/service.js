@@ -2,43 +2,60 @@
 const bcrypt = require("bcryptjs");
 const crypto = require("crypto");
 const pool = require("../config/db");
+const logger = require("../utils/logger");
 
 function validateEmail(email) {
   return typeof email === "string" && /\S+@\S+\.\S+/.test(email);
 }
+
 function validatePassword(pw) {
-  return typeof pw === "string" && pw.length >= 8;
+  if (typeof pw !== "string" || pw.length < 8) return false;
+
+  // Minimal harus ada:
+  // - 1 huruf besar
+  // - 1 huruf kecil
+  // - 1 angka
+  const hasUpperCase = /[A-Z]/.test(pw);
+  const hasLowerCase = /[a-z]/.test(pw);
+  const hasNumber = /[0-9]/.test(pw);
+
+  return hasUpperCase && hasLowerCase && hasNumber;
 }
+
 function validateRole(role) {
   return role === "siswa" || role === "guru";
 }
 
 async function handleLogin(data, role) {
   const { email, password } = data;
-  console.log(`handleLogin called - email=${email}, role=${role}`);
-  
+  logger.info(`Login attempt - email=${email}, role=${role}`);
+
   if (!validateEmail(email)) {
-    console.log("Email validation failed");
+    logger.warn("Email validation failed", { email });
     throw new Error("Invalid email format");
   }
-  
+
   if (!validatePassword(password)) {
-    console.log("Password validation failed - length:", password?.length);
-    throw new Error("Password must be at least 8 characters");
+    logger.warn("Password validation failed", {
+      passwordLength: password?.length,
+    });
+    throw new Error(
+      "Password must be at least 8 characters with uppercase, lowercase, and number"
+    );
   }
-  
+
   if (!validateRole(role)) {
-    console.log("Role validation failed");
+    logger.warn("Role validation failed", { role });
     throw new Error("Invalid role");
   }
 
   let client;
   try {
-    console.log("Attempting to connect to database...");
+    logger.debug("Attempting database connection...");
     client = await pool.connect();
-    console.log("Database connection successful");
+    logger.debug("Database connection successful");
   } catch (connectErr) {
-    console.error("Database connection error:", connectErr.message);
+    logger.error("Database connection error", { error: connectErr.message });
     throw new Error(
       "Database connection failed. Please check database configuration."
     );
@@ -47,7 +64,7 @@ async function handleLogin(data, role) {
   try {
     const q = `SELECT id, email, password, role FROM akun WHERE email = $1 AND role = $2 LIMIT 1`;
     const res = await client.query(q, [email, role]);
-    console.log("login query result rows:", res.rows.length);
+    logger.debug("Login query result", { rowCount: res.rows.length });
     if (res.rows.length === 0) return null;
 
     const user = res.rows[0];
@@ -55,7 +72,11 @@ async function handleLogin(data, role) {
     if (!match) return null;
 
     const token = crypto.randomBytes(32).toString("hex");
-    console.log("generated token for user id", user.id);
+    logger.info("Login successful", {
+      userId: user.id,
+      email: user.email,
+      role: user.role,
+    });
     await client.query(
       `INSERT INTO sesi (token, id_akun, waktu_berakhir) VALUES ($1, $2, DEFAULT)`,
       [token, user.id]
@@ -63,7 +84,10 @@ async function handleLogin(data, role) {
 
     return { token, user: { id: user.id, email: user.email, role: user.role } };
   } catch (err) {
-    console.error("Login service error:", err.message);
+    logger.error("Login service error", {
+      error: err.message,
+      stack: err.stack,
+    });
     throw err;
   } finally {
     if (client) client.release();
@@ -126,7 +150,10 @@ async function handleRegister(data, role) {
     return newUser;
   } catch (err) {
     await client.query("ROLLBACK").catch(() => {});
-    console.error("Register service error");
+    logger.error("Register service error", {
+      error: err.message,
+      stack: err.stack,
+    });
     throw err;
   } finally {
     client.release();
@@ -164,16 +191,52 @@ async function tampilkanKelas(idSiswa, subject) {
 }
 
 async function tampilkanMateri(idKelas) {
-  if (!idKelas) return [];
+  console.log("tampilkanMateri called with idKelas:", idKelas);
+  if (!idKelas) {
+    console.log("No idKelas provided, returning empty array");
+    return [];
+  }
 
   let client;
   try {
     client = await pool.connect();
-    const q = `SELECT * FROM materi WHERE id_kelas = $1 ORDER BY tanggal_pembuatan DESC`;
-    const res = await client.query(q, [idKelas]);
+    
+    // Query 1: Coba exact match dulu
+    let q = `SELECT * FROM materi WHERE id_kelas = $1 ORDER BY tanggal_pembuatan DESC`;
+    console.log("Executing query:", q, "with param:", idKelas);
+    let res = await client.query(q, [idKelas]);
+    console.log("Exact match query returned", res.rows.length, "rows");
+    
+    // Jika tidak ada hasil dan idKelas format "kelas-X", coba cari berdasarkan no_kelas
+    if (res.rows.length === 0 && idKelas.startsWith('kelas-')) {
+      const kelasNumber = parseInt(idKelas.replace('kelas-', ''));
+      console.log("Trying alternative query with kelasNumber:", kelasNumber);
+      
+      // Query berdasarkan no_kelas di tabel kelas
+      const altQ = `
+        SELECT m.* FROM materi m 
+        JOIN kelas k ON m.id_kelas = k.id 
+        WHERE k.no_kelas = $1 
+        ORDER BY m.tanggal_pembuatan DESC
+      `;
+      res = await client.query(altQ, [kelasNumber]);
+      console.log("Alternative query (by no_kelas) returned", res.rows.length, "rows");
+    }
+    
+    // Jika masih tidak ada, tampilkan nilai id_kelas yang ada untuk debugging
+    if (res.rows.length === 0) {
+      const debugQ = `SELECT DISTINCT id_kelas FROM materi ORDER BY id_kelas LIMIT 20`;
+      const debugRes = await client.query(debugQ);
+      console.log("⚠️ No materi found! Available id_kelas values in database:", 
+        debugRes.rows.map(r => r.id_kelas));
+    }
+    
     return res.rows;
   } catch (err) {
-    console.error("tampilkanMateri error:", err.message);
+    logger.error("tampilkanMateri error", {
+      error: err.message,
+      kelasId: idKelas,
+    });
     throw err;
   } finally {
     if (client) client.release();
@@ -249,13 +312,24 @@ async function getSiswaLogin() {
 async function tambahMateri(data) {
   const { guruId, matpelId, kelasId, nama, deskripsi, isi, catatan, urlMedia } =
     data;
-  if (!guruId || !matpelId || !kelasId || !nama)
+  
+  console.log("=== tambahMateri received data ===");
+  console.log("guruId:", guruId, "type:", typeof guruId);
+  console.log("matpelId:", matpelId, "type:", typeof matpelId);
+  console.log("kelasId:", kelasId, "type:", typeof kelasId);
+  console.log("nama:", nama, "type:", typeof nama);
+  
+  if (!guruId || !matpelId || !kelasId || !nama) {
+    console.error("❌ Missing required fields!");
+    console.error("guruId:", guruId, "matpelId:", matpelId, "kelasId:", kelasId, "nama:", nama);
     throw new Error("Missing required fields");
+  }
 
   let client;
   try {
     client = await pool.connect();
     const q = `INSERT INTO materi (id_guru,id_matpel,id_kelas,nama,deskripsi,isi,catatan,url_media) VALUES ($1,$2,$3,$4,$5,$6,$7,$8) RETURNING *`;
+    console.log("Executing INSERT query with values:", [guruId, matpelId, kelasId, nama]);
     const res = await client.query(q, [
       guruId,
       matpelId,
@@ -266,9 +340,11 @@ async function tambahMateri(data) {
       catatan || null,
       urlMedia || null,
     ]);
+    console.log("✅ Materi inserted successfully, id:", res.rows[0].id);
     return res.rows[0];
   } catch (err) {
-    console.error("tambahMateri error:", err.message);
+    console.error("❌ Database insert error:", err.message);
+    logger.error("tambahMateri error", { error: err.message, data });
     throw err;
   } finally {
     if (client) client.release();
@@ -380,7 +456,7 @@ async function updateProfil(idAkun, role, data) {
     return null;
   } catch (err) {
     await client.query("ROLLBACK").catch(() => {});
-    console.error("Update profil error");
+    logger.error("Update profil error", { error: err.message, idAkun, role });
     throw err;
   } finally {
     client.release();
@@ -406,7 +482,7 @@ async function updateMateri(id, data) {
     ]);
     return res.rows[0] || null;
   } catch (err) {
-    console.error("updateMateri error:", err.message);
+    logger.error("updateMateri error", { error: err.message, idMateri, data });
     throw err;
   } finally {
     if (client) client.release();
@@ -423,7 +499,7 @@ async function deleteMateri(id) {
     const res = await client.query(q, [id]);
     return res.rows[0] || null;
   } catch (err) {
-    console.error("deleteMateri error:", err.message);
+    logger.error("deleteMateri error", { error: err.message, idMateri: id });
     throw err;
   } finally {
     if (client) client.release();
@@ -472,7 +548,11 @@ async function tandaiMateriSelesai(idSiswa, idMateri) {
     return res.rows[0];
   } catch (err) {
     await client.query("ROLLBACK").catch(() => {});
-    console.error("Tandai materi selesai error");
+    logger.error("Tandai materi selesai error", {
+      error: err.message,
+      idSiswa,
+      idMateri,
+    });
     throw err;
   } finally {
     client.release();

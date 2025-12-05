@@ -13,7 +13,7 @@ import {
   UserPlus,
   Shield,
   AlertCircle,
-  BookOpen
+  BookOpen,
 } from "lucide-react";
 import Logo from "../assets/images/Educore_Logo_White.png";
 
@@ -29,7 +29,7 @@ export default function RegisterSiswa() {
     telpOrtuWali: "",
     sekolah: "",
     kelas: "",
-    alamat: ""
+    alamat: "",
   });
   const [agreed, setAgreed] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -65,6 +65,18 @@ export default function RegisterSiswa() {
       return;
     }
 
+    // Validasi kompleksitas password
+    const hasUpperCase = /[A-Z]/.test(formData.password);
+    const hasLowerCase = /[a-z]/.test(formData.password);
+    const hasNumber = /[0-9]/.test(formData.password);
+
+    if (!hasUpperCase || !hasLowerCase || !hasNumber) {
+      setError(
+        "Kata sandi harus mengandung huruf besar, huruf kecil, dan angka!"
+      );
+      return;
+    }
+
     if (formData.password !== formData.confirmPassword) {
       setError("Kata sandi tidak cocok!");
       return;
@@ -91,7 +103,7 @@ export default function RegisterSiswa() {
         telpOrtuWali: formData.telpOrtuWali,
         sekolah: formData.sekolah,
         kelas: formData.kelas,
-        alamat: formData.alamat
+        alamat: formData.alamat,
       });
       alert("Registrasi berhasil! Silakan login.");
       navigate("/login-siswa");
@@ -115,8 +127,8 @@ export default function RegisterSiswa() {
                 <p className="text-xs text-blue-100">Portal Siswa</p>
               </div>
             </div>
-            <Link 
-              to="/login-siswa" 
+            <Link
+              to="/login-siswa"
               className="text-sm bg-white/20 hover:bg-white/30 px-4 py-2 rounded-lg transition flex items-center gap-2"
             >
               <ArrowRight size={16} />
@@ -132,11 +144,14 @@ export default function RegisterSiswa() {
             {/* LEFT SIDE - INFO */}
             <div className="bg-gradient-to-br from-blue-600 to-cyan-600 rounded-2xl p-8 text-white hidden lg:flex flex-col justify-between">
               <div>
-                <h2 className="text-3xl font-bold mb-4">Bergabung dengan EduCore</h2>
+                <h2 className="text-3xl font-bold mb-4">
+                  Bergabung dengan EduCore
+                </h2>
                 <p className="text-blue-100 mb-8">
-                  Daftarkan akun siswa Anda dan mulai perjalanan belajar yang menyenangkan bersama guru-guru terbaik.
+                  Daftarkan akun siswa Anda dan mulai perjalanan belajar yang
+                  menyenangkan bersama guru-guru terbaik.
                 </p>
-                
+
                 <div className="space-y-4">
                   <div className="flex items-center gap-3">
                     <div className="p-2 bg-white/20 rounded-lg">
@@ -144,36 +159,45 @@ export default function RegisterSiswa() {
                     </div>
                     <div>
                       <p className="font-medium">Materi Lengkap</p>
-                      <p className="text-sm text-blue-200">Akses semua materi pelajaran</p>
+                      <p className="text-sm text-blue-200">
+                        Akses semua materi pelajaran
+                      </p>
                     </div>
                   </div>
-                  
+
                   <div className="flex items-center gap-3">
                     <div className="p-2 bg-white/20 rounded-lg">
                       <Users size={20} />
                     </div>
                     <div>
                       <p className="font-medium">Belajar Interaktif</p>
-                      <p className="text-sm text-blue-200">Diskusi dengan teman sekelas</p>
+                      <p className="text-sm text-blue-200">
+                        Diskusi dengan teman sekelas
+                      </p>
                     </div>
                   </div>
-                  
+
                   <div className="flex items-center gap-3">
                     <div className="p-2 bg-white/20 rounded-lg">
                       <Shield size={20} />
                     </div>
                     <div>
                       <p className="font-medium">Aman untuk Anak</p>
-                      <p className="text-sm text-blue-200">Pengawasan orang tua/wali</p>
+                      <p className="text-sm text-blue-200">
+                        Pengawasan orang tua/wali
+                      </p>
                     </div>
                   </div>
                 </div>
               </div>
-              
+
               <div className="mt-8 pt-6 border-t border-white/20">
                 <p className="text-sm text-blue-200">
                   Sudah punya akun?{" "}
-                  <Link to="/login-siswa" className="text-white font-semibold underline hover:no-underline">
+                  <Link
+                    to="/login-siswa"
+                    className="text-white font-semibold underline hover:no-underline"
+                  >
                     Masuk di sini
                   </Link>
                 </p>
@@ -187,14 +211,19 @@ export default function RegisterSiswa() {
                   <UserPlus className="text-blue-600" size={24} />
                 </div>
                 <div>
-                  <h2 className="text-2xl font-bold text-gray-800">Daftar Akun Siswa</h2>
+                  <h2 className="text-2xl font-bold text-gray-800">
+                    Daftar Akun Siswa
+                  </h2>
                   <p className="text-gray-600">Isi data siswa dengan lengkap</p>
                 </div>
               </div>
 
               {error && (
                 <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg flex items-start gap-3">
-                  <AlertCircle className="text-red-500 mt-0.5 flex-shrink-0" size={20} />
+                  <AlertCircle
+                    className="text-red-500 mt-0.5 flex-shrink-0"
+                    size={20}
+                  />
                   <p className="text-red-700">{error}</p>
                 </div>
               )}
@@ -256,9 +285,13 @@ export default function RegisterSiswa() {
                         className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                       >
                         <option value="SD">SD (Sekolah Dasar)</option>
-                        <option value="SMP">SMP (Sekolah Menengah Pertama)</option>
+                        <option value="SMP">
+                          SMP (Sekolah Menengah Pertama)
+                        </option>
                         <option value="SMA">SMA (Sekolah Menengah Atas)</option>
-                        <option value="SMK">SMK (Sekolah Menengah Kejuruan)</option>
+                        <option value="SMK">
+                          SMK (Sekolah Menengah Kejuruan)
+                        </option>
                       </select>
                     </div>
                   </div>
@@ -340,11 +373,12 @@ export default function RegisterSiswa() {
                     <Users size={20} className="text-green-500" />
                     Informasi Orang Tua/Wali
                   </h3>
-                  
+
                   <div className="space-y-4">
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
-                        <span className="text-red-500">*</span> Nama Orang Tua/Wali
+                        <span className="text-red-500">*</span> Nama Orang
+                        Tua/Wali
                       </label>
                       <input
                         type="text"
@@ -423,11 +457,16 @@ export default function RegisterSiswa() {
                       />
                     </div>
                     <div className="text-sm">
-                      <label htmlFor="terms" className="font-medium text-gray-700 cursor-pointer">
-                        Saya sebagai orang tua/wali menyetujui Syarat dan Ketentuan serta Kebijakan Privasi EduCore
+                      <label
+                        htmlFor="terms"
+                        className="font-medium text-gray-700 cursor-pointer"
+                      >
+                        Saya sebagai orang tua/wali menyetujui Syarat dan
+                        Ketentuan serta Kebijakan Privasi EduCore
                       </label>
                       <p className="text-gray-500 mt-1">
-                        Dengan mendaftarkan anak/ward, saya menyetujui semua ketentuan penggunaan platform untuk pembelajaran anak.
+                        Dengan mendaftarkan anak/ward, saya menyetujui semua
+                        ketentuan penggunaan platform untuk pembelajaran anak.
                       </p>
                     </div>
                   </div>
@@ -456,8 +495,8 @@ export default function RegisterSiswa() {
                 <div className="text-center pt-4">
                   <p className="text-gray-600">
                     Sudah punya akun?{" "}
-                    <Link 
-                      to="/login-siswa" 
+                    <Link
+                      to="/login-siswa"
                       className="text-blue-600 font-semibold hover:text-blue-700 hover:underline"
                     >
                       Masuk di sini
@@ -474,7 +513,9 @@ export default function RegisterSiswa() {
       <footer className="bg-white border-t border-gray-200 py-4">
         <div className="container mx-auto px-4 text-center text-sm text-gray-500">
           <p>© {new Date().getFullYear()} EduCore. Hak cipta dilindungi.</p>
-          <p className="mt-1">Platform Pembelajaran Digital untuk Siswa - Daftar Akun Baru</p>
+          <p className="mt-1">
+            Platform Pembelajaran Digital untuk Siswa - Daftar Akun Baru
+          </p>
         </div>
       </footer>
     </div>

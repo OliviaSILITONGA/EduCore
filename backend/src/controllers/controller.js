@@ -19,6 +19,7 @@ const {
 } = require("../services/service");
 
 const { success, error } = require("../utils/response");
+const logger = require("../utils/logger");
 const path = require("path");
 const fs = require("fs");
 const pool = require("../config/db");
@@ -34,7 +35,7 @@ const validateRole = (r) => ["siswa", "guru"].includes(r);
  */
 async function loginSiswa(req, res) {
   try {
-    console.log("loginSiswa request body:", req.body);
+    logger.info("Login siswa attempt", { email: req.body.email });
     const user = await handleLogin(req.body, "siswa");
     if (!user) return error(res, 401, "Masuk gagal");
 
@@ -47,12 +48,14 @@ async function loginSiswa(req, res) {
       );
       id_userProfil = profilRes.rows[0]?.id || null;
     } catch (profileErr) {
-      console.error("Error fetching siswa profile:", profileErr.message);
+      logger.error("Error fetching siswa profile", {
+        error: profileErr.message,
+      });
     }
 
     success(res, 200, "Masuk berhasil", { ...user, id_userProfil });
   } catch (e) {
-    console.error("loginSiswa error:", e.message);
+    logger.error("loginSiswa error", { error: e.message, body: req.body });
     if (e.message.includes("Database connection failed")) {
       return error(
         res,
@@ -70,7 +73,7 @@ async function loginSiswa(req, res) {
  */
 async function loginGuru(req, res) {
   try {
-    console.log("loginGuru request body:", req.body);
+    logger.info("Login guru attempt", { email: req.body.email });
     const user = await handleLogin(req.body, "guru");
     if (!user) return error(res, 401, "Masuk gagal");
 
@@ -83,12 +86,14 @@ async function loginGuru(req, res) {
       );
       id_userProfil = profilRes.rows[0]?.id || null;
     } catch (profileErr) {
-      console.error("Error fetching guru profile:", profileErr.message);
+      logger.error("Error fetching guru profile", {
+        error: profileErr.message,
+      });
     }
 
     success(res, 200, "Masuk berhasil", { ...user, id_userProfil });
   } catch (e) {
-    console.error("loginGuru error:", e.message);
+    logger.error("loginGuru error", { error: e.message, body: req.body });
     if (e.message.includes("Database connection failed")) {
       return error(
         res,
@@ -97,6 +102,25 @@ async function loginGuru(req, res) {
       );
     }
     error(res, 500, "Masuk mengalami gangguan");
+  }
+}
+
+/**
+ * LOGOUT
+ * POST /logout
+ */
+async function logout(req, res) {
+  try {
+    const token = req.headers.authorization?.trim();
+    if (!token) return error(res, 401, "Tidak ada token");
+
+    // Hapus session dari database
+    await pool.query("DELETE FROM sesi WHERE token = $1", [token]);
+
+    success(res, 200, "Logout berhasil", null);
+  } catch (e) {
+    logger.error("Logout error", { error: e.message });
+    error(res, 500, "Logout gagal");
   }
 }
 
@@ -110,7 +134,7 @@ async function registerSiswa(req, res) {
     if (!user) return error(res, 400, "Email sudah terdaftar");
     success(res, 201, "Akun dibuat", user);
   } catch (e) {
-    console.error("Register Siswa Error:", e.message);
+    logger.error("Register Siswa Error", { error: e.message, body: req.body });
     error(res, 500, e.message || "Registrasi tertunda");
   }
 }
@@ -125,7 +149,7 @@ async function registerGuru(req, res) {
     if (!user) return error(res, 400, "Email sudah terdaftar");
     success(res, 201, "Akun dibuat", user);
   } catch (e) {
-    console.error("Register Guru Error:", e.message);
+    logger.error("Register Guru Error", { error: e.message, body: req.body });
     error(res, 500, e.message || "Registrasi tertunda");
   }
 }
@@ -280,9 +304,14 @@ async function getMateriBySubject(req, res) {
   try {
     const matpel = req.params.subject;
     const kelas = req.query.kelas || null;
-    console.log("getMateriBySubject - matpel:", matpel, "kelas:", kelas);
+    console.log("=== GET MATERI BY SUBJECT ===");
+    console.log("matpel:", matpel, "kelas:", kelas);
 
     const data = await tampilkanMateri(kelas);
+    console.log("Data returned from tampilkanMateri:", data.length, "rows");
+    if (data.length > 0) {
+      console.log("Sample data:", data[0]);
+    }
     success(res, 200, "Materi", data);
   } catch (e) {
     console.error("getMateriBySubject error:", e.message);
@@ -525,7 +554,16 @@ async function downloadMateri(req, res) {
 async function doneMateriSiswa(req, res) {
   try {
     let idMateri = req.body.idMateri;
+    console.log("=== TANDAI SELESAI REQUEST ===");
+    console.log("Request body:", req.body);
+    console.log("idMateri:", idMateri, "type:", typeof idMateri);
+    
     if (!idMateri) return error(res, 400, "ID materi wajib");
+    
+    // Validasi: ID harus integer valid (bukan timestamp localStorage)
+    if (idMateri > 2147483647) {
+      return error(res, 400, "Invalid ID - this appears to be a localStorage ID. Please refresh the page.");
+    }
 
     const resProfil = await pool.query(
       `SELECT id FROM siswa WHERE id_akun = $1 LIMIT 1`,
@@ -543,7 +581,8 @@ async function doneMateriSiswa(req, res) {
 
     success(res, 200, "Status belajar disimpan", data);
   } catch (e) {
-    error(res, 500, "Gagal menandai materi");
+    console.error("ERROR doneMateriSiswa:", e);
+    error(res, 500, "Gagal menandai materi: " + e.message);
   }
 }
 
@@ -737,6 +776,7 @@ async function downloadFile(req, res) {
 module.exports = {
   loginSiswa,
   loginGuru,
+  logout,
   registerSiswa,
   registerGuru,
   getProfilSiswa,

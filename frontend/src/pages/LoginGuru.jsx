@@ -10,7 +10,7 @@ import {
   ArrowRight,
   Shield,
   BookOpen,
-  GraduationCap
+  GraduationCap,
 } from "lucide-react";
 
 export default function LoginGuru() {
@@ -40,8 +40,20 @@ export default function LoginGuru() {
       return;
     }
 
-    if (password.length < 6) {
-      setError("Kata sandi harus minimal 6 karakter!");
+    if (password.length < 8) {
+      setError("Kata sandi harus minimal 8 karakter!");
+      return;
+    }
+
+    // Validasi kompleksitas password
+    const hasUpperCase = /[A-Z]/.test(password);
+    const hasLowerCase = /[a-z]/.test(password);
+    const hasNumber = /[0-9]/.test(password);
+
+    if (!hasUpperCase || !hasLowerCase || !hasNumber) {
+      setError(
+        "Kata sandi harus mengandung huruf besar, huruf kecil, dan angka!"
+      );
       return;
     }
 
@@ -69,8 +81,8 @@ export default function LoginGuru() {
                 <p className="text-xs text-blue-100">Portal Guru</p>
               </div>
             </div>
-            <Link 
-              to="/register-guru" 
+            <Link
+              to="/register-guru"
               className="text-sm bg-white/20 hover:bg-white/30 px-4 py-2 rounded-lg transition flex items-center gap-2"
             >
               <User size={16} />
@@ -86,11 +98,14 @@ export default function LoginGuru() {
             {/* LEFT SIDE - INFO */}
             <div className="bg-gradient-to-br from-blue-600 to-cyan-600 rounded-2xl p-8 text-white hidden lg:flex flex-col justify-between">
               <div>
-                <h2 className="text-3xl font-bold mb-4">Selamat Datang Kembali!</h2>
+                <h2 className="text-3xl font-bold mb-4">
+                  Selamat Datang Kembali!
+                </h2>
                 <p className="text-blue-100 mb-8">
-                  Masuk ke akun guru Anda untuk mengakses dashboard, materi, dan manajemen kelas.
+                  Masuk ke akun guru Anda untuk mengakses dashboard, materi, dan
+                  manajemen kelas.
                 </p>
-                
+
                 <div className="space-y-4">
                   <div className="flex items-center gap-3">
                     <div className="p-2 bg-white/20 rounded-lg">
@@ -98,31 +113,35 @@ export default function LoginGuru() {
                     </div>
                     <div>
                       <p className="font-medium">Dashboard Lengkap</p>
-                      <p className="text-sm text-blue-200">Pantau perkembangan siswa secara real-time</p>
+                      <p className="text-sm text-blue-200">
+                        Pantau perkembangan siswa secara real-time
+                      </p>
                     </div>
                   </div>
-                  
+
                   <div className="flex items-center gap-3">
                     <div className="p-2 bg-white/20 rounded-lg">
                       <BookOpen size={20} />
                     </div>
                     <div>
                       <p className="font-medium">Manajemen Kelas</p>
-                      <p className="text-sm text-blue-200">Kelola materi dan tugas dengan mudah</p>
+                      <p className="text-sm text-blue-200">
+                        Kelola materi dan tugas dengan mudah
+                      </p>
                     </div>
                   </div>
-                  
-                  <div className="flex items-center gap-3">
-                    
-                  
-                  </div>
+
+                  <div className="flex items-center gap-3"></div>
                 </div>
               </div>
-              
+
               <div className="mt-8 pt-6 border-t border-white/20">
                 <p className="text-sm text-blue-200">
                   Belum punya akun?{" "}
-                  <Link to="/register-guru" className="text-white font-semibold underline hover:no-underline">
+                  <Link
+                    to="/register-guru"
+                    className="text-white font-semibold underline hover:no-underline"
+                  >
                     Daftar di sini
                   </Link>
                 </p>
@@ -136,8 +155,12 @@ export default function LoginGuru() {
                   <LogIn className="text-blue-600" size={24} />
                 </div>
                 <div>
-                  <h2 className="text-2xl font-bold text-gray-800">Masuk ke Akun Guru</h2>
-                  <p className="text-gray-600">Masukkan kredensial Anda untuk melanjutkan</p>
+                  <h2 className="text-2xl font-bold text-gray-800">
+                    Masuk ke Akun Guru
+                  </h2>
+                  <p className="text-gray-600">
+                    Masukkan kredensial Anda untuk melanjutkan
+                  </p>
                 </div>
               </div>
 
@@ -167,7 +190,10 @@ export default function LoginGuru() {
                       required
                       className="w-full p-3 pl-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     />
-                    <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
+                    <Mail
+                      className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+                      size={20}
+                    />
                   </div>
                 </div>
 
@@ -196,7 +222,10 @@ export default function LoginGuru() {
                       required
                       className="w-full p-3 pl-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     />
-                    <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
+                    <Lock
+                      className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+                      size={20}
+                    />
                   </div>
                 </div>
 
@@ -207,12 +236,15 @@ export default function LoginGuru() {
                       type="checkbox"
                       className="h-4 w-4 text-blue-600 rounded focus:ring-blue-500 border-gray-300"
                     />
-                    <label htmlFor="remember" className="ml-2 text-sm text-gray-700">
+                    <label
+                      htmlFor="remember"
+                      className="ml-2 text-sm text-gray-700"
+                    >
                       Ingat saya
                     </label>
                   </div>
-                  <Link 
-                    to="/forgot-password-guru" 
+                  <Link
+                    to="/forgot-password-guru"
                     className="text-sm text-blue-600 hover:text-blue-700 hover:underline"
                   >
                     Lupa kata sandi?
@@ -241,8 +273,8 @@ export default function LoginGuru() {
                 <div className="text-center pt-4">
                   <p className="text-gray-600">
                     Belum punya akun?{" "}
-                    <Link 
-                      to="/register-guru" 
+                    <Link
+                      to="/register-guru"
                       className="text-blue-600 font-semibold hover:text-blue-700 hover:underline flex items-center gap-1 justify-center"
                     >
                       Daftar akun guru
@@ -260,7 +292,9 @@ export default function LoginGuru() {
       <footer className="bg-white border-t border-gray-200 py-4">
         <div className="container mx-auto px-4 text-center text-sm text-gray-500">
           <p>© {new Date().getFullYear()} EduCore. Hak cipta dilindungi.</p>
-          <p className="mt-1">Portal Login Guru - Akses dashboard dan manajemen kelas</p>
+          <p className="mt-1">
+            Portal Login Guru - Akses dashboard dan manajemen kelas
+          </p>
         </div>
       </footer>
     </div>
