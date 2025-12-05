@@ -164,14 +164,6 @@ export const cekStatusMateri = async (idMateri) => {
   return authFetch(`/materi/${idMateri}/selesai`);
 };
 
-// Tandai materi selesai (siswa)
-export const tandaiMateriSelesai = async (idMateri) => {
-  return authFetch(`/materi/selesai`, {
-    method: "POST",
-    body: JSON.stringify({ idMateri }),
-  });
-};
-
 // GURU: ambil siswa yang telah menandai materi selesai (sidebar)
 export const getSiswaSelesai = async () => {
   return authFetch(`/guru/selesai`);
