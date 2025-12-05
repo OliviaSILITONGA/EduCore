@@ -200,10 +200,28 @@ async function tampilkanMateri(idKelas) {
   let client;
   try {
     client = await pool.connect();
-    const q = `SELECT * FROM materi WHERE id_kelas = $1 ORDER BY tanggal_pembuatan DESC`;
+    
+    // Query 1: Coba exact match dulu
+    let q = `SELECT * FROM materi WHERE id_kelas = $1 ORDER BY tanggal_pembuatan DESC`;
     console.log("Executing query:", q, "with param:", idKelas);
-    const res = await client.query(q, [idKelas]);
-    console.log("Query returned", res.rows.length, "rows");
+    let res = await client.query(q, [idKelas]);
+    console.log("Exact match query returned", res.rows.length, "rows");
+    
+    // Jika tidak ada hasil dan idKelas format "kelas-X", coba query tanpa prefix
+    if (res.rows.length === 0 && idKelas.startsWith('kelas-')) {
+      const kelasNumber = idKelas.replace('kelas-', '');
+      console.log("Trying alternative query with kelasNumber:", kelasNumber);
+      res = await client.query(q, [kelasNumber]);
+      console.log("Alternative query returned", res.rows.length, "rows");
+    }
+    
+    // Jika masih tidak ada, coba query LIKE untuk debug
+    if (res.rows.length === 0) {
+      const debugQ = `SELECT DISTINCT id_kelas FROM materi LIMIT 10`;
+      const debugRes = await client.query(debugQ);
+      console.log("Available id_kelas values in database:", debugRes.rows);
+    }
+    
     return res.rows;
   } catch (err) {
     logger.error("tampilkanMateri error", {
