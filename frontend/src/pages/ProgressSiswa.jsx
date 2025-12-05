@@ -4,6 +4,7 @@ import Button from "../components/Button";
 import Logo from "../assets/images/Educore_Logo_White.png";
 import Aki from "../assets/images/Ellipse_15.png";
 import useStudentProfile from "../hooks/useStudentProfile";
+import { tandaiMateriSelesai } from "../services/api";
 import {
   Home,
   User,
@@ -86,12 +87,22 @@ export default function ProgressSiswa() {
     });
   };
 
-  const handleMarkComplete = (materiId) => {
+  const handleMarkComplete = async (materiId) => {
     const progressKey = `progress_${subject}_kelas${kelasId}`;
     const completedList = JSON.parse(localStorage.getItem(progressKey) || "[]");
     if (!completedList.includes(materiId)) {
       completedList.push(materiId);
       localStorage.setItem(progressKey, JSON.stringify(completedList));
+      
+      // Kirim ke backend
+      try {
+        await tandaiMateriSelesai(materiId);
+        console.log("Berhasil menandai materi selesai di database:", materiId);
+      } catch (error) {
+        console.error("Gagal menandai materi selesai di database:", error);
+        // Tetap simpan di localStorage meskipun gagal ke database
+      }
+      
       calculateProgress();
     }
   };
@@ -102,6 +113,9 @@ export default function ProgressSiswa() {
     const filtered = completedList.filter((id) => id !== materiId);
     localStorage.setItem(progressKey, JSON.stringify(filtered));
     calculateProgress();
+    
+    // Note: Backend belum ada endpoint untuk unmark/batalkan selesai
+    // Jadi sementara hanya update localStorage saja
   };
 
   const materiList = JSON.parse(
