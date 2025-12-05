@@ -57,6 +57,7 @@ export default function ProgressSiswa() {
     try {
       // HARUS load dari API untuk mendapat ID database yang benar
       if (getToken()) {
+        console.log("Loading materi - subject:", subject, "kelasId:", kelasId);
         const res = await getMateriBySubject(subject, `kelas-${kelasId}`);
         console.log("API Response:", res);
         if (res && res.data && res.data.length > 0) {
@@ -66,21 +67,42 @@ export default function ProgressSiswa() {
           setLoading(false);
           return;
         } else {
-          console.warn("API returned empty data or no data");
+          console.warn("API returned empty data:", res);
         }
       } else {
         console.warn("No token found, cannot load from API");
       }
       
-      // Jika API gagal atau kosong, tampilkan pesan kosong
-      console.log("No materi found from API, showing empty state");
-      setMateriList([]);
-      calculateProgress([]);
+      // Jika API gagal atau kosong, coba fallback ke localStorage untuk backward compatibility
+      console.log("Trying fallback to localStorage...");
+      const storageKey = `materi_${subject}_kelas${kelasId}`;
+      const storedMateri = JSON.parse(localStorage.getItem(storageKey) || "[]");
+      console.log("Materi from localStorage:", storedMateri);
+      
+      if (storedMateri.length > 0) {
+        // localStorage materi ada, tapi tidak punya ID database yang valid
+        // Tampilkan warning
+        console.warn("⚠️ WARNING: Using localStorage data - IDs may not be valid for database operations!");
+        setMateriList(storedMateri);
+        calculateProgress(storedMateri);
+      } else {
+        console.log("No materi found anywhere, showing empty state");
+        setMateriList([]);
+        calculateProgress([]);
+      }
     } catch (error) {
       console.error("Error loading materi from API:", error);
-      // Tampilkan pesan error, jangan fallback ke localStorage
-      setMateriList([]);
-      calculateProgress([]);
+      // Fallback ke localStorage jika API error
+      const storageKey = `materi_${subject}_kelas${kelasId}`;
+      const storedMateri = JSON.parse(localStorage.getItem(storageKey) || "[]");
+      if (storedMateri.length > 0) {
+        console.warn("⚠️ Using localStorage fallback due to API error");
+        setMateriList(storedMateri);
+        calculateProgress(storedMateri);
+      } else {
+        setMateriList([]);
+        calculateProgress([]);
+      }
     } finally {
       setLoading(false);
     }
@@ -130,6 +152,13 @@ export default function ProgressSiswa() {
     console.log("=== TANDAI SELESAI ===");
     console.log("materiId:", materiId, "type:", typeof materiId);
     
+    // Validasi: pastikan ID adalah integer yang valid (bukan timestamp localStorage)
+    if (!materiId || materiId > 2147483647) {
+      alert("⚠️ Error: ID materi tidak valid!\n\nMateri ini mungkin dari localStorage lama. Silakan:\n1. Minta guru upload ulang materi\n2. Refresh halaman ini\n3. Coba lagi");
+      console.error("Invalid materiId - too large for database integer:", materiId);
+      return;
+    }
+    
     const progressKey = `progress_${subject}_kelas${kelasId}`;
     const completedList = JSON.parse(localStorage.getItem(progressKey) || "[]");
     if (!completedList.includes(materiId)) {
@@ -141,10 +170,10 @@ export default function ProgressSiswa() {
         console.log("Mengirim ke backend, idMateri:", materiId);
         const response = await tandaiMateriSelesai(materiId);
         console.log("Response dari backend:", response);
-        alert("Berhasil menandai materi selesai!");
+        alert("✅ Berhasil menandai materi selesai!");
       } catch (error) {
         console.error("ERROR menandai materi selesai:", error);
-        alert("Gagal menandai materi selesai: " + error.message);
+        alert("❌ Gagal menyimpan ke database: " + error.message + "\n\nData tetap tersimpan di browser Anda.");
         // Tetap simpan di localStorage meskipun gagal ke database
       }
       
