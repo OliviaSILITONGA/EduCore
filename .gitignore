@@ -7,6 +7,11 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
+# Backend logs
+backend/logs/*.log
+!backend/logs/.gitkeep
+
+node_modules
 */node_modules
 dist
 dist-ssr

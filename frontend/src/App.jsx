@@ -18,10 +18,10 @@ import ProfilSiswa from "./pages/ProfilSiswa";
 import EditProfilSiswa from "./pages/EditProfilSiswa";
 import ProfilGuru from "./pages/ProfilGuru";
 import EditProfilGuru from "./pages/EditProfilGuru";
-import Lupasandi_guru from "./pages/Lupasandi_guru";
-import Lupasandi_siswa from "./pages/Lupasandi_siswa";
-import Buatsandi_guru from "./pages/Buatsandi_guru";
-import Buatsandi_siswa from "./pages/Buatsandi_siswa";
+import ProgressSiswa from "./pages/ProgressSiswa";
+import Datasiswa from "./pages/Datasiswa";
+import ForgotPasswordSiswa from "./pages/ForgotPasswordSiswa";
+import ForgotPasswordGuru from "./pages/ForgotPasswordGuru";
 
 export default function App() {
   return (
@@ -37,14 +37,6 @@ export default function App() {
           {/* REGISTER */}
           <Route path="/register-siswa" element={<RegisterSiswa />} />
           <Route path="/register-guru" element={<RegisterGuru />} />
-
-          {/* LUPA SANDI */}
-          <Route path="/lupasandi-guru" element={<Lupasandi_guru />} />
-          <Route path="/lupasandi-siswa" element={<Lupasandi_siswa />} />
-
-          {/* BUAT SANDI */}
-          <Route path="/buatsandi-guru" element={<Buatsandi_guru />} />
-          <Route path="/buatsandi-siswa" element={<Buatsandi_siswa />} />
 
           {/* BERANDA - PASTIKAN ADA */}
           <Route path="/beranda-siswa" element={<BerandaSiswa />} />
@@ -68,6 +60,10 @@ export default function App() {
             element={<MateriSayaSiswa />}
           />
           <Route path="/belajar/:subject/:materiId" element={<Belajar />} />
+          <Route
+            path="/progress/:subject/:kelasId"
+            element={<ProgressSiswa />}
+          />
 
           {/* profil siswa*/}
           <Route path="/profil-siswa" element={<ProfilSiswa />} />
@@ -76,7 +72,12 @@ export default function App() {
           {/* profil guru*/}
           <Route path="/profil-guru" element={<ProfilGuru />} />
           <Route path="/edit-profil-guru" element={<EditProfilGuru />} />
+          <Route path="/data-siswa" element={<Datasiswa />} />
+
+          <Route path="/forgot-password-siswa" element={<ForgotPasswordSiswa />} />
+          <Route path="/forgot-password-guru" element={<ForgotPasswordGuru />} />
         </Routes>
+
       </BrowserRouter>
     </div>
   );
