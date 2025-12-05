@@ -4,7 +4,7 @@ import Button from "../components/Button";
 import Logo from "../assets/images/Educore_Logo_White.png";
 import Aki from "../assets/images/Ellipse_15.png";
 import useStudentProfile from "../hooks/useStudentProfile";
-import { tandaiMateriSelesai } from "../services/api";
+import { tandaiMateriSelesai, getMateriBySubject, getToken } from "../services/api";
 import {
   Home,
   User,
@@ -36,6 +36,8 @@ export default function ProgressSiswa() {
   const { profile } = useStudentProfile();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
+  const [materiList, setMateriList] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const [progress, setProgress] = useState({
     totalMateri: 0,
@@ -46,20 +48,51 @@ export default function ProgressSiswa() {
   });
 
   useEffect(() => {
-    calculateProgress();
+    loadMateriList();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [subject, kelasId]);
 
-  const calculateProgress = () => {
+  const loadMateriList = async () => {
+    setLoading(true);
+    try {
+      // Coba load dari API terlebih dahulu
+      if (getToken()) {
+        const res = await getMateriBySubject(subject, `kelas-${kelasId}`);
+        if (res.data && res.data.length > 0) {
+          console.log("Materi loaded from API:", res.data);
+          setMateriList(res.data);
+          calculateProgress(res.data);
+          setLoading(false);
+          return;
+        }
+      }
+      
+      // Fallback ke localStorage jika API gagal
+      const storageKey = `materi_${subject}_kelas${kelasId}`;
+      const storedMateri = JSON.parse(localStorage.getItem(storageKey) || "[]");
+      console.log("Materi loaded from localStorage:", storedMateri);
+      setMateriList(storedMateri);
+      calculateProgress(storedMateri);
+    } catch (error) {
+      console.error("Error loading materi:", error);
+      // Fallback ke localStorage
+      const storageKey = `materi_${subject}_kelas${kelasId}`;
+      const storedMateri = JSON.parse(localStorage.getItem(storageKey) || "[]");
+      setMateriList(storedMateri);
+      calculateProgress(storedMateri);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const calculateProgress = (materiData = materiList) => {
     // Load dari localStorage atau API
-    const storageKey = `materi_${subject}_kelas${kelasId}`;
-    const materiList = JSON.parse(localStorage.getItem(storageKey) || "[]");
     const progressKey = `progress_${subject}_kelas${kelasId}`;
     const completedList = JSON.parse(localStorage.getItem(progressKey) || "[]");
 
-    const total = materiList.length;
+    const total = materiData.length;
     const completed = completedList.filter((m) =>
-      materiList.some((mat) => mat.id === m)
+      materiData.some((mat) => mat.id === m)
     ).length;
     const percentage = total > 0 ? Math.round((completed / total) * 100) : 0;
 
@@ -124,15 +157,13 @@ export default function ProgressSiswa() {
     // Jadi sementara hanya update localStorage saja
   };
 
-  const materiList = JSON.parse(
-    localStorage.getItem(`materi_${subject}_kelas${kelasId}`) || "[]"
-  );
   const completedList = JSON.parse(
     localStorage.getItem(`progress_${subject}_kelas${kelasId}`) || "[]"
   );
 
   const filteredMateriList = materiList.filter(materi =>
-    materi.folderName.toLowerCase().includes(searchTerm.toLowerCase())
+    materi.folderName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    materi.nama?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const getCompletionStatus = (percentage) => {
@@ -510,7 +541,12 @@ export default function ProgressSiswa() {
                   </div>
                 </div>
 
-                {filteredMateriList.length === 0 ? (
+                {loading ? (
+                  <div className="p-12 text-center">
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
+                    <p className="text-gray-600">Memuat data materi...</p>
+                  </div>
+                ) : filteredMateriList.length === 0 ? (
                   <div className="p-12 text-center">
                     <div className="w-20 h-20 mx-auto mb-6 bg-gray-100 rounded-2xl flex items-center justify-center">
                       <BookOpen className="w-10 h-10 text-gray-400" />
